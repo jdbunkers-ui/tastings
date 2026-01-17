@@ -24,7 +24,7 @@
     const { data, error } = await supabase
       .from("tasting_leaderboard")
       .select("*")
-      .order("weighted_score", { ascending: false }) // highest score first
+      //.order("weighted_score", { ascending: false }) // highest score first
       .limit(500);
 
     if (error) {
