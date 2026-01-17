@@ -1,1 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Tastings Leaderboard</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 24px; }
+      table { border-collapse: collapse; width: 100%; }
+      th, td { border: 1px solid #ddd; padding: 8px; vertical-align: top; }
+      th { cursor: pointer; position: sticky; top: 0; background: #f7f7f7; }
+      tr:nth-child(even) { background: #fafafa; }
+      .muted { color: #666; font-size: 12px; }
+      .error { color: crimson; white-space: pre-wrap; }
+      .controls { display: flex; gap: 12px; align-items: center; margin: 12px 0 18px; }
+      input { padding: 8px; width: 280px; }
+      .pill { display: inline-block; padding: 2px 8px; border: 1px solid #ddd; border-radius: 999px; font-size: 12px; }
+    </style>
+  </head>
 
+  <body>
+    <h1>Tastings Leaderboard</h1>
+    <div class="muted">
+      Data loaded from Supabase view <span class="pill">tasting_leaderboard</span>
+    </div>
+
+    <div class="controls">
+      <input id="filter" placeholder="Filter rows (search text)..." />
+      <span class="muted" id="status">Loading…</span>
+    </div>
+
+    <div id="error" class="error"></div>
+
+    <table id="tbl" aria-label="Leaderboard table">
+      <thead id="thead"></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+
+    <script type="module">
+      import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+      const SUPABASE_URL = "https://uzgwhofpmdgvyottchzx.supabase.co";
+      const SUPABASE_ANON_KEY =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6Z3dob2ZwbWRndnlvdHRjaHp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg0MjUwODQsImV4cCI6MjA4NDAwMTA4NH0.pJkYm8EftixLt496JEvOoSHC0Ph31kYp5NVXctG41o4";
+
+      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+      const thead = document.getElementById("thead");
+      const tbody = document.getElementById("tbody");
+      const filterEl = document.getElementById("filter");
+      const statusEl = document.getElementById("status");
+      const errorEl = document.getElementById("error");
+
+      let rows = [];
+      let columns = [];
+      let sortKey = null;
+      let sortAsc = false;
+
+      function escapeHtml(v) {
+        return String(v ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#39;");
+      }
+
+      function renderTable(data) {
+        // Build header once
+        if (!columns.length) {
+          columns = data.length ? Object.keys(data[0]) : [];
+          thead.innerHTML =
+            "<tr>" +
+            columns
+              .map(
+                (c) =>
+                  `<th data-col="${escapeHtml(c)}">${escapeHtml(c)}</th>`
+              )
+              .join("") +
+            "</tr>";
+
+          // Click-to-sort
+          thead.querySelectorAll("th").forEach((th) => {
+            th.addEventListener("click", () => {
+              const col = th.getAttribute("data-col");
+              if (sortKey === col) sortAsc = !sortAsc;
+              else {
+                sortKey = col;
+                sortAsc = true;
+              }
+              render();
+            });
+          });
+        }
+
+        tbody.innerHTML = data
+          .map((r) => {
+            return (
+              "<tr>" +
+              columns.map((c) => `<td>${escapeHtml(r[c])}</td>`).join("") +
+              "</tr>"
+            );
+          })
+          .join("");
+      }
+
+      function applyFilter(data) {
+        const q = filterEl.value.trim().toLowerCase();
+        if (!q) return data;
+
+        return data.filter((r) =>
+          columns.some((c) => String(r[c] ?? "").toLowerCase().includes(q))
+        );
+      }
+
+      function applySort(data) {
+        if (!sortKey) return data;
+
+        const sorted = [...data].sort((a, b) => {
+          const av = a[sortKey];
+          const bv = b[sortKey];
+
+          // numeric sort when possible
+          const an = Number(av);
+          const bn = Number(bv);
+          const bothNumeric = !Number.isNaN(an) && !Number.isNaN(bn);
+
+          if (bothNumeric) return an - bn;
+
+          return String(av ?? "").localeCompare(String(bv ?? ""), undefined, {
+            numeric: true,
+            sensitivity: "base",
+          });
+        });
+
+        return sortAsc ? sorted : sorted.reverse();
+      }
+
+      function render() {
+        let data = rows;
+        data = applyFilter(data);
+        data = applySort(data);
+
+        statusEl.textContent = `Rows: ${data.length}${sortKey ? ` | Sort: ${sortKey} (${sortAsc ? "asc" : "desc"})` : ""}`;
+        renderTable(data);
+      }
+
+      async function loadLeaderboard() {
+        statusEl.textContent = "Loading…";
+        errorEl.textContent = "";
+
+        const { data, error } = await supabase
+          .from("tasting_leaderboard")
+          .select("*")
+          .limit(500);
+
+        if (error) {
+          errorEl.textContent = "Supabase error:\n" + JSON.stringify(error, null, 2);
+          statusEl.textContent = "Failed to load";
+          return;
+        }
+
+        rows = data ?? [];
+        statusEl.textContent = `Loaded ${rows.length} rows`;
+        columns = []; // rebuild columns based on result
+        render();
+      }
+
+      filterEl.addEventListener("input", () => render());
+
+      loadLeaderboard();
+    </script>
+  </body>
+</html>
