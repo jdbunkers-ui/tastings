@@ -2,172 +2,258 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Tastings Leaderboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome to the Speakeasy</title>
+
     <style>
-      body { font-family: Arial, sans-serif; margin: 24px; }
-      table { border-collapse: collapse; width: 100%; }
-      th, td { border: 1px solid #ddd; padding: 8px; vertical-align: top; }
-      th { cursor: pointer; position: sticky; top: 0; background: #f7f7f7; }
-      tr:nth-child(even) { background: #fafafa; }
-      .muted { color: #666; font-size: 12px; }
-      .error { color: crimson; white-space: pre-wrap; }
-      .controls { display: flex; gap: 12px; align-items: center; margin: 12px 0 18px; }
-      input { padding: 8px; width: 280px; }
-      .pill { display: inline-block; padding: 2px 8px; border: 1px solid #ddd; border-radius: 999px; font-size: 12px; }
+      :root {
+        /* 1930s speakeasy vibe: deep browns + brass/gold */
+        --bg: #120c08;
+        --panel: rgba(24, 16, 12, 0.82);
+        --border: rgba(212, 175, 55, 0.35);
+        --gold: #d4af37;
+        --gold-soft: rgba(212, 175, 55, 0.18);
+        --text: #f1e7d7;
+        --muted: rgba(241, 231, 215, 0.75);
+        --shadow: rgba(0, 0, 0, 0.55);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        color: var(--text);
+        background: radial-gradient(1200px 700px at 20% 10%, #2b1a12 0%, var(--bg) 55%);
+        font-family: ui-serif, Georgia, "Times New Roman", serif;
+      }
+
+      /* subtle “smoke” texture using gradients */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background:
+          radial-gradient(800px 400px at 65% 20%, rgba(255, 255, 255, 0.06), transparent 60%),
+          radial-gradient(900px 500px at 30% 40%, rgba(255, 255, 255, 0.04), transparent 65%),
+          radial-gradient(700px 350px at 70% 70%, rgba(255, 255, 255, 0.03), transparent 60%);
+        mix-blend-mode: screen;
+        opacity: 0.6;
+      }
+
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 28px 18px 60px;
+        position: relative;
+      }
+
+      header {
+        display: flex;
+        gap: 18px;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 22px;
+      }
+
+      .title-block {
+        padding: 18px 18px 14px;
+        border: 1px solid var(--border);
+        background: linear-gradient(180deg, var(--panel), rgba(18, 12, 8, 0.55));
+        box-shadow: 0 18px 40px var(--shadow);
+        border-radius: 14px;
+        flex: 1;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        letter-spacing: 0.5px;
+        font-size: clamp(28px, 4vw, 44px);
+        color: var(--gold);
+        text-shadow: 0 1px 0 rgba(0,0,0,0.35);
+      }
+
+      .subtitle {
+        margin: 0;
+        color: var(--muted);
+        font-size: 16px;
+        line-height: 1.35;
+      }
+
+      .hero-img {
+        width: 240px;
+        max-width: 34vw;
+        border-radius: 14px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        box-shadow: 0 18px 40px var(--shadow);
+        background: rgba(0,0,0,0.25);
+      }
+
+      .hero-img img {
+        display: block;
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+      }
+
+      main {
+        margin-top: 18px;
+      }
+
+      .card {
+        border: 1px solid var(--border);
+        background: linear-gradient(180deg, rgba(24, 16, 12, 0.78), rgba(18, 12, 8, 0.55));
+        box-shadow: 0 18px 40px var(--shadow);
+        border-radius: 14px;
+        padding: 18px;
+      }
+
+      .card h2 {
+        margin: 0 0 12px;
+        font-size: 20px;
+        color: var(--text);
+      }
+
+      nav ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 10px;
+      }
+
+      nav a {
+        display: block;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: rgba(0, 0, 0, 0.18);
+        color: var(--text);
+        text-decoration: none;
+        transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+      }
+
+      nav a:hover {
+        transform: translateY(-1px);
+        background: var(--gold-soft);
+        border-color: rgba(212, 175, 55, 0.6);
+      }
+
+      .row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+      }
+
+      .filter {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: rgba(0, 0, 0, 0.18);
+        width: 100%;
+        max-width: 520px;
+      }
+
+      .filter label {
+        color: var(--muted);
+        font-size: 14px;
+        letter-spacing: 0.2px;
+      }
+
+      .filter input {
+        flex: 1;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid rgba(212, 175, 55, 0.35);
+        background: rgba(10, 6, 4, 0.55);
+        color: var(--text);
+        outline: none;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      }
+
+      .filter input:focus {
+        border-color: rgba(212, 175, 55, 0.7);
+        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.12);
+      }
+
+      footer {
+        margin-top: 22px;
+        color: rgba(241, 231, 215, 0.55);
+        font-size: 12px;
+        text-align: center;
+      }
+
+      @media (max-width: 720px) {
+        header {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .hero-img {
+          width: 100%;
+          max-width: 100%;
+        }
+      }
     </style>
   </head>
 
   <body>
-    <h1>Tastings Leaderboard</h1>
-    <div class="muted">
-      Data loaded from Supabase view <span class="pill">tasting_leaderboard</span>
+    <div class="wrap">
+      <header>
+        <div class="title-block">
+          <h1>Welcome to the Speakeasy</h1>
+          <p class="subtitle">
+            Step inside. Find leaderboards, upload new flights, and keep the good stuff flowing.
+          </p>
+
+          <div class="row">
+            <div class="filter">
+              <label for="filterBox">Filter</label>
+              <input id="filterBox" type="text" placeholder="(placeholder for future filtering)" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Top-right image -->
+        <div class="hero-img">
+          <img src="speakeasy.jpg" alt="Speakeasy scene" />
+        </div>
+      </header>
+
+      <main>
+        <section class="card">
+          <h2>Quick Links</h2>
+          <nav>
+            <ul>
+              <li>
+                <a href="database_pulls/Junks_Tastings">Junk's Tasting Leaderboard</a>
+              </li>
+              <li>
+                <a href="#">My Tasting Leaderboard</a>
+              </li>
+              <li>
+                <a href="#">Upload a new flight result</a>
+              </li>
+            </ul>
+          </nav>
+        </section>
+
+        <footer>
+          © <span id="year"></span> The Speakeasy
+        </footer>
+      </main>
     </div>
 
-    <div class="controls">
-      <input id="filter" placeholder="Filter rows (search text)..." />
-      <span class="muted" id="status">Loading…</span>
-    </div>
-
-    <div id="error" class="error"></div>
-
-    <table id="tbl" aria-label="Leaderboard table">
-      <thead id="thead"></thead>
-      <tbody id="tbody"></tbody>
-    </table>
-
-    <script type="module">
-      import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-      const SUPABASE_URL = "https://uzgwhofpmdgvyottchzx.supabase.co";
-      const SUPABASE_ANON_KEY =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6Z3dob2ZwbWRndnlvdHRjaHp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg0MjUwODQsImV4cCI6MjA4NDAwMTA4NH0.pJkYm8EftixLt496JEvOoSHC0Ph31kYp5NVXctG41o4";
-
-      const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-      const thead = document.getElementById("thead");
-      const tbody = document.getElementById("tbody");
-      const filterEl = document.getElementById("filter");
-      const statusEl = document.getElementById("status");
-      const errorEl = document.getElementById("error");
-
-      let rows = [];
-      let columns = [];
-      let sortKey = null;
-      let sortAsc = false;
-
-      function escapeHtml(v) {
-        return String(v ?? "")
-          .replaceAll("&", "&amp;")
-          .replaceAll("<", "&lt;")
-          .replaceAll(">", "&gt;")
-          .replaceAll('"', "&quot;")
-          .replaceAll("'", "&#39;");
-      }
-
-      function renderTable(data) {
-        // Build header once
-        if (!columns.length) {
-          columns = data.length ? Object.keys(data[0]) : [];
-          thead.innerHTML =
-            "<tr>" +
-            columns
-              .map(
-                (c) =>
-                  `<th data-col="${escapeHtml(c)}">${escapeHtml(c)}</th>`
-              )
-              .join("") +
-            "</tr>";
-
-          // Click-to-sort
-          thead.querySelectorAll("th").forEach((th) => {
-            th.addEventListener("click", () => {
-              const col = th.getAttribute("data-col");
-              if (sortKey === col) sortAsc = !sortAsc;
-              else {
-                sortKey = col;
-                sortAsc = true;
-              }
-              render();
-            });
-          });
-        }
-
-        tbody.innerHTML = data
-          .map((r) => {
-            return (
-              "<tr>" +
-              columns.map((c) => `<td>${escapeHtml(r[c])}</td>`).join("") +
-              "</tr>"
-            );
-          })
-          .join("");
-      }
-
-      function applyFilter(data) {
-        const q = filterEl.value.trim().toLowerCase();
-        if (!q) return data;
-
-        return data.filter((r) =>
-          columns.some((c) => String(r[c] ?? "").toLowerCase().includes(q))
-        );
-      }
-
-      function applySort(data) {
-        if (!sortKey) return data;
-
-        const sorted = [...data].sort((a, b) => {
-          const av = a[sortKey];
-          const bv = b[sortKey];
-
-          // numeric sort when possible
-          const an = Number(av);
-          const bn = Number(bv);
-          const bothNumeric = !Number.isNaN(an) && !Number.isNaN(bn);
-
-          if (bothNumeric) return an - bn;
-
-          return String(av ?? "").localeCompare(String(bv ?? ""), undefined, {
-            numeric: true,
-            sensitivity: "base",
-          });
-        });
-
-        return sortAsc ? sorted : sorted.reverse();
-      }
-
-      function render() {
-        let data = rows;
-        data = applyFilter(data);
-        data = applySort(data);
-
-        statusEl.textContent = `Rows: ${data.length}${sortKey ? ` | Sort: ${sortKey} (${sortAsc ? "asc" : "desc"})` : ""}`;
-        renderTable(data);
-      }
-
-      async function loadLeaderboard() {
-        statusEl.textContent = "Loading…";
-        errorEl.textContent = "";
-
-        const { data, error } = await supabase
-          .from("tasting_leaderboard")
-          .select("*")
-          .limit(500);
-
-        if (error) {
-          errorEl.textContent = "Supabase error:\n" + JSON.stringify(error, null, 2);
-          statusEl.textContent = "Failed to load";
-          return;
-        }
-
-        rows = data ?? [];
-        statusEl.textContent = `Loaded ${rows.length} rows`;
-        columns = []; // rebuild columns based on result
-        render();
-      }
-
-      filterEl.addEventListener("input", () => render());
-
-      loadLeaderboard();
+    <script>
+      // Just to keep the footer year current
+      document.getElementById("year").textContent = new Date().getFullYear();
     </script>
   </body>
 </html>
