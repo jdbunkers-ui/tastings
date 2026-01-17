@@ -2,38 +2,236 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tastings Leaderboard</title>
+
     <style>
-      body { font-family: Arial, sans-serif; margin: 24px; }
-      table { border-collapse: collapse; width: 100%; }
-      th, td { border: 1px solid #ddd; padding: 8px; vertical-align: top; }
-      th { cursor: pointer; position: sticky; top: 0; background: #f7f7f7; }
-      tr:nth-child(even) { background: #fafafa; }
-      .muted { color: #666; font-size: 12px; }
-      .error { color: crimson; white-space: pre-wrap; }
-      .controls { display: flex; gap: 12px; align-items: center; margin: 12px 0 18px; }
-      input { padding: 8px; width: 280px; }
-      .pill { display: inline-block; padding: 2px 8px; border: 1px solid #ddd; border-radius: 999px; font-size: 12px; }
+      :root {
+        /* Same palette as your Speakeasy index page */
+        --bg: #120c08;
+        --panel: rgba(24, 16, 12, 0.82);
+        --border: rgba(212, 175, 55, 0.35);
+        --gold: #d4af37;
+        --gold-soft: rgba(212, 175, 55, 0.18);
+        --text: #f1e7d7;
+        --muted: rgba(241, 231, 215, 0.75);
+        --shadow: rgba(0, 0, 0, 0.55);
+        --danger: #ff5a5a;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        color: var(--text);
+        background: radial-gradient(1200px 700px at 20% 10%, #2b1a12 0%, var(--bg) 55%);
+        font-family: ui-serif, Georgia, "Times New Roman", serif;
+      }
+
+      /* subtle “smoke” texture */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background:
+          radial-gradient(800px 400px at 65% 20%, rgba(255, 255, 255, 0.06), transparent 60%),
+          radial-gradient(900px 500px at 30% 40%, rgba(255, 255, 255, 0.04), transparent 65%),
+          radial-gradient(700px 350px at 70% 70%, rgba(255, 255, 255, 0.03), transparent 60%);
+        mix-blend-mode: screen;
+        opacity: 0.6;
+      }
+
+      .wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 26px 16px 60px;
+        position: relative;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 14px;
+      }
+
+      .title-block {
+        border: 1px solid var(--border);
+        background: linear-gradient(180deg, var(--panel), rgba(18, 12, 8, 0.55));
+        box-shadow: 0 18px 40px var(--shadow);
+        border-radius: 14px;
+        padding: 16px 16px 14px;
+        flex: 1;
+      }
+
+      h1 {
+        margin: 0 0 6px;
+        letter-spacing: 0.5px;
+        font-size: clamp(24px, 3.2vw, 40px);
+        color: var(--gold);
+        text-shadow: 0 1px 0 rgba(0,0,0,0.35);
+      }
+
+      .muted {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.35;
+      }
+
+      .pill {
+        display: inline-block;
+        padding: 2px 10px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        font-size: 12px;
+        color: var(--text);
+        background: rgba(0, 0, 0, 0.18);
+        vertical-align: middle;
+      }
+
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        margin: 14px 0 0;
+      }
+
+      input {
+        padding: 10px 12px;
+        width: min(420px, 100%);
+        border-radius: 12px;
+        border: 1px solid rgba(212, 175, 55, 0.35);
+        background: rgba(10, 6, 4, 0.55);
+        color: var(--text);
+        outline: none;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      }
+
+      input:focus {
+        border-color: rgba(212, 175, 55, 0.7);
+        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.12);
+      }
+
+      .card {
+        margin-top: 16px;
+        border: 1px solid var(--border);
+        background: linear-gradient(180deg, rgba(24, 16, 12, 0.78), rgba(18, 12, 8, 0.55));
+        box-shadow: 0 18px 40px var(--shadow);
+        border-radius: 14px;
+        overflow: hidden;
+      }
+
+      .table-wrap {
+        overflow: auto;
+        max-height: 72vh;
+      }
+
+      table {
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100%;
+        min-width: 860px; /* helps keep columns readable; scrolls on small screens */
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      }
+
+      th, td {
+        padding: 10px 10px;
+        vertical-align: top;
+        border-bottom: 1px solid rgba(212, 175, 55, 0.16);
+        white-space: nowrap;
+      }
+
+      td {
+        color: rgba(241, 231, 215, 0.92);
+      }
+
+      /* Sticky header with gold tone */
+      th {
+        cursor: pointer;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        color: var(--bg);
+        background: linear-gradient(180deg, rgba(212, 175, 55, 0.95), rgba(212, 175, 55, 0.72));
+        border-bottom: 1px solid rgba(0,0,0,0.35);
+        text-shadow: 0 1px 0 rgba(255,255,255,0.25);
+      }
+
+      th:hover {
+        filter: brightness(1.02);
+      }
+
+      /* Zebra striping (subtle) */
+      tbody tr:nth-child(even) td {
+        background: rgba(0, 0, 0, 0.14);
+      }
+
+      tbody tr:hover td {
+        background: rgba(212, 175, 55, 0.10);
+      }
+
+      /* Sort indicator */
+      th.sort-asc::after {
+        content: " ▲";
+        font-size: 12px;
+      }
+      th.sort-desc::after {
+        content: " ▼";
+        font-size: 12px;
+      }
+
+      .error {
+        margin-top: 14px;
+        color: var(--danger);
+        white-space: pre-wrap;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        font-size: 13px;
+      }
+
+      .footer {
+        margin-top: 14px;
+        color: rgba(241, 231, 215, 0.55);
+        font-size: 12px;
+        text-align: center;
+      }
     </style>
   </head>
 
   <body>
-    <h1>Tastings Leaderboard</h1>
-    <div class="muted">
-      Data loaded from Supabase view <span class="pill">tasting_leaderboard</span>
+    <div class="wrap">
+      <div class="topbar">
+        <div class="title-block">
+          <h1>Tastings Leaderboard</h1>
+          <div class="muted">
+            Data loaded from Supabase view <span class="pill">tasting_leaderboard</span>
+          </div>
+
+          <div class="controls">
+            <input id="filter" placeholder="Filter rows (search text)..." />
+            <span class="muted" id="status">Loading…</span>
+          </div>
+
+          <div id="error" class="error"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="table-wrap">
+          <table id="tbl" aria-label="Leaderboard table">
+            <thead id="thead"></thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="footer">© <span id="year"></span> The Speakeasy</div>
     </div>
-
-    <div class="controls">
-      <input id="filter" placeholder="Filter rows (search text)..." />
-      <span class="muted" id="status">Loading…</span>
-    </div>
-
-    <div id="error" class="error"></div>
-
-    <table id="tbl" aria-label="Leaderboard table">
-      <thead id="thead"></thead>
-      <tbody id="tbody"></tbody>
-    </table>
 
     <script type="module">
       import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -71,10 +269,7 @@
           thead.innerHTML =
             "<tr>" +
             columns
-              .map(
-                (c) =>
-                  `<th data-col="${escapeHtml(c)}">${escapeHtml(c)}</th>`
-              )
+              .map((c) => `<th data-col="${escapeHtml(c)}">${escapeHtml(c)}</th>`)
               .join("") +
             "</tr>";
 
@@ -91,6 +286,13 @@
             });
           });
         }
+
+        // Sort indicator classes
+        thead.querySelectorAll("th").forEach((th) => {
+          th.classList.remove("sort-asc", "sort-desc");
+          const col = th.getAttribute("data-col");
+          if (col === sortKey) th.classList.add(sortAsc ? "sort-asc" : "sort-desc");
+        });
 
         tbody.innerHTML = data
           .map((r) => {
@@ -119,7 +321,6 @@
           const av = a[sortKey];
           const bv = b[sortKey];
 
-          // numeric sort when possible
           const an = Number(av);
           const bn = Number(bv);
           const bothNumeric = !Number.isNaN(an) && !Number.isNaN(bn);
@@ -138,36 +339,3 @@
       function render() {
         let data = rows;
         data = applyFilter(data);
-        data = applySort(data);
-
-        statusEl.textContent = `Rows: ${data.length}${sortKey ? ` | Sort: ${sortKey} (${sortAsc ? "asc" : "desc"})` : ""}`;
-        renderTable(data);
-      }
-
-      async function loadLeaderboard() {
-        statusEl.textContent = "Loading…";
-        errorEl.textContent = "";
-
-        const { data, error } = await supabase
-          .from("tasting_leaderboard")
-          .select("*")
-          .limit(500);
-
-        if (error) {
-          errorEl.textContent = "Supabase error:\n" + JSON.stringify(error, null, 2);
-          statusEl.textContent = "Failed to load";
-          return;
-        }
-
-        rows = data ?? [];
-        statusEl.textContent = `Loaded ${rows.length} rows`;
-        columns = []; // rebuild columns based on result
-        render();
-      }
-
-      filterEl.addEventListener("input", () => render());
-
-      loadLeaderboard();
-    </script>
-  </body>
-</html>
