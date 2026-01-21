@@ -1,49 +1,29 @@
-// assets/js/layout.js
-(async function () {
-  const headerEl = document.getElementById("site-header");
-  const footerEl = document.getElementById("site-footer");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Speakeasy</title>
 
-  // If these are null, the IDs don't match your HTML
-  if (!headerEl || !footerEl) {
-    console.error("[layout] Missing #site-header or #site-footer in the page.");
-    return;
-  }
+  <!-- Use repo-safe relative paths on GitHub Pages project sites -->
+  <link rel="stylesheet" href="./assets/css/site.css" />
+</head>
 
-  // Resolve correct base path for GitHub Pages project sites:
-  // https://username.github.io/<repo>/...
-  const isProjectPages = location.hostname.endsWith("github.io");
-  const repoName = location.pathname.split("/")[1] || "";
-  const base = isProjectPages ? `/${repoName}` : "";
+<body>
+  <div id="site-header"></div>
 
-  // Put your partials here (adjust folder names to your real structure)
-  const headerUrl = `${base}/assets/partials/header.html`;
-  const footerUrl = `${base}/assets/partials/footer.html`;
+  <main class="site-main">
+    <h1>Welcome to The Speakeasy</h1>
+    <p>Your private tasting ledger.</p>
+  </main>
 
-  console.log("[layout] base:", base);
-  console.log("[layout] headerUrl:", headerUrl);
-  console.log("[layout] footerUrl:", footerUrl);
+  <div id="site-footer"></div>
 
-  async function inject(url, el, label) {
-    const res = await fetch(url, { cache: "no-store" });
-    if (!res.ok) {
-      throw new Error(`${label} fetch failed: ${res.status} ${res.statusText} (${url})`);
-    }
-    const html = await res.text();
-    if (!html.trim()) {
-      console.warn(`[layout] ${label} loaded but was empty: ${url}`);
-    }
-    el.innerHTML = html;
-  }
+  <!-- IMPORTANT: the filename here must match your actual file -->
+  <!-- If your file is assets/js/layout.js, use this: -->
+  <script src="./assets/js/layout.js"></script>
 
-  try {
-    await inject(headerUrl, headerEl, "header");
-    await inject(footerUrl, footerEl, "footer");
-    console.log("[layout] injected header + footer ✅");
-  } catch (err) {
-    console.error("[layout] ERROR:", err);
-    // Optional: show a visible error on the page so you don't have to open devtools
-    headerEl.innerHTML = `<div style="padding:12px;border:1px solid #c00;color:#c00;">
-      Header failed to load. Open DevTools Console for details.
-    </div>`;
-  }
-})();
+  <!-- If your file is assets/js/layouts.js (plural), use this instead and delete the line above: -->
+  <!-- <script src="./assets/js/layouts.js"></script> -->
+</body>
+</html>
