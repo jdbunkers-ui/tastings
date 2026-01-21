@@ -1,3 +1,5 @@
+console.log("[layout] layouts.js loaded");
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
