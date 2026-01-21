@@ -1,39 +1,49 @@
-// assets/js/layouts.js
-(async function () {
-  const headerEl = document.getElementById("site-header");
-  const footerEl = document.getElementById("site-footer");
+function getBasePath() {
+  // For GitHub Pages project sites: /<repo>/...
+  const parts = window.location.pathname.split("/").filter(Boolean);
 
-  if (!headerEl || !footerEl) {
-    console.error("[layout] Missing #site-header or #site-footer in the page.");
-    return;
+  if (window.location.hostname.endsWith("github.io") && parts.length > 0) {
+    return `/${parts[0]}`;
   }
+  return "";
+}
 
-  // GitHub Pages project site base: /<repo>
-  const isGithubPages = location.hostname.endsWith("github.io");
-  const repoName = location.pathname.split("/")[1] || "";
-  const base = isGithubPages ? `/${repoName}` : "";
-
-  const headerUrl = `${base}/assets/partials/header.html`;
-  const footerUrl = `${base}/assets/partials/footer.html`;
-
-  console.log("[layout] layouts.js loaded");
-  console.log("[layout] headerUrl:", headerUrl);
-  console.log("[layout] footerUrl:", footerUrl);
-
-  async function inject(url, el, label) {
-    const res = await fetch(url, { cache: "no-store" });
-    if (!res.ok) throw new Error(`${label} fetch failed: ${res.status} ${res.statusText} (${url})`);
-    el.innerHTML = await res.text();
-  }
+async function loadPartial(elementId, url) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
 
   try {
-    await inject(headerUrl, headerEl, "header");
-    await inject(footerUrl, footerEl, "footer");
-    console.log("[layout] injected header + footer ✅");
-  } catch (err) {
-    console.error("[layout] ERROR:", err);
-    headerEl.innerHTML = `<div style="padding:12px;border:1px solid #c00;color:#c00;">
-      Header failed to load. Check Console for details.
-    </div>`;
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) {
+      console.error(`layout.js: failed to load ${url} (${res.status})`);
+      return;
+    }
+    el.innerHTML = await res.text();
+  } catch (e) {
+    console.error(`layout.js: error loading ${url}`, e);
   }
-})();
+}
+
+function wireNavLinks(base) {
+  const routes = {
+    home: `${base}/`,
+    distilleries: `${base}/distilleries/`,
+    bottles: `${base}/bottles/`,
+    tastings: `${base}/tastings/`,
+  };
+
+  document.querySelectorAll("[data-nav]").forEach((a) => {
+    const key = a.getAttribute("data-nav");
+    if (routes[key]) a.setAttribute("href", routes[key]);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  const base = getBasePath();
+
+  await loadPartial("site-header", `${base}/partials/header.html`);
+  await loadPartial("site-footer", `${base}/partials/footer.html`);
+
+  // After header is injected, set correct links
+  wireNavLinks(base);
+});
