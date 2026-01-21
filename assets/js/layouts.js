@@ -21,7 +21,7 @@
 
   <!-- IMPORTANT: the filename here must match your actual file -->
   <!-- If your file is assets/js/layout.js, use this: -->
-  <script src="./assets/js/layout.js"></script>
+  <script src="./assets/js/layouts.js"></script>
 
   <!-- If your file is assets/js/layouts.js (plural), use this instead and delete the line above: -->
   <!-- <script src="./assets/js/layouts.js"></script> -->
