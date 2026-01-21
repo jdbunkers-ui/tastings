@@ -1,31 +1,39 @@
-console.log("[layout] layouts.js loaded");
+// assets/js/layouts.js
+(async function () {
+  const headerEl = document.getElementById("site-header");
+  const footerEl = document.getElementById("site-footer");
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Speakeasy</title>
+  if (!headerEl || !footerEl) {
+    console.error("[layout] Missing #site-header or #site-footer in the page.");
+    return;
+  }
 
-  <!-- Use repo-safe relative paths on GitHub Pages project sites -->
-  <link rel="stylesheet" href="./assets/css/site.css" />
-</head>
+  // GitHub Pages project site base: /<repo>
+  const isGithubPages = location.hostname.endsWith("github.io");
+  const repoName = location.pathname.split("/")[1] || "";
+  const base = isGithubPages ? `/${repoName}` : "";
 
-<body>
-  <div id="site-header"></div>
+  const headerUrl = `${base}/assets/partials/header.html`;
+  const footerUrl = `${base}/assets/partials/footer.html`;
 
-  <main class="site-main">
-    <h1>Welcome to The Speakeasy</h1>
-    <p>Your private tasting ledger.</p>
-  </main>
+  console.log("[layout] layouts.js loaded");
+  console.log("[layout] headerUrl:", headerUrl);
+  console.log("[layout] footerUrl:", footerUrl);
 
-  <div id="site-footer"></div>
+  async function inject(url, el, label) {
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) throw new Error(`${label} fetch failed: ${res.status} ${res.statusText} (${url})`);
+    el.innerHTML = await res.text();
+  }
 
-  <!-- IMPORTANT: the filename here must match your actual file -->
-  <!-- If your file is assets/js/layout.js, use this: -->
-  <script src="./assets/js/layouts.js"></script>
-
-  <!-- If your file is assets/js/layouts.js (plural), use this instead and delete the line above: -->
-  <!-- <script src="./assets/js/layouts.js"></script> -->
-</body>
-</html>
+  try {
+    await inject(headerUrl, headerEl, "header");
+    await inject(footerUrl, footerEl, "footer");
+    console.log("[layout] injected header + footer ✅");
+  } catch (err) {
+    console.error("[layout] ERROR:", err);
+    headerEl.innerHTML = `<div style="padding:12px;border:1px solid #c00;color:#c00;">
+      Header failed to load. Check Console for details.
+    </div>`;
+  }
+})();
