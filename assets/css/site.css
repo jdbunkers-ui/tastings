@@ -1,49 +1,74 @@
-/* Crosstab nav matrix */
-.nav-matrix {
-  border-collapse: separate;
-  border-spacing: 6px;
-  font-size: 12px;
+/* ===== Velvet Room Header Theme ===== */
+
+.velvet-header {
+  background:
+    radial-gradient(1200px 600px at 30% 20%, rgba(120,40,80,0.35), transparent 60%),
+    linear-gradient(180deg, #2a0f1f, #12060d);
+  border-bottom: 1px solid rgba(212,175,55,0.35);
+  padding: 24px 32px;
 }
 
-.nav-matrix th,
-.nav-matrix td {
-  padding: 0;
-  vertical-align: middle;
-  text-align: center;
+.velvet-inner {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 32px;
 }
 
-.nav-matrix thead th {
-  opacity: 0.9;
-  font-weight: 700;
+.velvet-logo {
+  flex-shrink: 0;
 }
 
-.nav-matrix tbody th[scope="row"] {
-  text-align: right;
-  padding-right: 10px;
-  font-weight: 700;
-  white-space: nowrap;
-  opacity: 0.9;
-}
-
-.nav-matrix .corner {
-  width: 12px;
-}
-
-.nav-btn {
-  display: inline-block;
-  padding: 6px 10px;
-  border-radius: 10px;
-  text-decoration: none;
-  border: 1px solid rgba(212, 175, 55, 0.45);
-  background: rgba(0, 0, 0, 0.18);
+/* Typography */
+.velvet-nav,
+.velvet-matrix {
+  font-family: "Georgia", "Times New Roman", serif;
   color: #f1e7d7;
-  font-weight: 700;
-  line-height: 1;
-  min-width: 34px;
 }
 
-.nav-btn:hover {
-  background: rgba(212, 175, 55, 0.18);
-  border-color: rgba(212, 175, 55, 0.7);
+/* Crosstab table */
+.velvet-matrix {
+  border-collapse: separate;
+  border-spacing: 10px 8px;
+}
+
+.velvet-matrix thead th {
+  color: #d4af37;
+  font-size: 16px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.velvet-matrix tbody th {
+  text-align: right;
+  padding-right: 14px;
+  font-weight: 600;
+  color: #e6d6bf;
+  white-space: nowrap;
+}
+
+/* Buttons styled like brass hardware */
+.velvet-btn {
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+
+  color: #2a1400;
+  background:
+    linear-gradient(180deg, #f1d48a, #c9a24e);
+  border: 1px solid #8c6a2a;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.4),
+    0 4px 10px rgba(0,0,0,0.5);
+}
+
+.velvet-btn:hover {
+  background:
+    linear-gradient(180deg, #f7e2a8, #d4af37);
   transform: translateY(-1px);
 }
