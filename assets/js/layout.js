@@ -1,10 +1,3 @@
-function wireStubLinks() {
-  document.querySelectorAll("a[data-stub]").forEach((a) => {
-    const url = a.getAttribute("data-stub");
-    if (url) a.setAttribute("href", url);
-  });
-}
-
 function getBasePath() {
   const parts = window.location.pathname.split("/").filter(Boolean);
   if (window.location.hostname.endsWith("github.io") && parts.length > 0) {
