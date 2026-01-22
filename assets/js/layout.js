@@ -29,6 +29,26 @@ async function loadPartial(elementId, url) {
   el.innerHTML = await res.text();
 }
 
+function wireStubLinks() {
+  document.querySelectorAll("a[data-stub]").forEach((a) => {
+    const url = a.getAttribute("data-stub");
+    if (url) a.setAttribute("href", url);
+  });
+}
+/* ======================================================
+   THIS is exactly where your snippet belongs
+   ====================================================== */
+
+document.addEventListener("DOMContentLoaded", async () => {
+  const base = getBasePath();
+
+  await loadPartial("site-header", `${base}/assets/partials/header.html`);
+  await loadPartial("site-footer", `${base}/assets/partials/footer.html`);
+
+  wireNavLinks(base);
+  wireStubLinks();   // ✅ THIS makes your Go buttons work
+});
+
 document.addEventListener("DOMContentLoaded", async () => {
   const base = getBasePath();
 
