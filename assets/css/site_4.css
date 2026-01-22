@@ -22,17 +22,15 @@ body {
     radial-gradient(1200px 600px at 30% 20%, rgba(120,40,80,0.35), transparent 60%),
     linear-gradient(180deg, #2a0f1f, #12060d);
   border-bottom: 1px solid rgba(212, 175, 55, 0.35);
-  padding: 16px 20px;
+  padding: 16px 20px;                 /* tighter top-right padding */
 }
 
-/* Make the header a positioning context so the nav can be pinned */
 .velvet-inner {
-  position: relative;
-
   display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
+  align-items: flex-start;            /* 🔑 pin content to top */
+  justify-content: space-between;
   gap: 24px;
+  position: relative;
 }
 
 /* =========================================================
@@ -50,68 +48,57 @@ body {
 
 /* =========================================================
    Tasting Navigation Crosstab
-   - Compact as a component
-   - Pinned to far top-right
    ========================================================= */
 
 .velvet-nav {
-  position: absolute;      /* 🔑 pin it */
-  top: 0;
-  right: 0;
-
-  margin: 0;
+  margin-left: auto;                  /* push to far right */
+  align-self: flex-start;             /* stay at top */
   padding: 0;
-
-  display: inline-block;   /* shrink-to-fit wrapper */
-  width: max-content;      /* keep it tight */
   font-family: "Georgia", "Times New Roman", serif;
   color: #f1e7d7;
-
-  /* Optional: keeps it from sticking to the edge if you want 0, set to 0 */
-  /* transform: translate(0, 0); */
 }
 
 /* =========================================================
-   Crosstab Table – Compact Layout
+   Crosstab Table – FINAL LAYOUT
    ========================================================= */
 
 .velvet-matrix {
-  width: auto;                 /* 🔑 stop stretching full width */
-  table-layout: auto;          /* let content define width */
-  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed;                /* equal columns */
+  border-collapse: collapse;          /* remove uneven gaps */
   margin: 0;
 }
 
-/* Uniform cell alignment + tighter padding */
+/* Uniform cell alignment */
 .velvet-matrix th,
 .velvet-matrix td {
   text-align: center;
   vertical-align: middle;
-  padding: 4px 5px;            /* tighter than before */
+  padding: 6px 6px;                   /* tight spacing */
 }
 
 /* =========================================================
-   Column Sizing (compact)
+   Column Sizing
    ========================================================= */
 
-/* Row label column compact */
+/* Row labels */
 .velvet-matrix th.corner,
 .velvet-matrix tbody th[scope="row"] {
-  width: auto;                 /* content-sized */
+  width: 170px;
 }
 
 .velvet-matrix tbody th[scope="row"] {
   text-align: right;
-  padding-right: 10px;
+  padding-right: 12px;
   white-space: nowrap;
   font-weight: 600;
   color: #e6d6bf;
 }
 
-/* Ensure the 3 tasting columns stay consistent width (compact) */
+/* Nose / Palate / Finish columns */
 .velvet-matrix thead th:not(.corner),
 .velvet-matrix tbody td {
-  width: 72px;                 /* adjust for tighter/wider buttons */
+  width: calc((100% - 170px) / 3);
 }
 
 /* =========================================================
@@ -120,14 +107,13 @@ body {
 
 .velvet-matrix thead th {
   color: #d4af37;
-  font-size: 12px;             /* smaller */
+  font-size: 14px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  white-space: nowrap;
 }
 
 /* =========================================================
-   Buttons (Brass / Lounge Style) - Compact
+   Buttons (Brass / Lounge Style)
    ========================================================= */
 
 .velvet-btn {
@@ -136,11 +122,11 @@ body {
   justify-content: center;
 
   margin: 0 auto;
-  padding: 4px 8px;
-  min-width: 34px;
+  padding: 5px 9px;
+  min-width: 36px;
 
   border-radius: 12px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.05em;
   line-height: 1;
@@ -167,7 +153,6 @@ body {
 
 /* =========================================================
    Column Hover Glow (by column)
-   (td index: 2=Nose, 3=Palate, 4=Finish because first cell is row label th)
    ========================================================= */
 
 /* Nose */
@@ -207,35 +192,37 @@ body {
 
 /* =========================================================
    Responsive Adjustments
-   - On smaller screens, unpin the nav so it doesn’t overlap the logo
    ========================================================= */
 
 @media (max-width: 900px) {
-  .velvet-nav {
-    position: static;        /* unpin */
-    width: auto;
-    margin-left: auto;
-  }
-
   .velvet-inner {
     flex-direction: column;
     align-items: center;
     gap: 20px;
   }
+
+  .velvet-nav {
+    margin-left: 0;
+  }
+
+  .velvet-matrix th.corner,
+  .velvet-matrix tbody th[scope="row"] {
+    width: 140px;
+    font-size: 12px;
+  }
+
+  .velvet-matrix thead th {
+    font-size: 13px;
+  }
 }
 
 @media (max-width: 600px) {
-  .velvet-matrix thead th {
+  .velvet-matrix {
     font-size: 11px;
   }
 
-  .velvet-matrix thead th:not(.corner),
-  .velvet-matrix tbody td {
-    width: 64px;
-  }
-
   .velvet-btn {
-    padding: 4px 7px;
+    padding: 4px 8px;
     font-size: 11px;
   }
 }
