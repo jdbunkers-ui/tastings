@@ -1,60 +1,49 @@
-.site-header {
-  background: #111;
-  color: #f5f5f5;
-  padding: 12px 24px;
+/* Crosstab nav matrix */
+.nav-matrix {
+  border-collapse: separate;
+  border-spacing: 6px;
+  font-size: 12px;
 }
 
-.header-inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.site-title a {
-  color: #f5f5f5;
-  text-decoration: none;
-  font-size: 20px;
-  font-weight: bold;
-}
-
-.site-nav a {
-  color: #f5f5f5;
-  text-decoration: none;
-  margin-left: 20px;
-  font-weight: 500;
-}
-
-.site-nav a:hover {
-  text-decoration: underline;
-}
-
-
-.site-footer {
-  background: #111;
-  color: #aaa;
-  padding: 16px 24px;
-  font-size: 14px;
-  margin-top: 48px;
-}
-
-.footer-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-}
-
-.footer-left {
-  text-align: left;
-}
-
-.footer-center {
+.nav-matrix th,
+.nav-matrix td {
+  padding: 0;
+  vertical-align: middle;
   text-align: center;
 }
 
-.footer-right {
+.nav-matrix thead th {
+  opacity: 0.9;
+  font-weight: 700;
+}
+
+.nav-matrix tbody th[scope="row"] {
   text-align: right;
+  padding-right: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+  opacity: 0.9;
+}
+
+.nav-matrix .corner {
+  width: 12px;
+}
+
+.nav-btn {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 10px;
+  text-decoration: none;
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  background: rgba(0, 0, 0, 0.18);
+  color: #f1e7d7;
+  font-weight: 700;
+  line-height: 1;
+  min-width: 34px;
+}
+
+.nav-btn:hover {
+  background: rgba(212, 175, 55, 0.18);
+  border-color: rgba(212, 175, 55, 0.7);
+  transform: translateY(-1px);
 }
