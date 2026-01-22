@@ -1,0 +1,49 @@
+/* Crosstab nav matrix */
+.nav-matrix {
+  border-collapse: separate;
+  border-spacing: 6px;
+  font-size: 12px;
+}
+
+.nav-matrix th,
+.nav-matrix td {
+  padding: 0;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.nav-matrix thead th {
+  opacity: 0.9;
+  font-weight: 700;
+}
+
+.nav-matrix tbody th[scope="row"] {
+  text-align: right;
+  padding-right: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+  opacity: 0.9;
+}
+
+.nav-matrix .corner {
+  width: 12px;
+}
+
+.nav-btn {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 10px;
+  text-decoration: none;
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  background: rgba(0, 0, 0, 0.18);
+  color: #f1e7d7;
+  font-weight: 700;
+  line-height: 1;
+  min-width: 34px;
+}
+
+.nav-btn:hover {
+  background: rgba(212, 175, 55, 0.18);
+  border-color: rgba(212, 175, 55, 0.7);
+  transform: translateY(-1px);
+}
