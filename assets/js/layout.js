@@ -10,16 +10,31 @@ async function loadPartial(elementId, url) {
   const el = document.getElementById(elementId);
   if (!el) {
     console.error(`[layout] Missing #${elementId}`);
-    return;
+    return false;
   }
 
   const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) {
     console.error(`[layout] Failed to load ${url} (${res.status})`);
-    return;
+    return false;
   }
 
   el.innerHTML = await res.text();
+  return true;
+}
+
+function wireNavLinks(base) {
+  const routes = {
+    home: `${base}/`,
+    distilleries: `${base}/distilleries/`,
+    bottles: `${base}/bottles/`,
+    tastings: `${base}/tastings/`,
+  };
+
+  document.querySelectorAll("a[data-nav]").forEach((a) => {
+    const key = a.getAttribute("data-nav");
+    if (routes[key]) a.setAttribute("href", routes[key]);
+  });
 }
 
 function wireStubLinks() {
@@ -28,23 +43,21 @@ function wireStubLinks() {
     if (url) a.setAttribute("href", url);
   });
 }
-/* ======================================================
-   THIS is exactly where your snippet belongs
-   ====================================================== */
 
 document.addEventListener("DOMContentLoaded", async () => {
   const base = getBasePath();
 
-  await loadPartial("site-header", `${base}/assets/partials/header.html`);
-  await loadPartial("site-footer", `${base}/assets/partials/footer.html`);
+  const headerOk = await loadPartial("site-header", `${base}/assets/partials/header.html`);
+  const footerOk = await loadPartial("site-footer", `${base}/assets/partials/footer.html`);
 
-  wireNavLinks(base);
-  wireStubLinks();   // ✅ THIS makes your Go buttons work
-});
+  // Only wire links after header is injected
+  if (headerOk) {
+    wireNavLinks(base);
+    wireStubLinks();
+  }
 
-document.addEventListener("DOMContentLoaded", async () => {
-  const base = getBasePath();
-
-  await loadPartial("site-header", `${base}/assets/partials/header.html`);
-  await loadPartial("site-footer", `${base}/assets/partials/footer.html`);
+  if (!footerOk) {
+    // footer failure is non-fatal; leave page usable
+    console.warn("[layout] Footer did not load.");
+  }
 });
