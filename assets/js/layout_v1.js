@@ -1,9 +1,11 @@
 const BASE = location.hostname.includes("github.io") ? "/tastings" : "";
 
 function getBasePath() {
-  // GitHub Pages project site: https://<user>.github.io/<repo>/
-  // Custom domain (or local dev): https://<domain>/
-  return location.hostname.includes("github.io") ? "/tastings" : "";
+  const parts = window.location.pathname.split("/").filter(Boolean);
+  if (window.location.hostname.endsWith("github.io") && parts.length > 0) {
+    return `/${parts[0]}`; // repo name, e.g. /tastings
+  }
+  return "";
 }
 
 async function loadPartial(elementId, url) {
