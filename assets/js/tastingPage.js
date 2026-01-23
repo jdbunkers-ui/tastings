@@ -9,6 +9,16 @@ function getRouteParams() {
   };
 }
 
+// Basic HTML escaping to avoid rendering issues
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
 async function loadTastingSection() {
   const { weight, section } = getRouteParams();
 
@@ -23,27 +33,51 @@ async function loadTastingSection() {
   if (!el) return;
 
   if (error) {
-    el.innerHTML = `<pre class="error">${error.message}</pre>`;
+    el.innerHTML = `<pre class="error">${escapeHtml(error.message)}</pre>`;
     return;
   }
 
   if (!data || data.length === 0) {
-    el.innerHTML = `<p class="muted">No tasting notes yet for ${weight} / ${section}.</p>`;
+    el.innerHTML = `<p class="muted">No tasting notes yet for ${escapeHtml(
+      weight
+    )} / ${escapeHtml(section)}.</p>`;
     return;
   }
 
-  el.innerHTML = data.map(r => `
-    <div class="card">
-      <div class="title">${r.label} — ${r.bottle_type}</div>
-      <div class="meta">
-        Single Barrel: ${r.single_barrel_name}
-        • Proof: ${r.proof ?? "—"}
-        • Age: ${r.age ?? "—"}
-      </div>
-      <div class="notes">${r.notes ?? ""}</div>
-      <div class="meta">Score: ${r.score ?? "—"}</div>
+  el.innerHTML = `
+    <div class="table-wrap">
+      <table class="tasting-table">
+        <thead>
+          <tr>
+            <th>Label</th>
+            <th>Bottle</th>
+            <th>Single Barrel</th>
+            <th class="num">Proof</th>
+            <th class="num">Age</th>
+            <th class="notes">Notes</th>
+            <th class="num">Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${data
+            .map(
+              (r) => `
+            <tr>
+              <td>${escapeHtml(r.label)}</td>
+              <td>${escapeHtml(r.bottle_type)}</td>
+              <td>${escapeHtml(r.single_barrel_name)}</td>
+              <td class="num">${escapeHtml(r.proof ?? "—")}</td>
+              <td class="num">${escapeHtml(r.age ?? "—")}</td>
+              <td class="notes">${escapeHtml(r.notes ?? "")}</td>
+              <td class="num">${escapeHtml(r.score ?? "—")}</td>
+            </tr>
+          `
+            )
+            .join("")}
+        </tbody>
+      </table>
     </div>
-  `).join("");
+  `;
 }
 
 loadTastingSection();
