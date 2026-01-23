@@ -1,29 +1,63 @@
-// Base path for GitHub Pages vs custom domain
 const BASE = location.hostname.includes("github.io") ? "/tastings" : "";
 
-document.addEventListener("DOMContentLoaded", () => {
-  const header = document.getElementById("site-header");
-  const footer = document.getElementById("site-footer");
+function getBasePath() {
+  // GitHub Pages project site: https://<user>.github.io/<repo>/
+  // Custom domain (or local dev): https://<domain>/
+  return location.hostname.includes("github.io") ? "/tastings" : "";
+}
 
-  if (header) {
-    header.innerHTML = `
-      <header class="site-header">
-        <a href="${BASE}/index_v2.html">
-          <img
-            src="${BASE}/assets/img/velvetslide.png"
-            alt="The Velvet Slide"
-            class="site-logo"
-          />
-        </a>
-      </header>
-    `;
+async function loadPartial(elementId, url) {
+  const el = document.getElementById(elementId);
+  if (!el) {
+    console.error(`[layout] Missing #${elementId}`);
+    return false;
   }
 
-  if (footer) {
-    footer.innerHTML = `
-      <footer class="site-footer">
-        <p>© ${new Date().getFullYear()} The Velvet Slide</p>
-      </footer>
-    `;
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) {
+    console.error(`[layout] Failed to load ${url} (${res.status})`);
+    return false;
+  }
+
+  el.innerHTML = await res.text();
+  return true;
+}
+
+function wireNavLinks(base) {
+  const routes = {
+    home: `${base}/`,
+    distilleries: `${base}/distilleries/`,
+    bottles: `${base}/bottles/`,
+    tastings: `${base}/tastings/`,
+  };
+
+  document.querySelectorAll("a[data-nav]").forEach((a) => {
+    const key = a.getAttribute("data-nav");
+    if (routes[key]) a.setAttribute("href", routes[key]);
+  });
+}
+
+function wireStubLinks() {
+  document.querySelectorAll("a[data-stub]").forEach((a) => {
+    const url = a.getAttribute("data-stub");
+    if (url) a.setAttribute("href", url);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  const base = getBasePath();
+
+  const headerOk = await loadPartial("site-header", `${base}/assets/partials/header.html`);
+  const footerOk = await loadPartial("site-footer", `${base}/assets/partials/footer.html`);
+
+  // Only wire links after header is injected
+  if (headerOk) {
+    wireNavLinks(base);
+    wireStubLinks();
+  }
+
+  if (!footerOk) {
+    // footer failure is non-fatal; leave page usable
+    console.warn("[layout] Footer did not load.");
   }
 });
