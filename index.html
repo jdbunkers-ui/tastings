@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome | The Velvet Slide</title>
+
+  <!-- Shared site styles -->
+  <link rel="stylesheet" href="./assets/css/site.css" />
+
+  <style>
+    /* Welcome page overrides only */
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(
+        ellipse at center,
+        rgba(40, 20, 30, 0.95) 0%,
+        rgba(10, 5, 8, 1) 70%
+      );
+    }
+
+    .welcome-container {
+      text-align: center;
+    }
+
+    .welcome-image {
+      max-width: 90vw;
+      max-height: 90vh;
+      height: auto;
+      width: auto;
+      display: block;
+      margin: 0 auto;
+      cursor: pointer;
+      filter: drop-shadow(0 25px 45px rgba(0, 0, 0, 0.75));
+      transition: transform 0.25s ease, filter 0.25s ease;
+    }
+
+    .welcome-image:hover {
+      transform: scale(1.015);
+      filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.9));
+    }
+  </style>
+</head>
+
+<body>
+  <main class="welcome-container">
+    <a href="./index_v2.html" aria-label="Enter The Velvet Room">
+      <img
+        src="./assets/images/velvetroom.png"
+        alt="Enter The Velvet Room"
+        class="welcome-image"
+      />
+    </a>
+  </main>
+</body>
+</html>
