@@ -1,3 +1,5 @@
+const BASE = location.hostname.includes("github.io") ? "/tastings" : "";
+
 function getBasePath() {
   const parts = window.location.pathname.split("/").filter(Boolean);
   if (window.location.hostname.endsWith("github.io") && parts.length > 0) {
