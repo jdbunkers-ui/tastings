@@ -66,9 +66,6 @@ body {
   width: max-content;      /* keep it tight */
   font-family: "Georgia", "Times New Roman", serif;
   color: #f1e7d7;
-
-  /* Optional: keeps it from sticking to the edge if you want 0, set to 0 */
-  /* transform: translate(0, 0); */
 }
 
 /* =========================================================
@@ -239,7 +236,6 @@ body {
     font-size: 11px;
   }
 }
-
 
 /* =========================================================
    Footer – Velvet Motif
@@ -436,28 +432,35 @@ body {
 .tasting-table {
   width: 100%;
   border-collapse: collapse;
-  border: 1px solid rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,0.12);
   border-radius: 12px;
   overflow: hidden;
+
+  /* Slight velvet glass look */
+  background: rgba(0,0,0,0.12);
 }
 
 .tasting-table th,
 .tasting-table td {
   padding: 10px 12px;
-  border-bottom: 1px solid rgba(255,255,255,.10);
+  border-bottom: 1px solid rgba(255,255,255,0.10);
   vertical-align: top;
 }
 
 .tasting-table thead th {
   position: sticky;
   top: 0;
-  background: rgba(0,0,0,.25);
+  background: rgba(0,0,0,0.25);
   backdrop-filter: blur(6px);
   text-align: left;
+  color: rgba(241,231,215,0.92);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .tasting-table tr:hover td {
-  background: rgba(255,255,255,.04);
+  background: rgba(255,255,255,0.04);
 }
 
 .tasting-table .num {
@@ -467,4 +470,83 @@ body {
 
 .tasting-table .notes {
   min-width: 320px;
+  line-height: 1.45;
+  color: rgba(241,231,215,0.85);
+}
+
+/* =========================================================
+   Mobile-friendly tasting table layout
+   - Converts each row into a stacked "label: value" card
+   ========================================================= */
+
+@media (max-width: 700px) {
+  .tasting-table {
+    border: none;
+    background: transparent;
+  }
+
+  .tasting-table thead {
+    display: none; /* hide header row */
+  }
+
+  .tasting-table,
+  .tasting-table tbody,
+  .tasting-table tr,
+  .tasting-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .tasting-table tr {
+    margin: 12px 0;
+    border: 1px solid rgba(212,175,55,0.18);
+    border-radius: 14px;
+    background: rgba(18, 9, 13, 0.55);
+    box-shadow: 0 10px 26px rgba(0,0,0,0.45);
+    overflow: hidden;
+  }
+
+  .tasting-table td {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .tasting-table td:last-child {
+    border-bottom: none;
+  }
+
+  .tasting-table td::before {
+    font-weight: 700;
+    color: rgba(212,175,55,0.9);
+    letter-spacing: 0.04em;
+    flex: 0 0 42%;
+    max-width: 42%;
+  }
+
+  /* Column labels via nth-child (no HTML changes needed) */
+  .tasting-table td:nth-child(1)::before { content: "Label"; }
+  .tasting-table td:nth-child(2)::before { content: "Bottle"; }
+  .tasting-table td:nth-child(3)::before { content: "Single Barrel"; }
+  .tasting-table td:nth-child(4)::before { content: "Proof"; }
+  .tasting-table td:nth-child(5)::before { content: "Age"; }
+  .tasting-table td:nth-child(6)::before { content: "Notes"; }
+  .tasting-table td:nth-child(7)::before { content: "Score"; }
+
+  /* Values */
+  .tasting-table td {
+    color: rgba(241,231,215,0.85);
+  }
+
+  .tasting-table .num {
+    text-align: left;
+    white-space: normal;
+  }
+
+  .tasting-table .notes {
+    min-width: 0;
+  }
 }
