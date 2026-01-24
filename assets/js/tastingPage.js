@@ -1,5 +1,9 @@
 import { supabase } from "./supabaseClient.js";
 
+function fmt1(x) {
+  return (x === null || x === undefined || x === "") ? "" : Number(x).toFixed(1);
+}
+
 function getRouteParams() {
   const parts = window.location.pathname.split("/").filter(Boolean);
   // /whiskey/<weight>/<section>/
