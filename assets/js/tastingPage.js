@@ -31,18 +31,9 @@ async function loadTastingSection() {
 
 const { data, error } = await supabase
   .from("v_tasting_sections")
-  .select(`
-    label,
-    bottle_type,
-    single_barrel_name,
-    proof::numeric(6,1)   as proof,
-    age,
-    notes,
-    score::numeric(4,1)   as score
-  `)
+  .select("label,bottle_type,single_barrel_name,proof,age,notes,score")
   .eq("weight_slug", weight)
   .eq("section", section)
-  // Sort priority
   .order("score", { ascending: false, nullsFirst: false })
   .order("age",   { ascending: false, nullsFirst: false })
   .order("proof", { ascending: false, nullsFirst: false })
