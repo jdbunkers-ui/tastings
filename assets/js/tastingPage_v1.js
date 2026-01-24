@@ -1,5 +1,9 @@
 import { supabase } from "./supabaseClient.js";
 
+/* =========================================================
+   Numeric formatting helpers
+   - Ensures proof & score always render with 1 decimal
+   ========================================================= */
 function fmt1(x) {
   return (x === null || x === undefined || x === "")
     ? "—"
@@ -58,13 +62,13 @@ async function loadTastingSection() {
       <table class="tasting-table">
         <thead>
           <tr>
-            <th class="num">Score</th>
-            <th class="num">Age</th>
-            <th class="num">Proof</th>
             <th>Label</th>
             <th>Bottle</th>
             <th>Single Barrel</th>
+            <th class="num">Proof</th>
+            <th class="num">Age</th>
             <th class="notes">Notes</th>
+            <th class="num">Score</th>
           </tr>
         </thead>
         <tbody>
@@ -72,13 +76,13 @@ async function loadTastingSection() {
             .map(
               (r) => `
             <tr>
-              <td class="num">${fmt1(r.score)}</td>
-              <td class="num">${escapeHtml(r.age ?? "—")}</td>
-              <td class="num">${fmt1(r.proof)}</td>
               <td>${escapeHtml(r.label)}</td>
               <td>${escapeHtml(r.bottle_type)}</td>
               <td>${escapeHtml(r.single_barrel_name)}</td>
+              <td class="num">${fmt1(r.proof)}</td>
+              <td class="num">${escapeHtml(r.age ?? "—")}</td>
               <td class="notes">${escapeHtml(r.notes ?? "")}</td>
+              <td class="num">${fmt1(r.score)}</td>
             </tr>
           `
             )
