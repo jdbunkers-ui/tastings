@@ -1,7 +1,13 @@
 import { supabase } from "./supabaseClient.js";
 
+/* =========================================================
+   Numeric formatting helpers
+   - Ensures proof & score always render with 1 decimal
+   ========================================================= */
 function fmt1(x) {
-  return (x === null || x === undefined || x === "") ? "" : Number(x).toFixed(1);
+  return (x === null || x === undefined || x === "")
+    ? "—"
+    : Number(x).toFixed(1);
 }
 
 function getRouteParams() {
@@ -26,23 +32,16 @@ function escapeHtml(value) {
 async function loadTastingSection() {
   const { weight, section } = getRouteParams();
 
-//  const { data, error } = await supabase
-//    .from("v_tasting_sections")
-//    .select("label,bottle_type,single_barrel_name,proof,age,notes,score")
-//    .eq("weight_slug", weight)
-//    .eq("section", section)
-//    .order("label", { ascending: true });
+  const { data, error } = await supabase
+    .from("v_tasting_sections")
+    .select("label,bottle_type,single_barrel_name,proof,age,notes,score")
+    .eq("weight_slug", weight)
+    .eq("section", section)
+    .order("score", { ascending: false, nullsFirst: false })
+    .order("age",   { ascending: false, nullsFirst: false })
+    .order("proof", { ascending: false, nullsFirst: false })
+    .order("label", { ascending: true });
 
-const { data, error } = await supabase
-  .from("v_tasting_sections")
-  .select("label,bottle_type,single_barrel_name,proof,age,notes,score")
-  .eq("weight_slug", weight)
-  .eq("section", section)
-  .order("score", { ascending: false, nullsFirst: false })
-  .order("age",   { ascending: false, nullsFirst: false })
-  .order("proof", { ascending: false, nullsFirst: false })
-  .order("label", { ascending: true });
-  
   const el = document.getElementById("tasting-content");
   if (!el) return;
 
@@ -80,10 +79,10 @@ const { data, error } = await supabase
               <td>${escapeHtml(r.label)}</td>
               <td>${escapeHtml(r.bottle_type)}</td>
               <td>${escapeHtml(r.single_barrel_name)}</td>
-              <td class="num">${escapeHtml(r.proof ?? "—")}</td>
+              <td class="num">${fmt1(r.proof)}</td>
               <td class="num">${escapeHtml(r.age ?? "—")}</td>
               <td class="notes">${escapeHtml(r.notes ?? "")}</td>
-              <td class="num">${escapeHtml(r.score ?? "—")}</td>
+              <td class="num">${fmt1(r.score)}</td>
             </tr>
           `
             )
