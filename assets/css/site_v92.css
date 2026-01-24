@@ -257,30 +257,6 @@ table.ledger td:nth-child(3) {
 }
 
 /* =========================================================
-   Tasting Table – Header Alignment Override
-   ---------------------------------------------------------
-   Date: 2026-01-24
-   Purpose:
-   - Left-align descriptive column headers
-   - Keep numeric headers (Score, Age, Proof) centered
-   ========================================================= */
-
-/* Descriptive headers */
-.tasting-table thead th:nth-child(4), /* Label */
-.tasting-table thead th:nth-child(5), /* Bottle */
-.tasting-table thead th:nth-child(6), /* Single Barrel */
-.tasting-table thead th:nth-child(7)  /* Notes */ {
-  text-align: left;
-}
-
-/* Numeric headers (defensive) */
-.tasting-table thead th:nth-child(1),
-.tasting-table thead th:nth-child(2),
-.tasting-table thead th:nth-child(3) {
-  text-align: center;
-}
-
-/* =========================================================
    Mobile adjustments
    ========================================================= */
 
