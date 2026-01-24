@@ -191,7 +191,7 @@ table.ledger tbody tr:nth-child(even) td {
 }
 
 /* =========================================================
-   Sticky first column (Score)
+   Sticky first column (Label)
    ========================================================= */
 
 table.ledger th.sticky-col,
@@ -237,17 +237,23 @@ table.ledger td:nth-child(3) {
   text-overflow: ellipsis;
 }
 
-/* Keep sticky column aligned */
+/* Keep sticky label column aligned */
 table.ledger th.sticky-col,
 table.ledger td.sticky-col {
   min-width: 260px;
 }
 
 /* =========================================================
-   Ledger Table – Column Centering Update
-   ---------------------------------------------------------
-   Date: 2026-01-24
-   Purpose:
-   - Center-align Score, Age, and Proof columns
-   - Ensure sticky Score column remains centered
-   - Suppor
+   Mobile adjustments
+   ========================================================= */
+
+@media (max-width: 480px) {
+  table.ledger {
+    font-size: 0.86rem;
+    min-width: 720px;
+  }
+
+  table.ledger td {
+    padding: 8px 12px;
+  }
+}
