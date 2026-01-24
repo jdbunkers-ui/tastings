@@ -38,6 +38,7 @@ body {
 /* Make the header a positioning context so the nav can be pinned */
 .velvet-inner {
   position: relative;
+
   display: flex;
   align-items: flex-start;
   justify-content: flex-start;
@@ -59,16 +60,20 @@ body {
 
 /* =========================================================
    Tasting Navigation Crosstab
+   - Compact as a component
+   - Pinned to far top-right
    ========================================================= */
 
 .velvet-nav {
-  position: absolute;
+  position: absolute;      /* 🔑 pin it */
   top: 0;
   right: 0;
+
   margin: 0;
   padding: 0;
-  display: inline-block;
-  width: max-content;
+
+  display: inline-block;   /* shrink-to-fit wrapper */
+  width: max-content;      /* keep it tight */
   font-family: "Georgia", "Times New Roman", serif;
   color: #f1e7d7;
 }
@@ -78,17 +83,42 @@ body {
    ========================================================= */
 
 .velvet-matrix {
-  width: auto;
-  table-layout: auto;
+  width: auto;                 /* 🔑 stop stretching full width */
+  table-layout: auto;          /* let content define width */
   border-collapse: collapse;
   margin: 0;
 }
 
+/* Uniform cell alignment + tighter padding */
 .velvet-matrix th,
 .velvet-matrix td {
   text-align: center;
   vertical-align: middle;
-  padding: 4px 5px;
+  padding: 4px 5px;            /* tighter than before */
+}
+
+/* =========================================================
+   Column Sizing (compact)
+   ========================================================= */
+
+/* Row label column compact */
+.velvet-matrix th.corner,
+.velvet-matrix tbody th[scope="row"] {
+  width: auto;                 /* content-sized */
+}
+
+.velvet-matrix tbody th[scope="row"] {
+  text-align: right;
+  padding-right: 10px;
+  white-space: nowrap;
+  font-weight: 600;
+  color: #e6d6bf;
+}
+
+/* Ensure the 3 tasting columns stay consistent width (compact) */
+.velvet-matrix thead th:not(.corner),
+.velvet-matrix tbody td {
+  width: 72px;                 /* adjust for tighter/wider buttons */
 }
 
 /* =========================================================
@@ -97,136 +127,74 @@ body {
 
 .velvet-matrix thead th {
   color: #d4af37;
-  font-size: 12px;
+  font-size: 12px;             /* smaller */
   letter-spacing: 0.08em;
   text-transform: uppercase;
   white-space: nowrap;
 }
 
 /* =========================================================
-   Buttons
+   Buttons (Brass / Lounge Style) - Compact
    ========================================================= */
 
 .velvet-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+
+  margin: 0 auto;
   padding: 4px 8px;
   min-width: 34px;
+
   border-radius: 12px;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.05em;
+  line-height: 1;
+
+  text-decoration: none;
   color: #2a1400;
+
   background: linear-gradient(180deg, #f1d48a, #c9a24e);
   border: 1px solid #8c6a2a;
+
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.4),
     0 3px 8px rgba(0,0,0,0.5);
+
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease,
+    background 120ms ease;
+}
+
+.velvet-btn:hover {
+  transform: translateY(-1px);
 }
 
 /* =========================================================
-   Ledger Table – Base (already implemented earlier)
+   Column Hover Glow (by column)
+   (td index: 2=Nose, 3=Palate, 4=Finish because first cell is row label th)
    ========================================================= */
 
-.ledger-wrap {
-  width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  border-radius: 14px;
-  border: 1px solid rgba(212,175,55,0.16);
-  background: rgba(0,0,0,0.12);
+/* Nose */
+.velvet-matrix tbody tr:hover td:nth-child(2) .velvet-btn {
+  box-shadow:
+    0 0 10px rgba(212,175,55,0.45),
+    0 0 18px rgba(212,175,55,0.25),
+    inset 0 1px 0 rgba(255,255,255,0.45);
 }
 
-table.ledger {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  min-width: 760px;
-  font-size: 0.92rem;
+/* Palate */
+.velvet-matrix tbody tr:hover td:nth-child(3) .velvet-btn {
+  box-shadow:
+    0 0 10px rgba(200,150,70,0.45),
+    0 0 18px rgba(200,150,70,0.25),
+    inset 0 1px 0 rgba(255,255,255,0.45);
 }
 
-table.ledger thead th {
-  position: sticky;
-  top: 0;
-  z-index: 5;
-  font-variant: small-caps;
-  letter-spacing: 0.08em;
-  font-size: 0.74rem;
-  color: #d4af37;
-  text-align: left;
-  background: linear-gradient(
-    180deg,
-    rgba(18,6,13,0.98),
-    rgba(18,6,13,0.88)
-  );
-  border-bottom: 1px solid rgba(212,175,55,0.22);
-}
-
-table.ledger td {
-  line-height: 1.22;
-  vertical-align: top;
-  border-bottom: 1px solid rgba(212,175,55,0.14);
-}
-
-table.ledger td.num,
-table.ledger th.num {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-/* =========================================================
-   Ledger Table – Additional Formatting (Widths & Padding)
-   ========================================================= */
-
-/* 2) More padding so text doesn't blend */
-table.ledger thead th {
-  padding: 12px 14px;
-}
-
-table.ledger td {
-  padding: 10px 14px;
-}
-
-/* Subtle vertical separators between columns */
-table.ledger thead th + th,
-table.ledger tbody td + td {
-  border-left: 1px solid rgba(212,175,55,0.10);
-}
-
-/* 1) First three columns: equal, fixed, wider */
-table.ledger th:nth-child(1),
-table.ledger td:nth-child(1),
-table.ledger th:nth-child(2),
-table.ledger td:nth-child(2),
-table.ledger th:nth-child(3),
-table.ledger td:nth-child(3) {
-  width: 260px;
-  min-width: 260px;
-  max-width: 260px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Keep sticky label column aligned with new width */
-table.ledger th.sticky-col,
-table.ledger td.sticky-col {
-  min-width: 260px;
-}
-
-/* 3) Extra padding for PROOF and AGE headers */
-table.ledger thead th:nth-child(4),
-table.ledger thead th:nth-child(5) {
-  padding-left: 18px;
-  padding-right: 18px;
-}
-
-/* Slightly more right padding for numeric columns */
-table.ledger td.num,
-table.ledger th.num {
-  padding-right: 18px;
-}
-
-/* Mobile tightening */
-@media (max-width: 480px)
+/* Finish */
+.velvet-matrix tbody tr:hover td:nth-child(4) .velvet-btn {
+  box-shadow:
+    0 0 12px rgba(140,60,120,0.55),
+    0 0 20px rgba(140,60,12
