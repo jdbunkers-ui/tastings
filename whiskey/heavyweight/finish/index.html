@@ -10,16 +10,19 @@
   </head>
 
   <body>
-    <!-- Injected Header -->
+    <!-- Injected Header (layout.js will populate #site-header) -->
     <div id="site-header"></div>
 
     <main class="page-content">
       <section class="content-card">
         <header class="content-header">
+          <!-- These headings are cosmetic; the data routing now comes from:
+               <html data-weight="..." data-dimension="..."> -->
           <h1 id="page-weight">heavyweight</h1>
           <h2 id="page-dimension">finish</h2>
         </header>
-<!--
+
+        <!--
         <nav class="page-nav">
           <a id="nav-prev" class="page-nav-btn" href="#" aria-disabled="true">← Prev</a>
           <a class="page-nav-btn" href="../../../index_v2.html">Home</a>
@@ -32,25 +35,45 @@
             <strong>heavyweight</strong> whiskeys focused on <strong>finish</strong>.
           </p>
         </div>
--->
-        <!-- Notes render here -->
+        -->
+
+        <!-- =========================================================
+             Filter Controls
+             - tastingFilter.js listens to #filter and hides/shows rows
+             - #status displays counts and filter status
+             - #error shows any runtime/filter errors (optional)
+             ========================================================= -->
+        <div class="controls">
+          <input id="filter" placeholder="Filter rows (search text)..." />
+          <span class="muted" id="status">Loading…</span>
+        </div>
+
+        <div id="error" class="error"></div>
+
+        <!-- =========================================================
+             Results Render Target
+             - tastingPage.js renders the Supabase rows into a table here
+             ========================================================= -->
         <div id="tasting-content"></div>
-        <!--div id="notes"></div>
       </section>
     </main>
 
-    <!-- Injected Footer -->
+    <!-- Injected Footer (layout.js will populate #site-footer) -->
     <div id="site-footer"></div>
 
     <!-- Layout injection (header/footer) -->
     <script src="../../../assets/js/layout.js"></script>
 
-    <!-- Layout injection -->
-     <!-- 👇 ADD THIS BLOCK BELOW -->
+    <!-- =========================================================
+         Data Rendering + Filtering
+         IMPORTANT ORDER:
+         1) tastingPage.js renders the table into #tasting-content
+         2) tastingFilter.js filters the rendered rows as you type
+         ========================================================= -->
     <script type="module" src="../../../assets/js/tastingPage.js"></script>
+    <script type="module" src="../../../assets/js/tastingFilter.js"></script>
 
-
-    <!-- Supabase reference wiring -->
+    <!-- Supabase reference wiring (your existing page wiring) -->
     <script type="module" src="../../../assets/js/whiskeyCompassPage.js"></script>
   </body>
 </html>

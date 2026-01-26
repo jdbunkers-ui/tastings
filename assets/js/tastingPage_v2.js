@@ -6,6 +6,15 @@ function fmt1(x) {
     : Number(x).toFixed(1);
 }
 
+function getRouteParams() {
+  const parts = window.location.pathname.split("/").filter(Boolean);
+  // /whiskey/<weight>/<section>/
+  return {
+    weight: parts[parts.length - 2],
+    section: parts[parts.length - 1],
+  };
+}
+
 // Basic HTML escaping to avoid rendering issues
 function escapeHtml(value) {
   return String(value ?? "")
@@ -16,27 +25,8 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
-// Read routing params from <html data-weight="..." data-dimension="...">
-function getPageParams() {
-  const root = document.documentElement;
-  const weight = (root?.dataset?.weight || "").trim();
-  const section = (root?.dataset?.dimension || "").trim(); // dimension == nose|palate|finish
-  return { weight, section };
-}
-
 async function loadTastingSection() {
-  const el = document.getElementById("tasting-content");
-  if (!el) return;
-
-  const { weight, section } = getPageParams();
-
-  if (!weight || !section) {
-    el.innerHTML = `
-      <pre class="error">Missing page routing attributes.
-Expected: &lt;html data-weight="heavyweight" data-dimension="finish"&gt;</pre>
-    `;
-    return;
-  }
+  const { weight, section } = getRouteParams();
 
   const { data, error } = await supabase
     .from("v_tasting_sections")
@@ -47,6 +37,9 @@ Expected: &lt;html data-weight="heavyweight" data-dimension="finish"&gt;</pre>
     .order("age",   { ascending: false, nullsFirst: false })
     .order("proof", { ascending: false, nullsFirst: false })
     .order("label", { ascending: true });
+
+  const el = document.getElementById("tasting-content");
+  if (!el) return;
 
   if (error) {
     el.innerHTML = `<pre class="error">${escapeHtml(error.message)}</pre>`;

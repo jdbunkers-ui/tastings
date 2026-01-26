@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en" data-weight="heavyweight" data-dimension="finish">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>heavyweight – finish | The Velvet Slide</title>
+
+    <!-- Shared site styles -->
+    <link rel="stylesheet" href="../../../assets/css/site.css" />
+  </head>
+
+  <body>
+    <!-- Injected Header -->
+    <div id="site-header"></div>
+
+    <main class="page-content">
+      <section class="content-card">
+        <header class="content-header">
+          <h1 id="page-weight">heavyweight</h1>
+          <h2 id="page-dimension">finish</h2>
+        </header>
+<!--
+        <nav class="page-nav">
+          <a id="nav-prev" class="page-nav-btn" href="#" aria-disabled="true">← Prev</a>
+          <a class="page-nav-btn" href="../../../index_v2.html">Home</a>
+          <a id="nav-next" class="page-nav-btn" href="#" aria-disabled="true">Next →</a>
+        </nav>
+
+        <div class="content-description">
+          <p>
+            This page will display tasting notes for
+            <strong>heavyweight</strong> whiskeys focused on <strong>finish</strong>.
+          </p>
+        </div>
+-->
+        <!-- Notes render here -->
+        <div id="tasting-content"></div>
+        <!--div id="notes"></div>
+      </section>
+    </main>
+
+    <!-- Injected Footer -->
+    <div id="site-footer"></div>
+
+    <!-- Layout injection (header/footer) -->
+    <script src="../../../assets/js/layout.js"></script>
+
+    <!-- Layout injection -->
+     <!-- 👇 ADD THIS BLOCK BELOW -->
+    <script type="module" src="../../../assets/js/tastingPage.js"></script>
+
+
+    <!-- Supabase reference wiring -->
+    <script type="module" src="../../../assets/js/whiskeyCompassPage.js"></script>
+  </body>
+</html>
