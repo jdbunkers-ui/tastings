@@ -33,25 +33,43 @@
           </p>
         </div>
 -->
-        <!-- Notes render here -->
+        <!-- =========================================================
+             Filter Controls
+             - tastingFilter.js listens to #filter and hides/shows rows
+             - #status displays counts and filter status
+             - #error shows any runtime/filter errors (optional)
+             ========================================================= -->
+        <div class="controls">
+          <input id="filter" placeholder="Filter rows (search text)..." />
+          <span class="muted" id="status">Loading…</span>
+        </div>
+
+        <div id="error" class="error"></div>
+
+        <!-- =========================================================
+             Results Render Target
+             - tastingPage.js renders the Supabase rows into a table here
+             ========================================================= -->
         <div id="tasting-content"></div>
-        <!--div id="notes"></div>        
       </section>
     </main>
 
-        <!-- Injected Footer -->
+    <!-- Injected Footer (layout.js will populate #site-footer) -->
     <div id="site-footer"></div>
 
-    <!-- Header/Footer injection -->
+    <!-- Layout injection (header/footer) -->
     <script src="../../../assets/js/layout.js"></script>
 
-    <!-- Layout injection -->
-     <!-- 👇 ADD THIS BLOCK BELOW -->
+    <!-- =========================================================
+         Data Rendering + Filtering
+         IMPORTANT ORDER:
+         1) tastingPage.js renders the table into #tasting-content
+         2) tastingFilter.js filters the rendered rows as you type
+         ========================================================= -->
     <script type="module" src="../../../assets/js/tastingPage.js"></script>
-        
-    <!-- Page logic -->
-    <script type="module" src="../../../assets/js/tastingPage.js"></script>
-    <script type="module" src="../../../assets/js/whiskeyCompassPage.js"></script>
+    <script type="module" src="../../../assets/js/tastingFilter.js"></script>
 
-    </body>
+    <!-- Supabase reference wiring (your existing page wiring) -->
+    <script type="module" src="../../../assets/js/whiskeyCompassPage.js"></script>
+  </body>
 </html>
