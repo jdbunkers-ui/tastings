@@ -6,6 +6,12 @@ function fmt1(x) {
     : Number(x).toFixed(1);
 }
 
+function fmtCurrency(x) {
+  return (x === null || x === undefined || x === "")
+    ? "—"
+    : `$${Number(x).toFixed(0)}`;
+}
+
 // Basic HTML escaping to avoid rendering issues
 function escapeHtml(value) {
   return String(value ?? "")
@@ -20,7 +26,7 @@ function escapeHtml(value) {
 function getPageParams() {
   const root = document.documentElement;
   const weight = (root?.dataset?.weight || "").trim();
-  const section = (root?.dataset?.dimension || "").trim(); // dimension == nose|palate|finish
+  const section = (root?.dataset?.dimension || "").trim(); // nose | palate | finish
   return { weight, section };
 }
 
@@ -40,7 +46,9 @@ Expected: &lt;html data-weight="heavyweight" data-dimension="finish"&gt;</pre>
 
   const { data, error } = await supabase
     .from("v_tasting_sections")
-    .select("label,bottle_type,single_barrel_name,proof,age,notes,score")
+    .select(
+      "label,bottle_type,single_barrel_name,single_barrel_id,proof,age,msrp,notes,score"
+    )
     .eq("weight_slug", weight)
     .eq("section", section)
     .order("score", { ascending: false, nullsFirst: false })
@@ -54,9 +62,10 @@ Expected: &lt;html data-weight="heavyweight" data-dimension="finish"&gt;</pre>
   }
 
   if (!data || data.length === 0) {
-    el.innerHTML = `<p class="muted">No tasting notes yet for ${escapeHtml(
-      weight
-    )} / ${escapeHtml(section)}.</p>`;
+    el.innerHTML = `
+      <p class="muted">
+        No tasting notes yet for ${escapeHtml(weight)} / ${escapeHtml(section)}.
+      </p>`;
     return;
   }
 
@@ -68,9 +77,10 @@ Expected: &lt;html data-weight="heavyweight" data-dimension="finish"&gt;</pre>
             <th class="num">Score</th>
             <th class="num">Age</th>
             <th class="num">Proof</th>
-            <th>Label</th>
-            <th>Bottle</th>
-            <th>Single Barrel</th>
+            <th>Expression</th>
+            <th>Release Type</th>
+            <th>Batch / Barrel</th>
+            <th class="num">MSRP</th>
             <th class="notes">Notes</th>
           </tr>
         </thead>
@@ -78,13 +88,14 @@ Expected: &lt;html data-weight="heavyweight" data-dimension="finish"&gt;</pre>
           ${data
             .map(
               (r) => `
-            <tr>
+            <tr data-single-barrel-id="${escapeHtml(r.single_barrel_id)}">
               <td class="num">${fmt1(r.score)}</td>
               <td class="num">${escapeHtml(r.age ?? "—")}</td>
               <td class="num">${fmt1(r.proof)}</td>
               <td>${escapeHtml(r.label)}</td>
               <td>${escapeHtml(r.bottle_type)}</td>
               <td>${escapeHtml(r.single_barrel_name)}</td>
+              <td class="num">${fmtCurrency(r.msrp)}</td>
               <td class="notes">${escapeHtml(r.notes ?? "")}</td>
             </tr>
           `
