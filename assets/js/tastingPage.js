@@ -68,9 +68,9 @@ Expected: &lt;html data-weight="heavyweight" data-dimension="finish"&gt;</pre>
             <th class="num">Score</th>
             <th class="num">Age</th>
             <th class="num">Proof</th>
-            <th>Label</th>
-            <th>Bottle</th>
-            <th>Single Barrel</th>
+            <th>Expression</th>
+            <th>Release Type</th>
+            <th>Batch / Barrel</th>
             <th class="notes">Notes</th>
           </tr>
         </thead>
