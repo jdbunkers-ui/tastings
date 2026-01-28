@@ -18,24 +18,12 @@
         --bad: rgba(231, 76, 60, 0.25);
       }
 
-      html,
-      body {
-        height: 100%;
-      }
-
+      html, body { height: 100%; }
       body {
         margin: 0;
-        background: radial-gradient(
-            1200px 800px at 20% -10%,
-            rgba(128, 90, 213, 0.18),
-            transparent 55%
-          ),
-          radial-gradient(
-            900px 700px at 90% 0%,
-            rgba(255, 215, 0, 0.1),
-            transparent 50%
-          ),
-          var(--bg);
+        background: radial-gradient(1200px 800px at 20% -10%, rgba(128, 90, 213, 0.18), transparent 55%),
+                    radial-gradient(900px 700px at 90% 0%, rgba(255, 215, 0, 0.10), transparent 50%),
+                    var(--bg);
         color: var(--text);
         font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       }
@@ -122,15 +110,8 @@
         padding: 8px 10px;
         min-width: 86px;
       }
-      .stat .k {
-        font-size: 11px;
-        color: var(--muted2);
-      }
-      .stat .v {
-        font-size: 15px;
-        font-weight: 700;
-        margin-top: 2px;
-      }
+      .stat .k { font-size: 11px; color: var(--muted2); }
+      .stat .v { font-size: 15px; font-weight: 700; margin-top: 2px; }
 
       .meta {
         display: flex;
@@ -142,8 +123,7 @@
       }
 
       .mono {
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-          "Liberation Mono", monospace;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
       }
 
       .btn {
@@ -155,9 +135,7 @@
         padding: 8px 10px;
         font-size: 13px;
       }
-      .btn:hover {
-        background: rgba(255, 255, 255, 0.08);
-      }
+      .btn:hover { background: rgba(255, 255, 255, 0.08); }
 
       .section-title {
         display: flex;
@@ -200,22 +178,12 @@
         padding: 10px 10px;
         border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         font-size: 13px;
-        color: rgba(255, 255, 255, 0.9);
+        color: rgba(255, 255, 255, 0.90);
       }
-      tbody tr:last-child td {
-        border-bottom: none;
-      }
-      .num {
-        text-align: right;
-        white-space: nowrap;
-      }
-      .notes {
-        color: rgba(255, 255, 255, 0.86);
-        line-height: 1.35;
-      }
-      .muted {
-        color: var(--muted);
-      }
+      tbody tr:last-child td { border-bottom: none; }
+      .num { text-align: right; white-space: nowrap; }
+      .notes { color: rgba(255, 255, 255, 0.86); line-height: 1.35; }
+      .muted { color: var(--muted); }
 
       .grid-2 {
         display: grid;
@@ -223,15 +191,9 @@
         gap: 12px;
       }
       @media (max-width: 860px) {
-        .grid-2 {
-          grid-template-columns: 1fr;
-        }
-        .hero-top {
-          grid-template-columns: 1fr;
-        }
-        .stats {
-          justify-content: flex-start;
-        }
+        .grid-2 { grid-template-columns: 1fr; }
+        .hero-top { grid-template-columns: 1fr; }
+        .stats { justify-content: flex-start; }
       }
 
       .list {
@@ -248,9 +210,7 @@
         gap: 10px;
         align-items: start;
       }
-      .row:hover {
-        background: rgba(255, 255, 255, 0.06);
-      }
+      .row:hover { background: rgba(255, 255, 255, 0.06); }
       .row .title {
         font-weight: 700;
         font-size: 13px;
@@ -295,16 +255,14 @@
         padding: 10px;
         border-radius: 12px;
         background: rgba(0, 0, 0, 0.35);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.10);
         overflow: auto;
         color: rgba(255, 255, 255, 0.85);
         font-size: 12px;
       }
 
       /* modal */
-      #modal {
-        display: none;
-      }
+      #modal { display:none; }
     </style>
   </head>
 
@@ -350,75 +308,23 @@
 
     <!-- Modal shell -->
     <div id="modal" aria-hidden="true">
-      <div
-        data-close
-        style="
-          position: fixed;
-          inset: 0;
-          background: rgba(0, 0, 0, 0.6);
-          z-index: 9998;
-        "
-      ></div>
-
-      <div
-        role="dialog"
-        aria-modal="true"
-        style="
-          position: fixed;
-          left: 50%;
-          top: 50%;
-          transform: translate(-50%, -50%);
-          width: min(920px, 92vw);
-          max-height: 86vh;
-          overflow: auto;
-          background: #111;
-          border: 1px solid rgba(255, 255, 255, 0.12);
-          border-radius: 16px;
-          z-index: 9999;
-          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
-        "
-      >
-        <div
-          style="
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            align-items: center;
-            padding: 14px 16px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-          "
-        >
+      <div data-close
+        style="position:fixed;inset:0;background:rgba(0,0,0,.60);z-index:9998;"></div>
+      <div role="dialog" aria-modal="true"
+        style="position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);
+               width:min(920px,92vw);max-height:86vh;overflow:auto;
+               background:#111;border:1px solid rgba(255,255,255,.12);
+               border-radius:16px;z-index:9999;box-shadow:0 20px 60px rgba(0,0,0,.55);">
+        <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;
+                    padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.10);">
           <div>
-            <div
-              id="modal-title"
-              style="font-weight: 800; color: #fff; font-size: 15px"
-            ></div>
-            <div
-              id="modal-sub"
-              style="
-                color: rgba(255, 255, 255, 0.7);
-                font-size: 12px;
-                margin-top: 2px;
-              "
-            ></div>
+            <div id="modal-title" style="font-weight:800;color:#fff;font-size:15px;"></div>
+            <div id="modal-sub" style="color:rgba(255,255,255,.7);font-size:12px;margin-top:2px;"></div>
           </div>
           <button class="btn" data-close type="button">Close</button>
         </div>
-
-        <div
-          id="modal-body"
-          style="padding: 14px 16px; color: rgba(255, 255, 255, 0.92)"
-        ></div>
-
-        <div
-          style="
-            padding: 12px 16px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-          "
-        >
+        <div id="modal-body" style="padding:14px 16px;color:rgba(255,255,255,.92);"></div>
+        <div style="padding:12px 16px;border-top:1px solid rgba(255,255,255,.10);display:flex;justify-content:flex-end;gap:10px;">
           <button class="btn" data-close type="button">Close</button>
         </div>
       </div>
@@ -426,6 +332,7 @@
 
     <script type="module">
       import { supabase } from "../js/supabaseClient.js";
+
 
       // -----------------------------
       // Helpers
@@ -440,7 +347,7 @@
       }
 
       function fmt(x, fallback = "—") {
-        return x === null || x === undefined || x === "" ? fallback : String(x);
+        return (x === null || x === undefined || x === "") ? fallback : String(x);
       }
 
       function fmtBool(b) {
@@ -506,7 +413,6 @@
         const t = e.target;
         if (t && t.closest && t.closest("[data-close]")) closeModal();
       });
-
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") closeModal();
       });
@@ -564,12 +470,8 @@
                 ${expr ? `<span class="pill">${escapeHtml(expr)}</span>` : ""}
                 ${pick ? `<span class="pill">${escapeHtml(pick)}</span>` : ""}
                 ${subtype ? `<span class="pill">${escapeHtml(subtype)}</span>` : ""}
-                <span class="pill">Finished: ${escapeHtml(
-                  fmtBool(barrel?.finished_ind)
-                )}</span>
-                <span class="pill">Chill Filtered: ${escapeHtml(
-                  fmtBool(barrel?.chill_filtered_ind)
-                )}</span>
+                <span class="pill">Finished: ${escapeHtml(fmtBool(barrel?.finished_ind))}</span>
+                <span class="pill">Chill Filtered: ${escapeHtml(fmtBool(barrel?.chill_filtered_ind))}</span>
               </div>
 
               <div class="meta" style="margin-top:10px;">
@@ -607,12 +509,10 @@
         }
       }
 
-      // Section 2: show data exactly as it comes from JSON
+      // Section 2 (your requirement): show data exactly as it comes from JSON
       function renderTastings(tastings) {
         const sorted = sortByDateDesc(tastings, "flight_date");
-        hintEl.textContent = `${sorted.length} tasting${
-          sorted.length === 1 ? "" : "s"
-        } • sorted by flight date (desc)`;
+        hintEl.textContent = `${sorted.length} tasting${sorted.length === 1 ? "" : "s"} • sorted by flight date (desc)`;
 
         if (!sorted.length) {
           tastingsEl.innerHTML = `<div class="card muted">No tastings found.</div>`;
@@ -635,8 +535,7 @@
             </thead>
             <tbody>
               ${sorted
-                .map(
-                  (t) => `
+                .map((t) => `
                   <tr>
                     <td class="mono">${escapeHtml(fmt(t.flight_date))}</td>
                     <td class="num"><b>${escapeHtml(fmt(t.nose_score))}</b></td>
@@ -647,8 +546,7 @@
                     <td class="notes">${escapeHtml(fmt(t.finish_notes, ""))}</td>
                     <td class="num"><b>${escapeHtml(fmt(t.score))}</b></td>
                   </tr>
-                `
-                )
+                `)
                 .join("")}
             </tbody>
           </table>
@@ -672,46 +570,33 @@
         winsEl.innerHTML = `
           <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px;">
             <div style="font-weight:800;">🟩 Wins (Foe Beat)</div>
-            <div class="muted" style="font-size:12px;">${wins.length} item${
-          wins.length === 1 ? "" : "s"
-        }</div>
+            <div class="muted" style="font-size:12px;">${wins.length} item${wins.length === 1 ? "" : "s"}</div>
           </div>
           <div class="list" id="wins-list">
             ${
               wins.length
-                ? wins
-                    .map((w) => {
-                      const id = fmt(w.single_barrel_id, "");
-                      const href = id
-                        ? new URL(`./${encodeURIComponent(id)}`, window.location.href).toString()
-                        : "#";
-
-                      return `
+                ? wins.map((w) => {
+                    const id = fmt(w.single_barrel_id, "");
+                    const href = id ? new URL(`./${encodeURIComponent(id)}`, window.location.href).toString() : "#";
+                    return `
                       <div class="row">
                         <div>
                           <div class="title">
-                            <a href="${escapeHtml(href)}" data-barrel-link="1" data-barrel-id="${escapeHtml(
-                        id
-                      )}">
+                            <a href="${escapeHtml(href)}" data-barrel-link="1" data-barrel-id="${escapeHtml(id)}">
                               ${escapeHtml(bottleLabel(w) || "(unknown bottle)")}
                             </a>
                           </div>
                           <div class="sub">
-                            ${escapeHtml(fmt(w.flight_date, ""))}${
-                        w.flight_date ? " • " : ""
-                      }${escapeHtml(fmt(w.proof ? `Proof ${w.proof}` : ""))}
+                            ${escapeHtml(fmt(w.flight_date, ""))}${w.flight_date ? " • " : ""}${escapeHtml(fmt(w.proof ? `Proof ${w.proof}` : ""))}
                           </div>
                         </div>
                         <div class="right">
                           <div class="score">${escapeHtml(fmt(w.score))}</div>
-                          <div class="meta2">${escapeHtml(
-                            fmt(w.size_ml ? `${w.size_ml} ml` : "")
-                          )}</div>
+                          <div class="meta2">${escapeHtml(fmt(w.size_ml ? `${w.size_ml} ml` : ""))}</div>
                         </div>
                       </div>
                     `;
-                    })
-                    .join("")
+                  }).join("")
                 : `<div class="muted">No wins found.</div>`
             }
           </div>
@@ -720,46 +605,33 @@
         lossesEl.innerHTML = `
           <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px;">
             <div style="font-weight:800;">🟥 Losses (Foe Lost)</div>
-            <div class="muted" style="font-size:12px;">${losses.length} item${
-          losses.length === 1 ? "" : "s"
-        }</div>
+            <div class="muted" style="font-size:12px;">${losses.length} item${losses.length === 1 ? "" : "s"}</div>
           </div>
           <div class="list" id="losses-list">
             ${
               losses.length
-                ? losses
-                    .map((l) => {
-                      const id = fmt(l.single_barrel_id, "");
-                      const href = id
-                        ? new URL(`./${encodeURIComponent(id)}`, window.location.href).toString()
-                        : "#";
-
-                      return `
+                ? losses.map((l) => {
+                    const id = fmt(l.single_barrel_id, "");
+                    const href = id ? new URL(`./${encodeURIComponent(id)}`, window.location.href).toString() : "#";
+                    return `
                       <div class="row">
                         <div>
                           <div class="title">
-                            <a href="${escapeHtml(href)}" data-barrel-link="1" data-barrel-id="${escapeHtml(
-                        id
-                      )}">
+                            <a href="${escapeHtml(href)}" data-barrel-link="1" data-barrel-id="${escapeHtml(id)}">
                               ${escapeHtml(bottleLabel(l) || "(unknown bottle)")}
                             </a>
                           </div>
                           <div class="sub">
-                            ${escapeHtml(fmt(l.flight_date, ""))}${
-                        l.flight_date ? " • " : ""
-                      }${escapeHtml(fmt(l.proof ? `Proof ${l.proof}` : ""))}
+                            ${escapeHtml(fmt(l.flight_date, ""))}${l.flight_date ? " • " : ""}${escapeHtml(fmt(l.proof ? `Proof ${l.proof}` : ""))}
                           </div>
                         </div>
                         <div class="right">
                           <div class="score">${escapeHtml(fmt(l.score))}</div>
-                          <div class="meta2">${escapeHtml(
-                            fmt(l.size_ml ? `${l.size_ml} ml` : "")
-                          )}</div>
+                          <div class="meta2">${escapeHtml(fmt(l.size_ml ? `${l.size_ml} ml` : ""))}</div>
                         </div>
                       </div>
                     `;
-                    })
-                    .join("")
+                  }).join("")
                 : `<div class="muted">No losses found.</div>`
             }
           </div>
@@ -807,8 +679,7 @@
       async function load() {
         const barrelId = getBarrelIdFromUrl();
         if (!barrelId) {
-          subtitleEl.textContent =
-            "Missing barrel id in URL (expected /barrel/<id> or ?id=<id>)";
+          subtitleEl.textContent = "Missing barrel id in URL (expected /barrel/<id> or ?id=<id>)";
           heroEl.innerHTML = `<div class="muted">No barrel id provided.</div>`;
           tastingsEl.innerHTML = `<div class="card muted">No tastings.</div>`;
           winsEl.innerHTML = `<div class="muted">No wins.</div>`;
@@ -842,15 +713,9 @@
         const barrel = payload?.barrel || {};
         renderHero(barrel);
         renderTastings(payload?.tastings || []);
-        renderFoes({
-          foe_beat: payload?.foe_beat || [],
-          foe_lost: payload?.foe_lost || [],
-        });
+        renderFoes({ foe_beat: payload?.foe_beat || [], foe_lost: payload?.foe_lost || [] });
 
-        subtitleEl.textContent = `${fmt(barrel?.distillery_name, "Loaded")} • ${fmt(
-          barrel?.state,
-          ""
-        )}`.replace(/\s•\s$/, "");
+        subtitleEl.textContent = `${fmt(barrel?.distillery_name, "Loaded")} • ${fmt(barrel?.state, "")}`.replace(/\s•\s$/, "");
       }
 
       load();
@@ -880,7 +745,7 @@
        *      (No re-query; no navigation.)
        *
        * 4) RPC:
-       *    - Assumes function name "F_get_barrel_payload"
+       *    - Assumes function name "f_get_barrel_payload"
        *      with arg "p_single_barrel_id".
        *    - If your signature differs, update the supabase.rpc() call.
        */
