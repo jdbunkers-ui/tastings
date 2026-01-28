@@ -31,27 +31,6 @@ function getPageParams() {
 }
 
 /**
- * GitHub Pages-safe barrel URL builder
- *
- * Why:
- * - GitHub Pages usually hosts your site under a subpath:
- *     https://<user>.github.io/<repo>/
- * - Absolute URLs like "/barrel/..." incorrectly point to:
- *     https://<user>.github.io/barrel/...
- *   and will 404.
- *
- * Approach:
- * - Always build URLs relative to document.baseURI so it works under subpaths.
- * - Use query string mode:
- *     barrel/index.html?id=<single_barrel_id>
- *   because GitHub Pages cannot rewrite /barrel/<id> to /barrel/index.html.
- */
-function barrelUrl(singleBarrelId) {
-  const id = encodeURIComponent(singleBarrelId ?? "");
-  return new URL(`barrel/index.html?id=${id}`, document.baseURI).toString();
-}
-
-/**
  * Simple modal (no external deps)
  * - openModal({ title, bodyHtml, footerHtml })
  * - closeModal()
@@ -222,7 +201,7 @@ function showRowDetailModal(rowEl) {
   `;
 
   const barrelId = d.singleBarrelId || "";
-  const barrelHref = barrelId ? barrelUrl(barrelId) : "#";
+  const barrelHref = barrelId ? `/barrel/${encodeURIComponent(barrelId)}` : "#";
 
   const footerHtml = `
     <a href="${escapeHtml(barrelHref)}" data-expr-link="1"
@@ -300,7 +279,9 @@ Expected: &lt;html data-weight="heavyweight" data-dimension="finish"&gt;</pre>
           ${data
             .map((r) => {
               const singleBarrelId = r.single_barrel_id ?? "";
-              const barrelHref = singleBarrelId ? barrelUrl(singleBarrelId) : "#";
+              const barrelHref = singleBarrelId
+                ? `/barrel/${encodeURIComponent(singleBarrelId)}`
+                : "#";
 
               // Pre-format display strings once, store on dataset for modal (no requery)
               const scoreDisp = fmt1(r.score);
@@ -358,20 +339,17 @@ Expected: &lt;html data-weight="heavyweight" data-dimension="finish"&gt;</pre>
     const target = e.target;
 
     // If Expression link clicked: update URL + show "under construction" popup
-    const link =
-      target && target.closest ? target.closest('a[data-expr-link="1"]') : null;
+    const link = target && target.closest ? target.closest('a[data-expr-link="1"]') : null;
     if (link) {
       e.preventDefault();
       e.stopPropagation();
 
       const row = link.closest("tr");
       const barrelId = row?.dataset?.singleBarrelId || "";
-      const href =
-        link.getAttribute("href") || (barrelId ? barrelUrl(barrelId) : "#");
+      const href = link.getAttribute("href") || (barrelId ? `/barrel/${encodeURIComponent(barrelId)}` : "#");
 
       // Update the URL in the address bar without navigating (SPA-style)
-      // Note: With GitHub Pages, clean URLs like /barrel/<id> will 404 on refresh,
-      // so we keep query-string URLs and only pushState to that safe URL.
+      // (This supports your /barrel/{id} route appearance immediately)
       try {
         if (href && href !== "#") window.history.pushState({}, "", href);
       } catch (_) {
@@ -400,29 +378,35 @@ loadTastingSection();
 
 /**
  * ==========================
- * Developer Notes (GitHub Pages)
+ * Developer Notes
  * ==========================
  *
- * Problem:
- * - GitHub Pages is static hosting and does NOT support rewrites like:
- *     /barrel/<uuid>  ->  /barrel/index.html
- * - Absolute paths (starting with "/") also break under repo subpaths:
- *     https://<user>.github.io/<repo>/
+ * 1) Expression hyperlink (/barrel/{single_barrel_id})
+ *    - The <a> uses href="/barrel/{id}".
+ *    - We intercept clicks to:
+ *        a) pushState() to update the browser URL
+ *        b) show an "Under construction" modal
+ *      This satisfies "route to /barrel/{id}" while keeping UX fast.
  *
- * Solution implemented:
- * 1) Build barrel links as query-string URLs:
- *      barrel/index.html?id=<uuid>
- *    This is a REAL file path, so it loads on GitHub Pages.
+ * 2) Modal WITHOUT requerying Supabase
+ *    - We store all display-ready values on <tr data-*> attributes.
+ *    - Row click reads from row.dataset and renders a modal.
+ *    - No additional Supabase calls are made.
  *
- * 2) barrelUrl() uses document.baseURI to stay safe under subpaths:
- *      new URL("barrel/index.html?id=...", document.baseURI)
+ * 3) Single Barrel ID captured but not displayed
+ *    - It lives in data-single-barrel-id on <tr>.
+ *    - It is used to build the href: /barrel/{id}.
  *
- * Where links are used:
- * - Expression <a href="..."> now points to barrel/index.html?id=...
- * - The modal "Go to barrel page" button uses the same safe URL.
- * - The click handler fallback also uses barrelUrl().
+ * 4) New placeholder page file
+ *    - Add: /barrel/index.html
+ *    - If you want direct navigation to /barrel/{id} to load that file on refresh,
+ *      you typically need a “rewrite” rule on your hosting:
+ *        - Netlify: redirect /barrel/* -> /barrel/index.html (200)
+ *        - Vercel: rewrites /barrel/:id -> /barrel/index.html
+ *      GitHub Pages does NOT support rewrites by default, so pushState-based
+ *      clean URLs can 404 on refresh unless you add a SPA fallback strategy.
  *
- * Later (optional):
- * - If you move off GitHub Pages to Netlify/Vercel, you can switch to pretty URLs
- *   (/barrel/<id>) by adding a rewrite rule and updating barrelUrl().
+ * 5) Styling
+ *    - Modal styles are inline for drop-in simplicity.
+ *    - You can move them into CSS later (recommended).
  */
