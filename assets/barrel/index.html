@@ -1,0 +1,753 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Barrel Details</title>
+
+    <style>
+      :root {
+        --bg: #0b0d10;
+        --panel: rgba(255, 255, 255, 0.06);
+        --panel2: rgba(255, 255, 255, 0.08);
+        --border: rgba(255, 255, 255, 0.12);
+        --text: rgba(255, 255, 255, 0.92);
+        --muted: rgba(255, 255, 255, 0.68);
+        --muted2: rgba(255, 255, 255, 0.55);
+        --good: rgba(46, 204, 113, 0.25);
+        --bad: rgba(231, 76, 60, 0.25);
+      }
+
+      html, body { height: 100%; }
+      body {
+        margin: 0;
+        background: radial-gradient(1200px 800px at 20% -10%, rgba(128, 90, 213, 0.18), transparent 55%),
+                    radial-gradient(900px 700px at 90% 0%, rgba(255, 215, 0, 0.10), transparent 50%),
+                    var(--bg);
+        color: var(--text);
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      }
+
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 18px 14px 46px;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+
+      .brand {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .brand h1 {
+        margin: 0;
+        font-size: 20px;
+        letter-spacing: 0.2px;
+      }
+
+      .brand .sub {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .pill-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 8px;
+      }
+
+      .pill {
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 999px;
+        padding: 6px 10px;
+        font-size: 12px;
+        color: var(--text);
+      }
+
+      .card {
+        border: 1px solid var(--border);
+        background: var(--panel);
+        border-radius: 16px;
+        padding: 14px;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+
+      .hero-top {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 12px;
+        align-items: start;
+      }
+
+      .stats {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+
+      .stat {
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 12px;
+        padding: 8px 10px;
+        min-width: 86px;
+      }
+      .stat .k { font-size: 11px; color: var(--muted2); }
+      .stat .v { font-size: 15px; font-weight: 700; margin-top: 2px; }
+
+      .meta {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .mono {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      }
+
+      .btn {
+        cursor: pointer;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text);
+        border-radius: 12px;
+        padding: 8px 10px;
+        font-size: 13px;
+      }
+      .btn:hover { background: rgba(255, 255, 255, 0.08); }
+
+      .section-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin: 18px 2px 10px;
+      }
+      .section-title h2 {
+        margin: 0;
+        font-size: 14px;
+        letter-spacing: 0.3px;
+        color: rgba(255, 255, 255, 0.86);
+        text-transform: uppercase;
+      }
+      .section-title .hint {
+        color: var(--muted2);
+        font-size: 12px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        overflow: hidden;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.03);
+      }
+      thead th {
+        text-align: left;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.72);
+        padding: 10px 10px;
+        border-bottom: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.03);
+        white-space: nowrap;
+      }
+      tbody td {
+        vertical-align: top;
+        padding: 10px 10px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.90);
+      }
+      tbody tr:last-child td { border-bottom: none; }
+      .num { text-align: right; white-space: nowrap; }
+      .notes { color: rgba(255, 255, 255, 0.86); line-height: 1.35; }
+      .muted { color: var(--muted); }
+
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      @media (max-width: 860px) {
+        .grid-2 { grid-template-columns: 1fr; }
+        .hero-top { grid-template-columns: 1fr; }
+        .stats { justify-content: flex-start; }
+      }
+
+      .list {
+        display: grid;
+        gap: 8px;
+      }
+      .row {
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 14px;
+        padding: 10px 10px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        align-items: start;
+      }
+      .row:hover { background: rgba(255, 255, 255, 0.06); }
+      .row .title {
+        font-weight: 700;
+        font-size: 13px;
+      }
+      .row .sub {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+      .row .right {
+        text-align: right;
+        white-space: nowrap;
+      }
+      .row .score {
+        font-weight: 800;
+        font-size: 14px;
+      }
+      .row .meta2 {
+        color: var(--muted2);
+        font-size: 12px;
+        margin-top: 2px;
+      }
+      .row a {
+        color: inherit;
+        text-decoration: underline;
+      }
+
+      details {
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 14px;
+        padding: 10px 10px;
+      }
+      details summary {
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.88);
+      }
+      pre {
+        margin: 10px 0 0;
+        padding: 10px;
+        border-radius: 12px;
+        background: rgba(0, 0, 0, 0.35);
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        overflow: auto;
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 12px;
+      }
+
+      /* modal */
+      #modal { display:none; }
+    </style>
+  </head>
+
+  <body>
+    <div class="wrap">
+      <div class="topbar">
+        <div class="brand">
+          <h1 id="page-title">Barrel</h1>
+          <div class="sub" id="page-subtitle">Loading…</div>
+        </div>
+        <button class="btn" id="close-btn" type="button">Close</button>
+      </div>
+
+      <div class="card hero" id="hero"></div>
+
+      <!-- Section 2: Tastings (as-is from JSON, sorted by flight_date desc) -->
+      <div class="section-title">
+        <h2>Tastings</h2>
+        <div class="hint" id="tastings-hint"></div>
+      </div>
+      <div id="tastings"></div>
+
+      <!-- Section 4: Flight outcomes -->
+      <div class="section-title">
+        <h2>Flight Outcomes</h2>
+        <div class="hint">Wins (foe beat) and losses (foe lost)</div>
+      </div>
+      <div class="grid-2">
+        <div class="card" id="wins"></div>
+        <div class="card" id="losses"></div>
+      </div>
+
+      <!-- Section 5: Debug -->
+      <div class="section-title">
+        <h2>Debug</h2>
+        <div class="hint">Raw payload</div>
+      </div>
+      <details>
+        <summary>Show raw JSON</summary>
+        <pre id="debug-json" class="mono">{}</pre>
+      </details>
+    </div>
+
+    <!-- Modal shell -->
+    <div id="modal" aria-hidden="true">
+      <div data-close
+        style="position:fixed;inset:0;background:rgba(0,0,0,.60);z-index:9998;"></div>
+      <div role="dialog" aria-modal="true"
+        style="position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);
+               width:min(920px,92vw);max-height:86vh;overflow:auto;
+               background:#111;border:1px solid rgba(255,255,255,.12);
+               border-radius:16px;z-index:9999;box-shadow:0 20px 60px rgba(0,0,0,.55);">
+        <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;
+                    padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.10);">
+          <div>
+            <div id="modal-title" style="font-weight:800;color:#fff;font-size:15px;"></div>
+            <div id="modal-sub" style="color:rgba(255,255,255,.7);font-size:12px;margin-top:2px;"></div>
+          </div>
+          <button class="btn" data-close type="button">Close</button>
+        </div>
+        <div id="modal-body" style="padding:14px 16px;color:rgba(255,255,255,.92);"></div>
+        <div style="padding:12px 16px;border-top:1px solid rgba(255,255,255,.10);display:flex;justify-content:flex-end;gap:10px;">
+          <button class="btn" data-close type="button">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      import { supabase } from "../supabaseClient.js";
+
+      // -----------------------------
+      // Helpers
+      // -----------------------------
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function fmt(x, fallback = "—") {
+        return (x === null || x === undefined || x === "") ? fallback : String(x);
+      }
+
+      function fmtBool(b) {
+        if (b === true) return "Yes";
+        if (b === false) return "No";
+        return "—";
+      }
+
+      function fmtCurrency(x) {
+        if (x === null || x === undefined || x === "") return "—";
+        const n = Number(x);
+        if (Number.isNaN(n)) return "—";
+        return `$${n.toFixed(0)}`;
+      }
+
+      function sortByDateDesc(arr, key) {
+        return [...(arr || [])].sort((a, b) => {
+          const da = new Date(a?.[key] || 0).getTime();
+          const db = new Date(b?.[key] || 0).getTime();
+          return db - da;
+        });
+      }
+
+      // Supports paths like:
+      // - /barrel/<uuid>
+      // - /<repo>/barrel/<uuid>   (GitHub Pages subpath)
+      // Also supports ?id=<uuid>
+      function getBarrelIdFromUrl() {
+        const url = new URL(window.location.href);
+        const qp = (url.searchParams.get("id") || "").trim();
+        if (qp) return qp;
+
+        const parts = url.pathname.split("/").filter(Boolean);
+        const idx = parts.lastIndexOf("barrel");
+        if (idx >= 0 && parts[idx + 1]) return parts[idx + 1];
+
+        // If someone hits /barrel/ with no id, return empty
+        return "";
+      }
+
+      // -----------------------------
+      // Modal
+      // -----------------------------
+      const modal = document.getElementById("modal");
+      const modalTitle = document.getElementById("modal-title");
+      const modalSub = document.getElementById("modal-sub");
+      const modalBody = document.getElementById("modal-body");
+
+      function openModal({ title, sub, bodyHtml }) {
+        modalTitle.textContent = title || "";
+        modalSub.textContent = sub || "";
+        modalBody.innerHTML = bodyHtml || "";
+        modal.style.display = "block";
+        modal.setAttribute("aria-hidden", "false");
+      }
+
+      function closeModal() {
+        modal.style.display = "none";
+        modal.setAttribute("aria-hidden", "true");
+      }
+
+      modal.addEventListener("click", (e) => {
+        const t = e.target;
+        if (t && t.closest && t.closest("[data-close]")) closeModal();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeModal();
+      });
+
+      function showUnderConstruction(href, id) {
+        openModal({
+          title: "Under construction",
+          sub: id ? `Barrel ID: ${id}` : "",
+          bodyHtml: `
+            <p style="margin:0 0 10px 0;">This page is not live yet.</p>
+            <p style="margin:0;color:rgba(255,255,255,.72);">
+              Route: <span class="mono">${escapeHtml(href || "")}</span>
+            </p>
+          `,
+        });
+      }
+
+      // -----------------------------
+      // Rendering
+      // -----------------------------
+      const heroEl = document.getElementById("hero");
+      const tastingsEl = document.getElementById("tastings");
+      const winsEl = document.getElementById("wins");
+      const lossesEl = document.getElementById("losses");
+      const titleEl = document.getElementById("page-title");
+      const subtitleEl = document.getElementById("page-subtitle");
+      const hintEl = document.getElementById("tastings-hint");
+      const debugEl = document.getElementById("debug-json");
+
+      function renderHero(barrel) {
+        const brand = fmt(barrel?.brand_name, "Unknown brand");
+        const dist = fmt(barrel?.distillery_name, "Unknown distillery");
+        const st = fmt(barrel?.state, "");
+        const expr = fmt(barrel?.expression_name, "");
+        const pick = fmt(barrel?.pick_name, "");
+        const subtype = fmt(barrel?.spirit_subtype, "");
+        const id = fmt(barrel?.single_barrel_id, "");
+
+        titleEl.textContent = brand;
+        subtitleEl.textContent = `${dist}${st ? " • " + st : ""}`;
+
+        const stats = [
+          { k: "Avg Score", v: fmt(barrel?.avg_score) },
+          { k: "Composite", v: fmt(barrel?.score) },
+          { k: "Tastings", v: fmt(barrel?.tasting_count ?? barrel?.tastings) },
+          { k: "Proof", v: fmt(barrel?.proof) },
+          { k: "Size", v: barrel?.size_ml ? `${barrel.size_ml} ml` : "—" },
+          { k: "MSRP", v: fmtCurrency(barrel?.msrp) },
+        ];
+
+        heroEl.innerHTML = `
+          <div class="hero-top">
+            <div>
+              <div class="pill-row">
+                ${expr ? `<span class="pill">${escapeHtml(expr)}</span>` : ""}
+                ${pick ? `<span class="pill">${escapeHtml(pick)}</span>` : ""}
+                ${subtype ? `<span class="pill">${escapeHtml(subtype)}</span>` : ""}
+                <span class="pill">Finished: ${escapeHtml(fmtBool(barrel?.finished_ind))}</span>
+                <span class="pill">Chill Filtered: ${escapeHtml(fmtBool(barrel?.chill_filtered_ind))}</span>
+              </div>
+
+              <div class="meta" style="margin-top:10px;">
+                <span class="mono">ID: ${escapeHtml(id)}</span>
+                <button class="btn" id="copy-id" type="button">Copy</button>
+              </div>
+            </div>
+
+            <div class="stats">
+              ${stats
+                .map(
+                  (s) => `
+                    <div class="stat">
+                      <div class="k">${escapeHtml(s.k)}</div>
+                      <div class="v">${escapeHtml(fmt(s.v))}</div>
+                    </div>
+                  `
+                )
+                .join("")}
+            </div>
+          </div>
+        `;
+
+        const copyBtn = document.getElementById("copy-id");
+        if (copyBtn) {
+          copyBtn.addEventListener("click", async () => {
+            try {
+              await navigator.clipboard.writeText(id);
+              copyBtn.textContent = "Copied!";
+              setTimeout(() => (copyBtn.textContent = "Copy"), 900);
+            } catch {
+              // ignore
+            }
+          });
+        }
+      }
+
+      // Section 2 (your requirement): show data exactly as it comes from JSON
+      function renderTastings(tastings) {
+        const sorted = sortByDateDesc(tastings, "flight_date");
+        hintEl.textContent = `${sorted.length} tasting${sorted.length === 1 ? "" : "s"} • sorted by flight date (desc)`;
+
+        if (!sorted.length) {
+          tastingsEl.innerHTML = `<div class="card muted">No tastings found.</div>`;
+          return;
+        }
+
+        tastingsEl.innerHTML = `
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th class="num">Nose</th>
+                <th>Nose Notes</th>
+                <th class="num">Palate</th>
+                <th>Palate Notes</th>
+                <th class="num">Finish</th>
+                <th>Finish Notes</th>
+                <th class="num">Final</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${sorted
+                .map((t) => `
+                  <tr>
+                    <td class="mono">${escapeHtml(fmt(t.flight_date))}</td>
+                    <td class="num"><b>${escapeHtml(fmt(t.nose_score))}</b></td>
+                    <td class="notes">${escapeHtml(fmt(t.nose_notes, ""))}</td>
+                    <td class="num"><b>${escapeHtml(fmt(t.palate_score))}</b></td>
+                    <td class="notes">${escapeHtml(fmt(t.palate_notes, ""))}</td>
+                    <td class="num"><b>${escapeHtml(fmt(t.finish_score))}</b></td>
+                    <td class="notes">${escapeHtml(fmt(t.finish_notes, ""))}</td>
+                    <td class="num"><b>${escapeHtml(fmt(t.score))}</b></td>
+                  </tr>
+                `)
+                .join("")}
+            </tbody>
+          </table>
+        `;
+      }
+
+      function bottleLabel(x) {
+        // user-friendly "bottle name"
+        // uses brand_name + expression_name + pick_name (if present)
+        const brand = fmt(x?.brand_name, "");
+        const expr = fmt(x?.expression_name, "");
+        const pick = fmt(x?.pick_name, "");
+        const parts = [brand, expr].filter(Boolean).join(" — ");
+        return pick ? `${parts} • ${pick}` : parts;
+      }
+
+      function renderFoes({ foe_beat, foe_lost }) {
+        const wins = foe_beat || [];
+        const losses = foe_lost || [];
+
+        winsEl.innerHTML = `
+          <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px;">
+            <div style="font-weight:800;">🟩 Wins (Foe Beat)</div>
+            <div class="muted" style="font-size:12px;">${wins.length} item${wins.length === 1 ? "" : "s"}</div>
+          </div>
+          <div class="list" id="wins-list">
+            ${
+              wins.length
+                ? wins.map((w) => {
+                    const id = fmt(w.single_barrel_id, "");
+                    const href = id ? new URL(`./${encodeURIComponent(id)}`, window.location.href).toString() : "#";
+                    return `
+                      <div class="row">
+                        <div>
+                          <div class="title">
+                            <a href="${escapeHtml(href)}" data-barrel-link="1" data-barrel-id="${escapeHtml(id)}">
+                              ${escapeHtml(bottleLabel(w) || "(unknown bottle)")}
+                            </a>
+                          </div>
+                          <div class="sub">
+                            ${escapeHtml(fmt(w.flight_date, ""))}${w.flight_date ? " • " : ""}${escapeHtml(fmt(w.proof ? `Proof ${w.proof}` : ""))}
+                          </div>
+                        </div>
+                        <div class="right">
+                          <div class="score">${escapeHtml(fmt(w.score))}</div>
+                          <div class="meta2">${escapeHtml(fmt(w.size_ml ? `${w.size_ml} ml` : ""))}</div>
+                        </div>
+                      </div>
+                    `;
+                  }).join("")
+                : `<div class="muted">No wins found.</div>`
+            }
+          </div>
+        `;
+
+        lossesEl.innerHTML = `
+          <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px;">
+            <div style="font-weight:800;">🟥 Losses (Foe Lost)</div>
+            <div class="muted" style="font-size:12px;">${losses.length} item${losses.length === 1 ? "" : "s"}</div>
+          </div>
+          <div class="list" id="losses-list">
+            ${
+              losses.length
+                ? losses.map((l) => {
+                    const id = fmt(l.single_barrel_id, "");
+                    const href = id ? new URL(`./${encodeURIComponent(id)}`, window.location.href).toString() : "#";
+                    return `
+                      <div class="row">
+                        <div>
+                          <div class="title">
+                            <a href="${escapeHtml(href)}" data-barrel-link="1" data-barrel-id="${escapeHtml(id)}">
+                              ${escapeHtml(bottleLabel(l) || "(unknown bottle)")}
+                            </a>
+                          </div>
+                          <div class="sub">
+                            ${escapeHtml(fmt(l.flight_date, ""))}${l.flight_date ? " • " : ""}${escapeHtml(fmt(l.proof ? `Proof ${l.proof}` : ""))}
+                          </div>
+                        </div>
+                        <div class="right">
+                          <div class="score">${escapeHtml(fmt(l.score))}</div>
+                          <div class="meta2">${escapeHtml(fmt(l.size_ml ? `${l.size_ml} ml` : ""))}</div>
+                        </div>
+                      </div>
+                    `;
+                  }).join("")
+                : `<div class="muted">No losses found.</div>`
+            }
+          </div>
+        `;
+
+        // Intercept foe clicks -> show under construction modal (no navigation)
+        const foeContainer = document.querySelector(".wrap");
+        foeContainer.addEventListener("click", (e) => {
+          const a = e.target?.closest?.('a[data-barrel-link="1"]');
+          if (!a) return;
+
+          e.preventDefault();
+          e.stopPropagation();
+
+          const id = a.getAttribute("data-barrel-id") || "";
+          const href = a.getAttribute("href") || "";
+          try {
+            if (href) window.history.pushState({}, "", href);
+          } catch {}
+
+          showUnderConstruction(href, id);
+        });
+      }
+
+      function renderDebug(payload) {
+        try {
+          debugEl.textContent = JSON.stringify(payload, null, 2);
+        } catch {
+          debugEl.textContent = String(payload ?? "");
+        }
+      }
+
+      // -----------------------------
+      // Close behavior
+      // -----------------------------
+      document.getElementById("close-btn").addEventListener("click", () => {
+        // Try to behave like a popup: go back if possible, else go to site root
+        if (window.history.length > 1) window.history.back();
+        else window.location.href = new URL("../", window.location.href).toString();
+      });
+
+      // -----------------------------
+      // Load payload
+      // -----------------------------
+      async function load() {
+        const barrelId = getBarrelIdFromUrl();
+        if (!barrelId) {
+          subtitleEl.textContent = "Missing barrel id in URL (expected /barrel/<id> or ?id=<id>)";
+          heroEl.innerHTML = `<div class="muted">No barrel id provided.</div>`;
+          tastingsEl.innerHTML = `<div class="card muted">No tastings.</div>`;
+          winsEl.innerHTML = `<div class="muted">No wins.</div>`;
+          lossesEl.innerHTML = `<div class="muted">No losses.</div>`;
+          return;
+        }
+
+        subtitleEl.textContent = `Loading payload for ${barrelId}…`;
+
+        // NOTE: Update the RPC name/arg key below if your function signature differs.
+        const { data, error } = await supabase.rpc("F_get_barrel_payload", {
+          p_single_barrel_id: barrelId,
+        });
+
+        if (error) {
+          subtitleEl.textContent = "Error loading barrel payload";
+          heroEl.innerHTML = `
+            <div class="muted">
+              <b>Error:</b> ${escapeHtml(error.message || String(error))}
+            </div>
+          `;
+          renderDebug({ error: error.message || String(error) });
+          return;
+        }
+
+        // Some Supabase RPCs return the JSON directly, others wrap it; handle both
+        const payload = data?.payload ?? data;
+
+        renderDebug(payload);
+
+        const barrel = payload?.barrel || {};
+        renderHero(barrel);
+        renderTastings(payload?.tastings || []);
+        renderFoes({ foe_beat: payload?.foe_beat || [], foe_lost: payload?.foe_lost || [] });
+
+        subtitleEl.textContent = `${fmt(barrel?.distillery_name, "Loaded")} • ${fmt(barrel?.state, "")}`.replace(/\s•\s$/, "");
+      }
+
+      load();
+
+      // Close modals when navigating history (nice UX)
+      window.addEventListener("popstate", () => {
+        closeModal();
+      });
+
+      /**
+       * ==========================
+       * Developer Notes
+       * ==========================
+       * 1) URL parsing:
+       *    - Reads barrel id from /barrel/<id> or ?id=<id>.
+       *    - Works under GitHub Pages subpaths too.
+       *
+       * 2) Section 2 (per your request):
+       *    - Shows EXACT fields from payload.tastings:
+       *      nose_notes/nose_score, palate_notes/palate_score,
+       *      finish_notes/finish_score, score (final).
+       *    - Sorted by flight_date DESC.
+       *
+       * 3) Section 4:
+       *    - Shows foe_beat and foe_lost as lists.
+       *    - Clicks are intercepted to show an "Under construction" modal.
+       *      (No re-query; no navigation.)
+       *
+       * 4) RPC:
+       *    - Assumes function name "F_get_barrel_payload"
+       *      with arg "p_single_barrel_id".
+       *    - If your signature differs, update the supabase.rpc() call.
+       */
+    </script>
+  </body>
+</html>
