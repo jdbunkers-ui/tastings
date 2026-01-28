@@ -690,7 +690,7 @@
         subtitleEl.textContent = `Loading payload for ${barrelId}…`;
 
         // NOTE: Update the RPC name/arg key below if your function signature differs.
-        const { data, error } = await supabase.rpc("F_get_barrel_payload", {
+        const { data, error } = await supabase.rpc("f_get_barrel_payload", {
           p_single_barrel_id: barrelId,
         });
 
@@ -745,7 +745,7 @@
        *      (No re-query; no navigation.)
        *
        * 4) RPC:
-       *    - Assumes function name "F_get_barrel_payload"
+       *    - Assumes function name "f_get_barrel_payload"
        *      with arg "p_single_barrel_id".
        *    - If your signature differs, update the supabase.rpc() call.
        */
