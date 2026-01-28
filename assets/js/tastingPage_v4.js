@@ -31,41 +31,24 @@ function getPageParams() {
 }
 
 /**
- * GitHub Pages-safe barrel URL builder (Assets folder)
+ * GitHub Pages-safe barrel URL builder
  *
- * Your setup:
- * - GitHub Pages hosts under a repo subpath:
+ * Why:
+ * - GitHub Pages usually hosts your site under a subpath:
  *     https://<user>.github.io/<repo>/
- * - Your barrel page lives under:
- *     Assets/barrel/index.html
+ * - Absolute URLs like "/barrel/..." incorrectly point to:
+ *     https://<user>.github.io/barrel/...
+ *   and will 404.
  *
- * Why this is needed:
- * - Relative links from nested pages (e.g., /whiskey/cruiserweight/nose/index.html)
- *   would otherwise resolve to:
- *     /whiskey/cruiserweight/nose/Assets/barrel/index.html   (wrong)
- * - GitHub Pages does NOT support rewrite rules for pretty URLs like /barrel/<id>.
- *
- * What we do:
- * - Compute the repo base path ("/<repo>/") when on *.github.io
- * - Build an absolute path *within the repo*:
- *     /<repo>/Assets/barrel/index.html?id=<single_barrel_id>
- *
- * IMPORTANT:
- * - Folder casing matters on GitHub Pages. Ensure it is exactly "Assets".
+ * Approach:
+ * - Always build URLs relative to document.baseURI so it works under subpaths.
+ * - Use query string mode:
+ *     barrel/index.html?id=<single_barrel_id>
+ *   because GitHub Pages cannot rewrite /barrel/<id> to /barrel/index.html.
  */
-function getGhPagesRepoBase() {
-  const isGhPages = window.location.hostname.endsWith("github.io");
-  if (!isGhPages) return "/";
-
-  // Path looks like: /<repo>/whiskey/cruiserweight/nose/index.html
-  const parts = window.location.pathname.split("/").filter(Boolean);
-  return parts.length ? `/${parts[0]}/` : "/";
-}
-
 function barrelUrl(singleBarrelId) {
   const id = encodeURIComponent(singleBarrelId ?? "");
-  const base = getGhPagesRepoBase();
-  return `${base}Assets/barrel/index.html?id=${id}`;
+  return new URL(`barrel/index.html?id=${id}`, document.baseURI).toString();
 }
 
 /**
