@@ -160,7 +160,7 @@ function renderTable(rows) {
   const displayCols = cols.filter((c) => c !== "single_barrel_id");
 
   const thead = displayCols
-    .map((c) => `<th title="${escapeHtml(c)}">${escapeHtml(labelize(c))}</th>`)
+    .map((c) => `<th title="${escapeHtml(c)}">${escapeHtml(headerLabel(c))}</th>`)
     .join("");
 
   const searchableFields = [
