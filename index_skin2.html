@@ -1,52 +1,76 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Velvet Room – Inventory</title>
+/* =========================================================
+   Velvet Room — Skin2 Inventory Filter (SAFE)
+   File: assets/js/inventorySkin2Filter.js
 
-    <!-- Base site styles (optional but safe) -->
-    <link rel="stylesheet" href="assets/css/site.css" />
+   Fix:
+   - NO MutationObserver (can cause infinite loops)
+   - Filters only on user input or when data is rendered
 
-    <!-- Skin2 styles -->
-    <link rel="stylesheet" href="assets/css/skin2.css" />
-  </head>
+   Depends on:
+   - #filter input
+   - #status span
+   - table rows: <tr class="inv-row" data-search="...">
+   - inventorySkin2Page.js dispatches: "skin2:inventoryRendered"
+   ========================================================= */
 
-  <body>
-    <!-- Skin2 Header Injection Target -->
-    <div id="site-header"></div>
+const elFilter = document.getElementById("filter");
+const elStatus = document.getElementById("status");
 
-    <main class="skin2-wrap">
-      <section class="skin2-card">
-        <!-- Controls -->
-        <div class="skin2-controls">
-          <input
-            id="filter"
-            type="text"
-            placeholder="Search inventory…"
-            aria-label="Search bottle inventory"
-          />
-          <span class="skin2-status" id="status">Loading…</span>
-        </div>
+function setStatus(text) {
+  if (elStatus) elStatus.textContent = text;
+}
 
-        <!-- Inventory Render Target -->
-        <div class="skin2-table-wrap">
-          <div id="inventory-content"></div>
-        </div>
+function getRows() {
+  return Array.from(document.querySelectorAll("tr.inv-row"));
+}
 
-        <!-- Error -->
-        <div id="error" class="skin2-error" style="display:none;"></div>
-      </section>
-    </main>
+function applyFilter() {
+  const queryRaw = elFilter ? elFilter.value : "";
+  const q = (queryRaw || "").trim().toLowerCase();
 
-    <!-- Skin2 Footer Injection Target -->
-    <div id="site-footer"></div>
+  const rows = getRows();
+  const total = rows.length;
 
-    <!-- Skin2 layout injector (lowercase confirmed) -->
-    <script src="assets/js/layout_skin2.js"></script>
+  // If table isn't rendered yet, do nothing.
+  if (!total) return;
 
-    <!-- Inventory page logic (step 4) -->
-    <script type="module" src="assets/js/inventorySkin2Page.js"></script>
-    <!--<script type="module" src="assets/js/inventorySkin2Filter.js"></script> -->
-  </body>
-</html>
+  let visible = 0;
+
+  if (!q) {
+    for (const r of rows) {
+      r.style.display = "";
+      visible++;
+    }
+    setStatus(`Loaded ${total} rows`);
+    return;
+  }
+
+  for (const r of rows) {
+    const hay = (r.getAttribute("data-search") || "").toLowerCase();
+    const show = hay.includes(q);
+    r.style.display = show ? "" : "none";
+    if (show) visible++;
+  }
+
+  setStatus(`Showing ${visible} of ${total} (filter: "${queryRaw}")`);
+}
+
+function debounce(fn, waitMs = 80) {
+  let t = null;
+  return () => {
+    if (t) clearTimeout(t);
+    t = setTimeout(fn, waitMs);
+  };
+}
+
+const onInput = debounce(applyFilter);
+
+// Wire: input filtering
+if (elFilter) {
+  elFilter.addEventListener("input", onInput);
+}
+
+// Wire: apply once data is rendered (from inventorySkin2Page.js)
+window.addEventListener("skin2:inventoryRendered", () => {
+  applyFilter();
+});
