@@ -1,0 +1,114 @@
+/* =========================================================
+   Velvet Room — Skin2 (Inventory)
+   Compact • Data-driven • Whiskey palette
+   ========================================================= */
+
+/* ---------- CSS Variables (Theme) ---------- */
+:root {
+  /* Core palette */
+  --s2-bg: #f6f1ea;                 /* parchment / light oak */
+  --s2-panel: #ffffff;
+  --s2-border: #d8cfc3;
+
+  /* Browns / whiskey hues */
+  --s2-brown-dark: #3b2a20;         /* dark barrel */
+  --s2-brown-mid: #6a4a32;          /* toasted oak */
+  --s2-amber: #b57a2a;              /* whiskey */
+  --s2-amber-soft: #e1b66a;
+
+  /* Text */
+  --s2-text: #2b1d14;
+  --s2-text-muted: #7a6758;
+  --s2-text-invert: #ffffff;
+
+  /* Accents */
+  --s2-link: #8a5a20;
+  --s2-link-hover: #b57a2a;
+
+  /* Fonts */
+  --s2-font-sans: ui-sans-serif, system-ui, -apple-system,
+                  Segoe UI, Roboto, Helvetica, Arial;
+  --s2-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco,
+                  Consolas, "Liberation Mono", monospace;
+}
+
+/* ---------- Page Reset / Base ---------- */
+html, body {
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(
+    180deg,
+    #efe6d9 0%,
+    #f6f1ea 45%
+  );
+  color: var(--s2-text);
+  font-family: var(--s2-font-sans);
+  font-size: 13px; /* intentionally small */
+}
+
+/* ---------- Layout Containers ---------- */
+.skin2-wrap {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 14px 16px 40px;
+}
+
+.skin2-card {
+  background: var(--s2-panel);
+  border: 1px solid var(--s2-border);
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+/* ---------- Header (Skin2-specific) ---------- */
+.skin2-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--s2-border);
+  background: linear-gradient(
+    90deg,
+    #4a3326,
+    #2f2119
+  );
+  color: var(--s2-text-invert);
+}
+
+.skin2-header h1 {
+  margin: 0;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.skin2-header .subtitle {
+  font-size: 11px;
+  color: #e6d3b8;
+  font-family: var(--s2-font-mono);
+}
+
+/* ---------- Controls ---------- */
+.skin2-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--s2-border);
+  background: #faf7f2;
+}
+
+.skin2-controls input[type="text"] {
+  width: 260px;
+  padding: 6px 8px;
+  font-size: 12px;
+  border-radius: 6px;
+  border: 1px solid var(--s2-border);
+  background: #ffffff;
+  color: var(--s2-text);
+
+/* Align common numeric columns right if you later add classes */
+.skin2-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
