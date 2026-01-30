@@ -84,8 +84,11 @@ function barrelLink(singleBarrelId, label) {
 
   const href = `assets/barrel/index.html?single_barrel_id=${encodeURIComponent(id)}`;
 
+  return `<a class="skin2-link" href="${href}" target="_blank" rel="noopener noreferrer">${escapeHtml(
+    text
+  )}</a>`;
+}
 
-   
   return `<a href="${href}" target="_blank" rel="noopener noreferrer">${escapeHtml(
     text
   )}</a>`;
