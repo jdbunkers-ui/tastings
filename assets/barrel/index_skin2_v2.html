@@ -316,7 +316,7 @@
 
       <div class="section-title">
         <h2>Flight Outcomes</h2>
-        <div class="hint">Wins and losses</div>
+        <div class="hint">Wins (foe beat) and losses (foe lost)</div>
       </div>
       <div class="grid-2">
         <div class="card" id="wins"></div>
@@ -350,20 +350,6 @@
 
       function fmt(x, fallback = "—") {
         return (x === null || x === undefined || x === "") ? fallback : String(x);
-      }
-
-      function fmt1(x, fallback = "—") {
-        if (x === null || x === undefined || x === "") return fallback;
-        const n = Number(x);
-        if (Number.isNaN(n)) return fallback;
-        return n.toFixed(1);
-      }
-
-      function fmt2(x, fallback = "—") {
-        if (x === null || x === undefined || x === "") return fallback;
-        const n = Number(x);
-        if (Number.isNaN(n)) return fallback;
-        return n.toFixed(2);
       }
 
       function fmtBool(b) {
@@ -436,12 +422,12 @@
         subtitleEl.textContent = `${dist}${st ? " • " + st : ""}`;
 
         const stats = [
-          { k: "Avg Score", v: fmt1(barrel?.avg_score) },
-          { k: "Composite", v: fmt1(barrel?.score) },
+          { k: "Avg Score", v: fmt(barrel?.avg_score) },
+          { k: "Composite", v: fmt(barrel?.score) },
           { k: "Tastings", v: fmt(barrel?.tasting_count ?? barrel?.tastings) },
-          { k: "Proof", v: fmt1(barrel?.proof) },
+          { k: "Proof", v: fmt(barrel?.proof) },
           { k: "Size", v: barrel?.size_ml ? `${barrel.size_ml} ml` : "—" },
-          { k: "MSRP", v: `$${fmt2(barrel?.msrp)}` },
+          { k: "MSRP", v: fmtCurrency(barrel?.msrp) },
         ];
 
         heroEl.innerHTML = `
@@ -524,7 +510,7 @@
                     <td class="notes">${escapeHtml(fmt(t.palate_notes, ""))}</td>
                     <td class="num"><b>${escapeHtml(fmt(t.finish_score))}</b></td>
                     <td class="notes">${escapeHtml(fmt(t.finish_notes, ""))}</td>
-                    <td class="num"><b>${escapeHtml(fmt1(t.score))}</b></td>
+                    <td class="num"><b>${escapeHtml(fmt(t.score))}</b></td>
                   </tr>
                 `)
                 .join("")}
@@ -547,7 +533,7 @@
 
         winsEl.innerHTML = `
           <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px;">
-            <div style="font-weight:800;">🟩 Wins</div>
+            <div style="font-weight:800;">🟩 Wins (Foe Beat)</div>
             <div class="muted" style="font-size:12px;">${wins.length} item${wins.length === 1 ? "" : "s"}</div>
           </div>
           <div class="list" id="wins-list">
@@ -569,7 +555,7 @@
                           </div>
                         </div>
                         <div class="right">
-                          <div class="score">${escapeHtml(fmt1(w.score))}</div>
+                          <div class="score">${escapeHtml(fmt(w.score))}</div>
                           <div class="meta2">${escapeHtml(fmt(w.size_ml ? `${w.size_ml} ml` : ""))}</div>
                         </div>
                       </div>
@@ -582,7 +568,7 @@
 
         lossesEl.innerHTML = `
           <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px;">
-            <div style="font-weight:800;">🟥 Losses</div>
+            <div style="font-weight:800;">🟥 Losses (Foe Lost)</div>
             <div class="muted" style="font-size:12px;">${losses.length} item${losses.length === 1 ? "" : "s"}</div>
           </div>
           <div class="list" id="losses-list">
@@ -604,7 +590,7 @@
                           </div>
                         </div>
                         <div class="right">
-                          <div class="score">${escapeHtml(fmt1(l.score))}</div>
+                          <div class="score">${escapeHtml(fmt(l.score))}</div>
                           <div class="meta2">${escapeHtml(fmt(l.size_ml ? `${l.size_ml} ml` : ""))}</div>
                         </div>
                       </div>
