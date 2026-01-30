@@ -1,13 +1,6 @@
 /* =========================================================
    Velvet Room — Skin2 Inventory Page
    File: assets/js/inventorySkin2Page.js
-
-   - Source: v_bottle_inventory
-   - Render into: #inventory-content
-   - Status into: #status
-   - Errors into: #error
-   - Hyperlink: bottle_expression -> tastings/assets/barrel/index.html?single_barrel_id=...
-
    ========================================================= */
 
 import { supabase } from "./supabaseClient.js";
@@ -51,12 +44,6 @@ function escapeHtml(v) {
     .replaceAll("'", "&#039;");
 }
 
-function labelize(key) {
-  return String(key ?? "")
-    .replaceAll("_", " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
 function isNumberLike(v) {
   if (v == null) return false;
   const n = Number(v);
@@ -65,13 +52,7 @@ function isNumberLike(v) {
 
 function fmtMoney(v) {
   if (!isNumberLike(v)) return escapeHtml(v);
-  const n = Number(v);
-  return `$${n.toFixed(2)}`;
-}
-
-function fmtInt(v) {
-  if (!isNumberLike(v)) return escapeHtml(v);
-  return String(Math.round(Number(v)));
+  return `$${Number(v).toFixed(2)}`;
 }
 
 function fmt1(v) {
@@ -87,7 +68,8 @@ function fmtAge(v) {
 }
 
 /**
- * bottle_expression links by single_barrel_id to barrel page
+ * Bottle Expression hyperlink
+ * index_skin2.html is at root; target page is assets/barrel/index.html
  */
 function barrelLink(singleBarrelId, label) {
   const id = singleBarrelId ?? "";
@@ -101,12 +83,21 @@ function barrelLink(singleBarrelId, label) {
   )}</a>`;
 }
 
-  return `<a href="${href}" target="_blank" rel="noopener noreferrer">${escapeHtml(
-    text
-  )}</a>`;
+function headerLabel(col) {
+  const map = {
+    score: "Score",
+    msrp: "MSRP",
+    proof: "Proof",
+    age: "Age",
+    bottle_expression: "Bottle Expression",
+    distillery_name: "Distillery Name",
+    state: "State",
+  };
+  return map[col] || col;
 }
 
 function selectColumns(keys) {
+  // EXACT order requested + keep id for link
   const desired = [
     "score",
     "msrp",
@@ -115,34 +106,20 @@ function selectColumns(keys) {
     "bottle_expression",
     "distillery_name",
     "state",
-    "single_barrel_id", // keep for linking (not displayed)
+    "single_barrel_id",
   ];
-
-  // keep only columns that exist in the view
   return desired.filter((k) => keys.includes(k));
-}
-  const cols = [];
-  for (const k of preferred) if (keys.includes(k)) cols.push(k);
-
-  for (const k of keys) {
-    if (!cols.includes(k)) cols.push(k);
-    if (cols.length >= 12) break;
-  }
-  return cols;
 }
 
 function renderCell(col, row) {
   const v = row[col];
 
-  if (col === "bottle_expression") {
-    return barrelLink(row.single_barrel_id, row.bottle_expression);
-  }
+  if (col === "bottle_expression") return barrelLink(row.single_barrel_id, row.bottle_expression);
   if (col === "msrp") return fmtMoney(v);
-  if (col === "size_ml") return fmtInt(v);
-  if (col === "on_hand_qty") return fmtInt(v);
   if (col === "score") return fmt1(v);
   if (col === "proof") return fmt1(v);
   if (col === "age") return fmtAge(v);
+
   return escapeHtml(v);
 }
 
@@ -163,12 +140,11 @@ function renderTable(rows) {
     .map((c) => `<th title="${escapeHtml(c)}">${escapeHtml(headerLabel(c))}</th>`)
     .join("");
 
+  // Keep search string small and stable
   const searchableFields = [
     "bottle_expression",
-    "brand_name",
-    "bottle_type",
-    "spirit_subtype",
-    "location",
+    "distillery_name",
+    "state",
     "single_barrel_id",
   ];
 
@@ -180,10 +156,7 @@ function renderTable(rows) {
         .join(" | ")
         .toLowerCase();
 
-      const tds = displayCols
-        .map((c) => `<td>${renderCell(c, r)}</td>`)
-        .join("");
-
+      const tds = displayCols.map((c) => `<td>${renderCell(c, r)}</td>`).join("");
       return `<tr class="inv-row" data-search="${escapeHtml(searchable)}">${tds}</tr>`;
     })
     .join("");
