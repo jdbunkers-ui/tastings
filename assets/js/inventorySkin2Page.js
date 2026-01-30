@@ -74,6 +74,18 @@ function fmtInt(v) {
   return String(Math.round(Number(v)));
 }
 
+function fmt1(v) {
+  if (!isNumberLike(v)) return escapeHtml(v);
+  return Number(v).toFixed(1);
+}
+
+function fmtAge(v) {
+  if (!isNumberLike(v)) return "NAS";
+  const n = Number(v);
+  if (n < 1.0) return "NAS";
+  return n.toFixed(1);
+}
+
 /**
  * bottle_expression links by single_barrel_id to barrel page
  */
@@ -82,9 +94,12 @@ function barrelLink(singleBarrelId, label) {
   const text = label ?? "";
   if (!id) return escapeHtml(text);
 
-  const href = `tastings/assets/barrel/index.html?single_barrel_id=${encodeURIComponent(
-    id
-  )}`;
+  const href = `assets/barrel/index.html?single_barrel_id=${encodeURIComponent(id)}`;
+
+  return `<a class="skin2-link" href="${href}" target="_blank" rel="noopener noreferrer">${escapeHtml(
+    text
+  )}</a>`;
+}
 
   return `<a href="${href}" target="_blank" rel="noopener noreferrer">${escapeHtml(
     text
@@ -92,18 +107,20 @@ function barrelLink(singleBarrelId, label) {
 }
 
 function selectColumns(keys) {
-  const preferred = [
-    "bottle_expression",
-    "brand_name",
-    "bottle_type",
-    "spirit_subtype",
-    "size_ml",
+  const desired = [
+    "score",
     "msrp",
-    "on_hand_qty",
-    "location",
-    "single_barrel_id", // used for link
+    "proof",
+    "age",
+    "bottle_expression",
+    "distillery_name",
+    "state",
+    "single_barrel_id", // keep for linking (not displayed)
   ];
 
+  // keep only columns that exist in the view
+  return desired.filter((k) => keys.includes(k));
+}
   const cols = [];
   for (const k of preferred) if (keys.includes(k)) cols.push(k);
 
@@ -123,7 +140,9 @@ function renderCell(col, row) {
   if (col === "msrp") return fmtMoney(v);
   if (col === "size_ml") return fmtInt(v);
   if (col === "on_hand_qty") return fmtInt(v);
-
+  if (col === "score") return fmt1(v);
+  if (col === "proof") return fmt1(v);
+  if (col === "age") return fmtAge(v);
   return escapeHtml(v);
 }
 
@@ -141,7 +160,7 @@ function renderTable(rows) {
   const displayCols = cols.filter((c) => c !== "single_barrel_id");
 
   const thead = displayCols
-    .map((c) => `<th title="${escapeHtml(c)}">${escapeHtml(labelize(c))}</th>`)
+    .map((c) => `<th title="${escapeHtml(c)}">${escapeHtml(headerLabel(c))}</th>`)
     .join("");
 
   const searchableFields = [
