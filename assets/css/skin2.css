@@ -109,6 +109,82 @@ html, body {
   border: 1px solid var(--s2-border);
   background: #ffffff;
   color: var(--s2-text);
+}
 
-/* Align common numeric columns right if you later add classes */
-.skin2-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.skin2-controls input::placeholder {
+  color: var(--s2-text-muted);
+}
+
+.skin2-status {
+  font-size: 11px;
+  color: var(--s2-text-muted);
+  font-family: var(--s2-font-mono);
+}
+
+/* ---------- Table ---------- */
+.skin2-table-wrap {
+  overflow-x: auto;
+}
+
+table.skin2-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px; /* compact */
+}
+
+table.skin2-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  text-align: left;
+  padding: 8px 10px;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--s2-text-muted);
+  background: #f3ede5;
+  border-bottom: 1px solid var(--s2-border);
+}
+
+table.skin2-table tbody td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #ece4da;
+  vertical-align: middle;
+}
+
+table.skin2-table tbody tr:nth-child(even) {
+  background: #fbf8f4;
+}
+
+table.skin2-table tbody tr:hover {
+  background: rgba(181, 122, 42, 0.08);
+}
+
+/* Optional numeric alignment if you later add .num class */
+.skin2-table td.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Links (Bottle Expression) ---------- */
+.skin2-link {
+  color: var(--s2-link);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.skin2-link:hover {
+  color: var(--s2-link-hover);
+  text-decoration: underline;
+}
+
+/* ---------- Error ---------- */
+.skin2-error {
+  padding: 10px 16px;
+  color: #9b2c2c;
+  font-size: 12px;
+  font-family: var(--s2-font-mono);
+  background: #fdecec;
+  border-top: 1px solid #f5c2c2;
+}
