@@ -1,18 +1,19 @@
 /* =========================================================
-   Velvet Room — Skin2 Inventory Filter
-   Step [5/6]: Text search filtering (same behavior style)
+   Velvet Room — Skin2 Inventory Filter (SAFE)
    File: assets/js/inventorySkin2Filter.js
 
    How it works:
    - Listens to #filter input
    - Filters rows with class ".inv-row"
    - Uses each row's data-search attribute (set by inventorySkin2Page.js)
-   - Updates #status with visible counts (preserves "Loaded X rows" prefix if present)
+   - Updates #status with visible counts
 
    Requires:
    - index_skin2.html has #filter and #status
    - inventorySkin2Page.js renders rows as:
        <tr class="inv-row" data-search="...">
+   - inventorySkin2Page.js dispatches:
+       window.dispatchEvent(new Event("skin2:inventoryRendered"));
    ========================================================= */
 
 const elFilter = document.getElementById("filter");
@@ -55,7 +56,6 @@ function applyFilter(query) {
   const visible = countVisible(rows);
   const total = rows.length;
 
-  // If the page already wrote "Loaded X rows", keep it simple but informative
   if (!q) {
     setStatus(`Loaded ${total} rows`);
   } else {
@@ -78,9 +78,7 @@ if (elFilter) {
   elFilter.addEventListener("input", onInput);
 }
 
-// Also re-apply after table renders (in case data loads after this script)
-const observer = new MutationObserver(() => {
+// Re-apply after table renders (SAFE: explicit event from inventorySkin2Page.js)
+window.addEventListener("skin2:inventoryRendered", () => {
   applyFilter(elFilter?.value ?? "");
 });
-
-observer.observe(document.body, { childList: true, subtree: true });
