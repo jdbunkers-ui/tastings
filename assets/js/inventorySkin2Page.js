@@ -140,7 +140,9 @@ function renderCell(col, row) {
   if (col === "msrp") return fmtMoney(v);
   if (col === "size_ml") return fmtInt(v);
   if (col === "on_hand_qty") return fmtInt(v);
-
+  if (col === "score") return fmt1(v);
+  if (col === "proof") return fmt1(v);
+  if (col === "age") return fmtAge(v);
   return escapeHtml(v);
 }
 
