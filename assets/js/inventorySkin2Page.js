@@ -76,12 +76,14 @@ function barrelLink(singleBarrelId, label) {
   const text = label ?? "";
   if (!id) return escapeHtml(text);
 
-  const href = `assets/barrel/index.html?single_barrel_id=${encodeURIComponent(id)}`;
+  // ✅ Skin2 barrel page
+  const href = `assets/barrel/index_skin2.html?single_barrel_id=${encodeURIComponent(id)}`;
 
   return `<a class="skin2-link" href="${href}" target="_blank" rel="noopener noreferrer">${escapeHtml(
     text
   )}</a>`;
 }
+
 
 function headerLabel(col) {
   const map = {

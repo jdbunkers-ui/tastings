@@ -3,35 +3,28 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Barrel Details</title>
+    <title>Barrel Details – Skin2</title>
 
-    <style>
-      :root {
-        --bg: #0b0d10;
-        --panel: rgba(255, 255, 255, 0.06);
-        --panel2: rgba(255, 255, 255, 0.08);
-        --border: rgba(255, 255, 255, 0.12);
-        --text: rgba(255, 255, 255, 0.92);
-        --muted: rgba(255, 255, 255, 0.68);
-        --muted2: rgba(255, 255, 255, 0.55);
-        --good: rgba(46, 204, 113, 0.25);
-        --bad: rgba(231, 76, 60, 0.25);
-      }
+    <!-- Skin2 palette + typography -->
+    <link rel="stylesheet" href="../css/skin2.css" />
+    <link rel="stylesheet" href="../css/barrel_skin2.css" />
 
+    <!-- Skin2 Barrel Overrides (local to this page) -->
+    <!--<style>
+      /* Map barrel page to Skin2 look */
       html, body { height: 100%; }
       body {
         margin: 0;
-        background: radial-gradient(1200px 800px at 20% -10%, rgba(128, 90, 213, 0.18), transparent 55%),
-                    radial-gradient(900px 700px at 90% 0%, rgba(255, 215, 0, 0.10), transparent 50%),
-                    var(--bg);
-        color: var(--text);
-        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        background: linear-gradient(180deg, #efe6d9 0%, #f6f1ea 55%);
+        color: var(--s2-text);
+        font-family: var(--s2-font-sans);
+        font-size: 13px;
       }
 
       .wrap {
         max-width: 980px;
         margin: 0 auto;
-        padding: 18px 14px 46px;
+        padding: 14px 16px 40px;
       }
 
       .topbar {
@@ -42,21 +35,40 @@
         margin-bottom: 14px;
       }
 
-      .brand {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-      }
-
       .brand h1 {
         margin: 0;
-        font-size: 20px;
-        letter-spacing: 0.2px;
+        font-size: 16px;
+        letter-spacing: 0.10em;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: var(--s2-brown-dark);
       }
 
       .brand .sub {
-        color: var(--muted);
-        font-size: 13px;
+        color: var(--s2-text-muted);
+        font-size: 12px;
+        font-family: var(--s2-font-mono);
+        margin-top: 2px;
+      }
+
+      .btn {
+        cursor: pointer;
+        border: 1px solid var(--s2-border);
+        background: #fff;
+        color: var(--s2-brown-dark);
+        border-radius: 10px;
+        padding: 7px 10px;
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .btn:hover { background: #faf7f2; }
+
+      .card {
+        border: 1px solid var(--s2-border);
+        background: var(--s2-panel);
+        border-radius: 12px;
+        padding: 12px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
       }
 
       .pill-row {
@@ -67,75 +79,43 @@
       }
 
       .pill {
-        border: 1px solid var(--border);
-        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--s2-border);
+        background: #f5efe7;
         border-radius: 999px;
-        padding: 6px 10px;
-        font-size: 12px;
-        color: var(--text);
+        padding: 5px 10px;
+        font-size: 11px;
+        color: var(--s2-brown-mid);
+        font-family: var(--s2-font-mono);
+        white-space: nowrap;
       }
 
-      .card {
-        border: 1px solid var(--border);
-        background: var(--panel);
-        border-radius: 16px;
-        padding: 14px;
-      }
+      .hero { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 14px; }
+      .hero-top { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: start; }
 
-      .hero {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 12px;
-        margin-bottom: 14px;
-      }
-
-      .hero-top {
-        display: grid;
-        grid-template-columns: 1fr auto;
-        gap: 12px;
-        align-items: start;
-      }
-
-      .stats {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        justify-content: flex-end;
-      }
+      .stats { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 
       .stat {
-        border: 1px solid var(--border);
-        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--s2-border);
+        background: #fbf8f4;
         border-radius: 12px;
         padding: 8px 10px;
-        min-width: 86px;
+        min-width: 92px;
       }
-      .stat .k { font-size: 11px; color: var(--muted2); }
-      .stat .v { font-size: 15px; font-weight: 700; margin-top: 2px; }
+      .stat .k { font-size: 10px; color: var(--s2-text-muted); letter-spacing: 0.08em; text-transform: uppercase; }
+      .stat .v { font-size: 14px; font-weight: 800; margin-top: 2px; color: var(--s2-brown-dark); }
 
       .meta {
         display: flex;
         gap: 10px;
         flex-wrap: wrap;
         align-items: center;
-        color: var(--muted);
+        color: var(--s2-text-muted);
         font-size: 12px;
       }
 
       .mono {
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+        font-family: var(--s2-font-mono);
       }
-
-      .btn {
-        cursor: pointer;
-        border: 1px solid var(--border);
-        background: rgba(255, 255, 255, 0.05);
-        color: var(--text);
-        border-radius: 12px;
-        padding: 8px 10px;
-        font-size: 13px;
-      }
-      .btn:hover { background: rgba(255, 255, 255, 0.08); }
 
       .section-title {
         display: flex;
@@ -146,124 +126,108 @@
       }
       .section-title h2 {
         margin: 0;
-        font-size: 14px;
-        letter-spacing: 0.3px;
-        color: rgba(255, 255, 255, 0.86);
+        font-size: 12px;
+        letter-spacing: 0.12em;
+        color: var(--s2-brown-dark);
         text-transform: uppercase;
       }
       .section-title .hint {
-        color: var(--muted2);
-        font-size: 12px;
+        color: var(--s2-text-muted);
+        font-size: 11px;
+        font-family: var(--s2-font-mono);
       }
 
       table {
         width: 100%;
         border-collapse: collapse;
         overflow: hidden;
-        border-radius: 14px;
-        border: 1px solid var(--border);
-        background: rgba(255, 255, 255, 0.03);
+        border-radius: 12px;
+        border: 1px solid var(--s2-border);
+        background: var(--s2-panel);
       }
       thead th {
         text-align: left;
-        font-size: 12px;
-        color: rgba(255, 255, 255, 0.72);
+        font-size: 10px;
+        color: var(--s2-text-muted);
         padding: 10px 10px;
-        border-bottom: 1px solid var(--border);
-        background: rgba(255, 255, 255, 0.03);
+        border-bottom: 1px solid var(--s2-border);
+        background: #f3ede5;
         white-space: nowrap;
+        letter-spacing: 0.10em;
+        text-transform: uppercase;
       }
       tbody td {
         vertical-align: top;
         padding: 10px 10px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        font-size: 13px;
-        color: rgba(255, 255, 255, 0.90);
+        border-bottom: 1px solid #ece4da;
+        font-size: 12px;
+        color: var(--s2-text);
       }
+      tbody tr:nth-child(even) { background: #fbf8f4; }
       tbody tr:last-child td { border-bottom: none; }
-      .num { text-align: right; white-space: nowrap; }
-      .notes { color: rgba(255, 255, 255, 0.86); line-height: 1.35; }
-      .muted { color: var(--muted); }
 
-      .grid-2 {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-      }
+      .num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+      .notes { color: var(--s2-text); line-height: 1.35; }
+      .muted { color: var(--s2-text-muted); }
+
+      .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
       @media (max-width: 860px) {
         .grid-2 { grid-template-columns: 1fr; }
         .hero-top { grid-template-columns: 1fr; }
         .stats { justify-content: flex-start; }
       }
 
-      .list {
-        display: grid;
-        gap: 8px;
-      }
+      .list { display: grid; gap: 8px; }
       .row {
-        border: 1px solid var(--border);
-        background: rgba(255, 255, 255, 0.04);
-        border-radius: 14px;
+        border: 1px solid var(--s2-border);
+        background: #ffffff;
+        border-radius: 12px;
         padding: 10px 10px;
         display: grid;
         grid-template-columns: 1fr auto;
         gap: 10px;
         align-items: start;
       }
-      .row:hover { background: rgba(255, 255, 255, 0.06); }
-      .row .title {
-        font-weight: 700;
-        font-size: 13px;
-      }
-      .row .sub {
-        font-size: 12px;
-        color: var(--muted);
-        margin-top: 2px;
-      }
-      .row .right {
-        text-align: right;
-        white-space: nowrap;
-      }
-      .row .score {
-        font-weight: 800;
-        font-size: 14px;
-      }
-      .row .meta2 {
-        color: var(--muted2);
-        font-size: 12px;
-        margin-top: 2px;
-      }
+      .row:hover { background: #fbf8f4; }
+      .row .title { font-weight: 800; font-size: 12px; color: var(--s2-brown-dark); }
+      .row .sub { font-size: 11px; color: var(--s2-text-muted); margin-top: 2px; }
+      .row .right { text-align: right; white-space: nowrap; }
+      .row .score { font-weight: 900; font-size: 13px; color: var(--s2-brown-dark); }
+      .row .meta2 { color: var(--s2-text-muted); font-size: 11px; margin-top: 2px; }
+
       .row a {
-        color: inherit;
+        color: var(--s2-link);
+        text-decoration: none;
+        font-weight: 800;
+      }
+      .row a:hover {
+        color: var(--s2-link-hover);
         text-decoration: underline;
       }
 
       details {
-        border: 1px solid var(--border);
-        background: rgba(255, 255, 255, 0.03);
-        border-radius: 14px;
+        border: 1px solid var(--s2-border);
+        background: #ffffff;
+        border-radius: 12px;
         padding: 10px 10px;
       }
       details summary {
         cursor: pointer;
-        font-weight: 700;
-        font-size: 13px;
-        color: rgba(255, 255, 255, 0.88);
+        font-weight: 800;
+        font-size: 12px;
+        color: var(--s2-brown-dark);
       }
       pre {
         margin: 10px 0 0;
         padding: 10px;
-        border-radius: 12px;
-        background: rgba(0, 0, 0, 0.35);
-        border: 1px solid rgba(255, 255, 255, 0.10);
+        border-radius: 10px;
+        background: #fbf8f4;
+        border: 1px solid var(--s2-border);
         overflow: auto;
-        color: rgba(255, 255, 255, 0.85);
+        color: var(--s2-text);
         font-size: 12px;
       }
-
-      /* modal */
-      #modal { display:none; }
-    </style>
+    </style>-->
   </head>
 
   <body>
@@ -278,14 +242,12 @@
 
       <div class="card hero" id="hero"></div>
 
-      <!-- Section 2: Tastings (as-is from JSON, sorted by flight_date desc) -->
       <div class="section-title">
         <h2>Tastings</h2>
         <div class="hint" id="tastings-hint"></div>
       </div>
       <div id="tastings"></div>
 
-      <!-- Section 4: Flight outcomes -->
       <div class="section-title">
         <h2>Flight Outcomes</h2>
         <div class="hint">Wins (foe beat) and losses (foe lost)</div>
@@ -295,7 +257,6 @@
         <div class="card" id="losses"></div>
       </div>
 
-      <!-- Section 5: Debug -->
       <div class="section-title">
         <h2>Debug</h2>
         <div class="hint">Raw payload</div>
@@ -306,33 +267,8 @@
       </details>
     </div>
 
-    <!-- Modal shell -->
-    <div id="modal" aria-hidden="true">
-      <div data-close
-        style="position:fixed;inset:0;background:rgba(0,0,0,.60);z-index:9998;"></div>
-      <div role="dialog" aria-modal="true"
-        style="position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);
-               width:min(920px,92vw);max-height:86vh;overflow:auto;
-               background:#111;border:1px solid rgba(255,255,255,.12);
-               border-radius:16px;z-index:9999;box-shadow:0 20px 60px rgba(0,0,0,.55);">
-        <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;
-                    padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.10);">
-          <div>
-            <div id="modal-title" style="font-weight:800;color:#fff;font-size:15px;"></div>
-            <div id="modal-sub" style="color:rgba(255,255,255,.7);font-size:12px;margin-top:2px;"></div>
-          </div>
-          <button class="btn" data-close type="button">Close</button>
-        </div>
-        <div id="modal-body" style="padding:14px 16px;color:rgba(255,255,255,.92);"></div>
-        <div style="padding:12px 16px;border-top:1px solid rgba(255,255,255,.10);display:flex;justify-content:flex-end;gap:10px;">
-          <button class="btn" data-close type="button">Close</button>
-        </div>
-      </div>
-    </div>
-
     <script type="module">
       import { supabase } from "../js/supabaseClient.js";
-
 
       // -----------------------------
       // Helpers
@@ -371,63 +307,28 @@
         });
       }
 
-      // Supports paths like:
-      // - /barrel/<uuid>
-      // - /<repo>/barrel/<uuid>   (GitHub Pages subpath)
-      // Also supports ?id=<uuid>
       function getBarrelIdFromUrl() {
         const url = new URL(window.location.href);
+
+        // Skin2 links
+        const qpSingle = (url.searchParams.get("single_barrel_id") || "").trim();
+        if (qpSingle) return qpSingle;
+
+        // Existing support
         const qp = (url.searchParams.get("id") || "").trim();
         if (qp) return qp;
 
+        // Existing support for /barrel/<uuid> paths
         const parts = url.pathname.split("/").filter(Boolean);
         const idx = parts.lastIndexOf("barrel");
         if (idx >= 0 && parts[idx + 1]) return parts[idx + 1];
 
-        // If someone hits /barrel/ with no id, return empty
         return "";
       }
 
-      // -----------------------------
-      // Modal
-      // -----------------------------
-      const modal = document.getElementById("modal");
-      const modalTitle = document.getElementById("modal-title");
-      const modalSub = document.getElementById("modal-sub");
-      const modalBody = document.getElementById("modal-body");
-
-      function openModal({ title, sub, bodyHtml }) {
-        modalTitle.textContent = title || "";
-        modalSub.textContent = sub || "";
-        modalBody.innerHTML = bodyHtml || "";
-        modal.style.display = "block";
-        modal.setAttribute("aria-hidden", "false");
-      }
-
-      function closeModal() {
-        modal.style.display = "none";
-        modal.setAttribute("aria-hidden", "true");
-      }
-
-      modal.addEventListener("click", (e) => {
-        const t = e.target;
-        if (t && t.closest && t.closest("[data-close]")) closeModal();
-      });
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") closeModal();
-      });
-
-      function showUnderConstruction(href, id) {
-        openModal({
-          title: "Under construction",
-          sub: id ? `Barrel ID: ${id}` : "",
-          bodyHtml: `
-            <p style="margin:0 0 10px 0;">This page is not live yet.</p>
-            <p style="margin:0;color:rgba(255,255,255,.72);">
-              Route: <span class="mono">${escapeHtml(href || "")}</span>
-            </p>
-          `,
-        });
+      function selfUrlForId(singleBarrelId) {
+        const id = encodeURIComponent(singleBarrelId ?? "");
+        return `${window.location.pathname}?id=${id}`;
       }
 
       // -----------------------------
@@ -509,7 +410,6 @@
         }
       }
 
-      // Section 2 (your requirement): show data exactly as it comes from JSON
       function renderTastings(tastings) {
         const sorted = sortByDateDesc(tastings, "flight_date");
         hintEl.textContent = `${sorted.length} tasting${sorted.length === 1 ? "" : "s"} • sorted by flight date (desc)`;
@@ -554,8 +454,6 @@
       }
 
       function bottleLabel(x) {
-        // user-friendly "bottle name"
-        // uses brand_name + expression_name + pick_name (if present)
         const brand = fmt(x?.brand_name, "");
         const expr = fmt(x?.expression_name, "");
         const pick = fmt(x?.pick_name, "");
@@ -577,7 +475,7 @@
               wins.length
                 ? wins.map((w) => {
                     const id = fmt(w.single_barrel_id, "");
-                    const href = id ? new URL(`./${encodeURIComponent(id)}`, window.location.href).toString() : "#";
+                    const href = id ? selfUrlForId(id) : "#";
                     return `
                       <div class="row">
                         <div>
@@ -592,7 +490,8 @@
                         </div>
                         <div class="right">
                           <div class="score">${escapeHtml(fmt(w.score))}</div>
-                          <div class="meta2">${escapeHtml(fmt(w.size_ml ? `${w.size_ml} ml` : ""))}</div>
+                          <div class="meta2">${escapeHtml(fmt(w.size_ml ? `${w.size_ml} ml` : ""))}
+                          </div>
                         </div>
                       </div>
                     `;
@@ -612,7 +511,7 @@
               losses.length
                 ? losses.map((l) => {
                     const id = fmt(l.single_barrel_id, "");
-                    const href = id ? new URL(`./${encodeURIComponent(id)}`, window.location.href).toString() : "#";
+                    const href = id ? selfUrlForId(id) : "#";
                     return `
                       <div class="row">
                         <div>
@@ -636,76 +535,50 @@
             }
           </div>
         `;
-
-        // Intercept foe clicks -> show under construction modal (no navigation)
-        const foeContainer = document.querySelector(".wrap");
-        foeContainer.addEventListener("click", (e) => {
-          const a = e.target?.closest?.('a[data-barrel-link="1"]');
-          if (!a) return;
-
-          e.preventDefault();
-          e.stopPropagation();
-
-          const id = a.getAttribute("data-barrel-id") || "";
-          const href = a.getAttribute("href") || "";
-          try {
-            if (href) window.history.pushState({}, "", href);
-          } catch {}
-
-          showUnderConstruction(href, id);
-        });
       }
 
       function renderDebug(payload) {
-        try {
-          debugEl.textContent = JSON.stringify(payload, null, 2);
-        } catch {
-          debugEl.textContent = String(payload ?? "");
-        }
+        try { debugEl.textContent = JSON.stringify(payload, null, 2); }
+        catch { debugEl.textContent = String(payload ?? ""); }
       }
 
-      // -----------------------------
       // Close behavior
-      // -----------------------------
       document.getElementById("close-btn").addEventListener("click", () => {
-        // Try to behave like a popup: go back if possible, else go to site root
-        if (window.history.length > 1) window.history.back();
-        else window.location.href = new URL("../", window.location.href).toString();
+        try { window.close(); } catch {}
+        setTimeout(() => {
+          if (!window.closed) {
+            if (window.history.length > 1) window.history.back();
+            else window.location.href = new URL("../", window.location.href).toString();
+          }
+        }, 50);
       });
 
-      // -----------------------------
-      // Load payload
-      // -----------------------------
       async function load() {
         const barrelId = getBarrelIdFromUrl();
         if (!barrelId) {
-          subtitleEl.textContent = "Missing barrel id in URL (expected /barrel/<id> or ?id=<id>)";
+          document.getElementById("page-subtitle").textContent =
+            "Missing barrel id in URL (expected /barrel/<id> or ?id=<id> or ?single_barrel_id=<id>)";
           heroEl.innerHTML = `<div class="muted">No barrel id provided.</div>`;
           tastingsEl.innerHTML = `<div class="card muted">No tastings.</div>`;
           winsEl.innerHTML = `<div class="muted">No wins.</div>`;
           lossesEl.innerHTML = `<div class="muted">No losses.</div>`;
+          renderDebug({ error: "Missing id" });
           return;
         }
 
-        subtitleEl.textContent = `Loading payload for ${barrelId}…`;
+        document.getElementById("page-subtitle").textContent = `Loading payload for ${barrelId}…`;
 
-        // NOTE: Update the RPC name/arg key below if your function signature differs.
         const { data, error } = await supabase.rpc("f_get_barrel_payload", {
           p_single_barrel_id: barrelId,
         });
 
         if (error) {
-          subtitleEl.textContent = "Error loading barrel payload";
-          heroEl.innerHTML = `
-            <div class="muted">
-              <b>Error:</b> ${escapeHtml(error.message || String(error))}
-            </div>
-          `;
+          document.getElementById("page-subtitle").textContent = "Error loading barrel payload";
+          heroEl.innerHTML = `<div class="muted"><b>Error:</b> ${escapeHtml(error.message || String(error))}</div>`;
           renderDebug({ error: error.message || String(error) });
           return;
         }
 
-        // Some Supabase RPCs return the JSON directly, others wrap it; handle both
         const payload = data?.payload ?? data;
 
         renderDebug(payload);
@@ -715,40 +588,32 @@
         renderTastings(payload?.tastings || []);
         renderFoes({ foe_beat: payload?.foe_beat || [], foe_lost: payload?.foe_lost || [] });
 
-        subtitleEl.textContent = `${fmt(barrel?.distillery_name, "Loaded")} • ${fmt(barrel?.state, "")}`.replace(/\s•\s$/, "");
+        document.getElementById("page-subtitle").textContent =
+          `${fmt(barrel?.distillery_name, "Loaded")} • ${fmt(barrel?.state, "")}`.replace(/\s•\s$/, "");
       }
 
-      load();
+      document.querySelector(".wrap").addEventListener("click", (e) => {
+        const a = e.target?.closest?.('a[data-barrel-link="1"]');
+        if (!a) return;
 
-      // Close modals when navigating history (nice UX)
-      window.addEventListener("popstate", () => {
-        closeModal();
+        e.preventDefault();
+        e.stopPropagation();
+
+        const href = a.getAttribute("href") || "";
+        if (!href || href === "#") return;
+
+        try {
+          window.history.pushState({}, "", href);
+          load();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        } catch {
+          window.location.href = href;
+        }
       });
 
-      /**
-       * ==========================
-       * Developer Notes
-       * ==========================
-       * 1) URL parsing:
-       *    - Reads barrel id from /barrel/<id> or ?id=<id>.
-       *    - Works under GitHub Pages subpaths too.
-       *
-       * 2) Section 2 (per your request):
-       *    - Shows EXACT fields from payload.tastings:
-       *      nose_notes/nose_score, palate_notes/palate_score,
-       *      finish_notes/finish_score, score (final).
-       *    - Sorted by flight_date DESC.
-       *
-       * 3) Section 4:
-       *    - Shows foe_beat and foe_lost as lists.
-       *    - Clicks are intercepted to show an "Under construction" modal.
-       *      (No re-query; no navigation.)
-       *
-       * 4) RPC:
-       *    - Assumes function name "f_get_barrel_payload"
-       *      with arg "p_single_barrel_id".
-       *    - If your signature differs, update the supabase.rpc() call.
-       */
+      window.addEventListener("popstate", () => load());
+
+      load();
     </script>
   </body>
 </html>
