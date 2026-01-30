@@ -155,6 +155,9 @@ function renderTable(rows) {
     return;
   }
 
+
+
+   
   const keys = Object.keys(rows[0] || {});
   const cols = selectColumns(keys);
 
@@ -185,7 +188,8 @@ function renderTable(rows) {
       <tbody>${tbody}</tbody>
     </table>
   `;
-}
+
+  window.dispatchEvent(new Event("skin2:inventoryRendered"));
 
 async function loadInventory() {
   clearError();
