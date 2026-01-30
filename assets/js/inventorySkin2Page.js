@@ -82,10 +82,10 @@ function barrelLink(singleBarrelId, label) {
   const text = label ?? "";
   if (!id) return escapeHtml(text);
 
-  const href = `tastings/assets/barrel/index.html?single_barrel_id=${encodeURIComponent(
-    id
-  )}`;
+  const href = `assets/barrel/index.html?single_barrel_id=${encodeURIComponent(id)}`;
 
+
+   
   return `<a href="${href}" target="_blank" rel="noopener noreferrer">${escapeHtml(
     text
   )}</a>`;
