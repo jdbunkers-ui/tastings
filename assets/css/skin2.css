@@ -109,3 +109,6 @@ html, body {
   border: 1px solid var(--s2-border);
   background: #ffffff;
   color: var(--s2-text);
+
+/* Align common numeric columns right if you later add classes */
+.skin2-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
