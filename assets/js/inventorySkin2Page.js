@@ -151,6 +151,7 @@ function renderTable(rows) {
 
   if (!rows || rows.length === 0) {
     elContent.innerHTML = `<div style="padding:12px;">No inventory rows returned.</div>`;
+    window.dispatchEvent(new Event("skin2:inventoryRendered"));
     return;
   }
 
