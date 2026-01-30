@@ -74,6 +74,18 @@ function fmtInt(v) {
   return String(Math.round(Number(v)));
 }
 
+function fmt1(v) {
+  if (!isNumberLike(v)) return escapeHtml(v);
+  return Number(v).toFixed(1);
+}
+
+function fmtAge(v) {
+  if (!isNumberLike(v)) return "NAS";
+  const n = Number(v);
+  if (n < 1.0) return "NAS";
+  return n.toFixed(1);
+}
+
 /**
  * bottle_expression links by single_barrel_id to barrel page
  */
@@ -95,18 +107,20 @@ function barrelLink(singleBarrelId, label) {
 }
 
 function selectColumns(keys) {
-  const preferred = [
-    "bottle_expression",
-    "brand_name",
-    "bottle_type",
-    "spirit_subtype",
-    "size_ml",
+  const desired = [
+    "score",
     "msrp",
-    "on_hand_qty",
-    "location",
-    "single_barrel_id", // used for link
+    "proof",
+    "age",
+    "bottle_expression",
+    "distillery_name",
+    "state",
+    "single_barrel_id", // keep for linking (not displayed)
   ];
 
+  // keep only columns that exist in the view
+  return desired.filter((k) => keys.includes(k));
+}
   const cols = [];
   for (const k of preferred) if (keys.includes(k)) cols.push(k);
 
