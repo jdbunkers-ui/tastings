@@ -196,7 +196,7 @@ async function loadInventory() {
   setStatus("Loading inventory…");
 
   try {
-    const { data, error } = await supabase.from(VIEW_NAME).select("*").limit(1000);
+    const { data, error } = await supabase.from(VIEW_NAME).select("*").limit(300);
     if (error) throw error;
 
     renderTable(data);
