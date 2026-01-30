@@ -61,16 +61,33 @@ function labelize(key) {
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+function isNumberLike(v) {
+  if (v == null) return false;
+  const n = Number(v);
+  return Number.isFinite(n);
+}
+
+function fmtMoney(v) {
+  if (!isNumberLike(v)) return escapeHtml(v);
+  const n = Number(v);
+  return `$${n.toFixed(2)}`;
+}
+
+function fmtInt(v) {
+  if (!isNumberLike(v)) return escapeHtml(v);
+  return String(Math.round(Number(v)));
+}
+
 /**
  * Builds a hyperlink to your existing barrel popup page.
- * Opens in a new tab.
+ * Requirement: bottle_expression should link (by single_barrel_id)
+ * to tastings/assets/barrel/index.html in a new page.
  */
 function barrelLink(singleBarrelId, label) {
   const id = singleBarrelId ?? "";
   const text = label ?? "";
   if (!id) return escapeHtml(text);
 
-  // From your requirement: open tastings/assets/barrel/index.html in a new page
   const href = `tastings/assets/barrel/index.html?single_barrel_id=${encodeURIComponent(
     id
   )}`;
@@ -81,11 +98,10 @@ function barrelLink(singleBarrelId, label) {
 }
 
 /**
- * Decide which columns to show.
- * You can tune this list once you confirm the view columns.
+ * Decide which columns to show and in what order.
+ * Adjust this list once you confirm the view schema.
  */
 function selectColumns(keys) {
-  // Preferred columns (best guess)
   const preferred = [
     "bottle_expression",
     "brand_name",
@@ -95,13 +111,14 @@ function selectColumns(keys) {
     "msrp",
     "on_hand_qty",
     "location",
+    // used for linking, usually not displayed:
     "single_barrel_id",
   ];
 
   const cols = [];
   for (const k of preferred) if (keys.includes(k)) cols.push(k);
 
-  // Add any remaining keys (keep it sane; we don’t want 40 columns)
+  // Add remaining columns (cap to keep it tight)
   for (const k of keys) {
     if (!cols.includes(k)) cols.push(k);
     if (cols.length >= 12) break;
@@ -109,9 +126,25 @@ function selectColumns(keys) {
   return cols;
 }
 
+function renderCell(col, row) {
+  const v = row[col];
+
+  if (col === "bottle_expression") {
+    return barrelLink(row.single_barrel_id, row.bottle_expression);
+  }
+
+  if (col === "msrp") return fmtMoney(v);
+  if (col === "size_ml") return fmtInt(v);
+  if (col === "on_hand_qty") return fmtInt(v);
+
+  return escapeHtml(v);
+}
+
 /**
- * Render the inventory table.
- * Adds data attributes on rows so Step [5/6] can filter by text.
+ * Render inventory table.
+ * Adds:
+ *  - .inv-row rows
+ *  - data-search attribute for filter module
  */
 function renderTable(rows) {
   if (!elContent) return;
@@ -124,28 +157,21 @@ function renderTable(rows) {
   const keys = Object.keys(rows[0] || {});
   const cols = selectColumns(keys);
 
-  const thead = cols
-    .filter((c) => c !== "single_barrel_id") // we don’t show id as a column unless needed
+  const displayCols = cols.filter((c) => c !== "single_barrel_id");
+
+  const thead = displayCols
     .map((c) => `<th title="${escapeHtml(c)}">${escapeHtml(labelize(c))}</th>`)
     .join("");
 
   const tbody = rows
     .map((r) => {
-      // For search filtering: concatenate visible text into a searchable attribute
-      // Step [5/6] can use this without re-walking every cell.
       const searchable = cols
         .map((c) => (r[c] == null ? "" : String(r[c])))
         .join(" | ")
         .toLowerCase();
 
-      const tds = cols
-        .filter((c) => c !== "single_barrel_id")
-        .map((c) => {
-          if (c === "bottle_expression") {
-            return `<td>${barrelLink(r.single_barrel_id, r.bottle_expression)}</td>`;
-          }
-          return `<td>${escapeHtml(r[c])}</td>`;
-        })
+      const tds = displayCols
+        .map((c) => `<td>${renderCell(c, r)}</td>`)
         .join("");
 
       return `<tr class="inv-row" data-search="${escapeHtml(searchable)}">${tds}</tr>`;
@@ -153,12 +179,10 @@ function renderTable(rows) {
     .join("");
 
   elContent.innerHTML = `
-    <div class="skin2-table-wrap">
-      <table class="skin2-table" aria-label="Bottle inventory table">
-        <thead><tr>${thead}</tr></thead>
-        <tbody>${tbody}</tbody>
-      </table>
-    </div>
+    <table class="skin2-table" aria-label="Bottle inventory table">
+      <thead><tr>${thead}</tr></thead>
+      <tbody>${tbody}</tbody>
+    </table>
   `;
 }
 
@@ -167,14 +191,10 @@ async function loadInventory() {
   setStatus("Loading inventory…");
 
   try {
-    // NOTE: Views can be large. Start with a sane cap.
-    // If you need pagination later, we can add it without touching your existing pages.
     const { data, error } = await supabase.from(VIEW_NAME).select("*").limit(1000);
-
     if (error) throw error;
 
     renderTable(data);
-
     setStatus(`Loaded ${data?.length ?? 0} rows`);
   } catch (e) {
     setStatus("Error loading inventory");
@@ -183,5 +203,4 @@ async function loadInventory() {
   }
 }
 
-// Kick off
 loadInventory();
