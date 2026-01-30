@@ -343,22 +343,21 @@
         });
       }
 
-      // Supports paths like:
-      // - /barrel/<uuid>
-      // - /<repo>/barrel/<uuid>   (GitHub Pages subpath)
-      // Also supports ?id=<uuid>
       function getBarrelIdFromUrl() {
         const url = new URL(window.location.href);
+        // ✅ NEW: support Skin2 links
+        const qpSingle = (url.searchParams.get("single_barrel_id") || "").trim();
+        if (qpSingle) return qpSingle;
+        // Existing support (Skin1 / current behavior)
         const qp = (url.searchParams.get("id") || "").trim();
         if (qp) return qp;
-
+        // Existing support for /barrel/<uuid> paths
         const parts = url.pathname.split("/").filter(Boolean);
         const idx = parts.lastIndexOf("barrel");
         if (idx >= 0 && parts[idx + 1]) return parts[idx + 1];
-
         return "";
-      }
-
+    }
+      
       // Build a GitHub Pages-safe "same file" URL that changes only ?id=
       function selfUrlForId(singleBarrelId) {
         const id = encodeURIComponent(singleBarrelId ?? "");
