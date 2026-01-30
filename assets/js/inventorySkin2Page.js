@@ -2,16 +2,12 @@
    Velvet Room — Skin2 Inventory Page
    File: assets/js/inventorySkin2Page.js
 
-   Step [4/6]: Supabase fetch + render
    - Source: v_bottle_inventory
    - Render into: #inventory-content
    - Status into: #status
    - Errors into: #error
    - Hyperlink: bottle_expression -> tastings/assets/barrel/index.html?single_barrel_id=...
 
-   NOTE:
-   - Step [5/6] will wire the text search to filter rendered rows.
-   - This file focuses on: load + render + link building.
    ========================================================= */
 
 import { supabase } from "./supabaseClient.js";
@@ -79,9 +75,7 @@ function fmtInt(v) {
 }
 
 /**
- * Builds a hyperlink to your existing barrel popup page.
- * Requirement: bottle_expression should link (by single_barrel_id)
- * to tastings/assets/barrel/index.html in a new page.
+ * bottle_expression links by single_barrel_id to barrel page
  */
 function barrelLink(singleBarrelId, label) {
   const id = singleBarrelId ?? "";
@@ -97,10 +91,6 @@ function barrelLink(singleBarrelId, label) {
   )}</a>`;
 }
 
-/**
- * Decide which columns to show and in what order.
- * Adjust this list once you confirm the view schema.
- */
 function selectColumns(keys) {
   const preferred = [
     "bottle_expression",
@@ -111,14 +101,12 @@ function selectColumns(keys) {
     "msrp",
     "on_hand_qty",
     "location",
-    // used for linking, usually not displayed:
-    "single_barrel_id",
+    "single_barrel_id", // used for link
   ];
 
   const cols = [];
   for (const k of preferred) if (keys.includes(k)) cols.push(k);
 
-  // Add remaining columns (cap to keep it tight)
   for (const k of keys) {
     if (!cols.includes(k)) cols.push(k);
     if (cols.length >= 12) break;
@@ -132,7 +120,6 @@ function renderCell(col, row) {
   if (col === "bottle_expression") {
     return barrelLink(row.single_barrel_id, row.bottle_expression);
   }
-
   if (col === "msrp") return fmtMoney(v);
   if (col === "size_ml") return fmtInt(v);
   if (col === "on_hand_qty") return fmtInt(v);
@@ -140,32 +127,36 @@ function renderCell(col, row) {
   return escapeHtml(v);
 }
 
-/**
- * Render inventory table.
- * Adds:
- *  - .inv-row rows
- *  - data-search attribute for filter module
- */
 function renderTable(rows) {
   if (!elContent) return;
 
   if (!rows || rows.length === 0) {
     elContent.innerHTML = `<div style="padding:12px;">No inventory rows returned.</div>`;
+    window.dispatchEvent(new Event("skin2:inventoryRendered"));
     return;
   }
 
   const keys = Object.keys(rows[0] || {});
   const cols = selectColumns(keys);
-
   const displayCols = cols.filter((c) => c !== "single_barrel_id");
 
   const thead = displayCols
     .map((c) => `<th title="${escapeHtml(c)}">${escapeHtml(labelize(c))}</th>`)
     .join("");
 
+  const searchableFields = [
+    "bottle_expression",
+    "brand_name",
+    "bottle_type",
+    "spirit_subtype",
+    "location",
+    "single_barrel_id",
+  ];
+
   const tbody = rows
     .map((r) => {
-      const searchable = cols
+      const searchable = searchableFields
+        .filter((c) => c in r)
         .map((c) => (r[c] == null ? "" : String(r[c])))
         .join(" | ")
         .toLowerCase();
@@ -184,6 +175,8 @@ function renderTable(rows) {
       <tbody>${tbody}</tbody>
     </table>
   `;
+
+  window.dispatchEvent(new Event("skin2:inventoryRendered"));
 }
 
 async function loadInventory() {
@@ -191,7 +184,7 @@ async function loadInventory() {
   setStatus("Loading inventory…");
 
   try {
-    const { data, error } = await supabase.from(VIEW_NAME).select("*").limit(1000);
+    const { data, error } = await supabase.from(VIEW_NAME).select("*").limit(300);
     if (error) throw error;
 
     renderTable(data);

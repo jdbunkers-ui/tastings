@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Velvet Room – Inventory</title>
 
-    <!-- Base site styles (optional but safe) -->
+    <!-- Base site styles (optional) -->
     <link rel="stylesheet" href="assets/css/site.css" />
 
     <!-- Skin2 styles -->
@@ -18,7 +18,7 @@
 
     <main class="skin2-wrap">
       <section class="skin2-card">
-        <!-- Controls -->
+        <!-- Header band (optional; layout_skin2.js also injects header at top) -->
         <div class="skin2-controls">
           <input
             id="filter"
@@ -42,11 +42,13 @@
     <!-- Skin2 Footer Injection Target -->
     <div id="site-footer"></div>
 
-    <!-- Skin2 layout injector (lowercase confirmed) -->
+    <!-- Skin2 layout injector -->
     <script src="assets/js/layout_skin2.js"></script>
 
-    <!-- Inventory page logic (step 4) -->
+    <!-- Inventory page logic -->
     <script type="module" src="assets/js/inventorySkin2Page.js"></script>
-    <!--<script type="module" src="assets/js/inventorySkin2Filter.js"></script> -->
+
+    <!-- Inventory text filter -->
+    <script type="module" src="assets/js/inventorySkin2Filter.js"></script>
   </body>
 </html>
