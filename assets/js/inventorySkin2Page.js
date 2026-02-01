@@ -100,6 +100,23 @@ function distilleryLink(distilleryId, label) {
   )}</a>`;
 }
 
+
+/**
+ * Distillery Name hyperlink
+ * index_skin2.html is at root; target page is assets/distillery/index.html
+ */
+function distilleryLink(distilleryId, label) {
+  const id = distilleryId ?? "";
+  const text = label ?? "";
+  if (!id) return escapeHtml(text);
+
+  const href = `assets/distillery/index.html?distillery_id=${encodeURIComponent(id)}`;
+
+  return `<a class="skin2-link" href="${href}" target="_blank" rel="noopener noreferrer">${escapeHtml(
+    text
+  )}</a>`;
+}
+
 function headerLabel(col) {
   const map = {
     score: "Score",
