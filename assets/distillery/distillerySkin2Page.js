@@ -1,13 +1,22 @@
 import { supabase } from "../js/supabaseClient.js";
 
 /**
- * Photo strategy:
- * - If v_distillery.distillery_photo_filename exists -> use that
- * - Else fallback to "<distillery_id>.jpg"
+ * Distillery Skin2 Page
+ * File: assets/distillery/distillerySkin2Page.js
  *
- * Folder expected: assets/img/distilleries/
- * (relative from assets/distillery/ => "../img/distilleries/")
+ * Renders:
+ *  - Distillery profile from public.v_distillery
+ *  - Tasted bottles list from public.v_bottle_inventory filtered by distillery_id
+ *
+ * Links:
+ *  - Bottle Expression in table links to ../barrel/index_skin2.html?single_barrel_id=<uuid>
  */
+
+// Photo strategy:
+// - If v_distillery.distillery_photo_filename exists -> use that
+// - Else fallback to "<distillery_id>.jpg"
+// Folder expected: assets/img/distilleries/
+// (relative from assets/distillery/ => "../img/distilleries/")
 const PHOTO_BASE = "../img/distilleries/";
 const DEFAULT_PHOTO_EXT = "jpg";
 
@@ -19,16 +28,19 @@ function qs(name) {
 }
 
 function show(el, isShown) {
+  if (!el) return;
   el.style.display = isShown ? "" : "none";
 }
 
 function setText(id, value) {
   const el = document.getElementById(id);
+  if (!el) return;
   el.textContent = value ?? "";
 }
 
 function showError(msg) {
   const el = document.getElementById("error");
+  if (!el) return;
   el.textContent = msg;
   show(el, true);
 }
@@ -59,6 +71,16 @@ function fmtAge(v) {
   return n < 1.0 ? "NAS" : n.toFixed(1);
 }
 
+function escapeHtml(str) {
+  return (str ?? "")
+    .toString()
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
 function buildFullAddress(dist) {
   // Prefer full_address if you have it
   const full = (dist.full_address ?? "").toString().trim();
@@ -71,48 +93,24 @@ function buildFullAddress(dist) {
     dist.city,
     dist.state,
     dist.postal_code,
-    dist.country
+    dist.country,
   ]
-    .map(v => (v ?? "").toString().trim())
+    .map((v) => (v ?? "").toString().trim())
     .filter(Boolean);
 
   return parts.length ? parts.join(", ") : "N/A";
 }
 
 function buildPhotoUrl(distilleryId, photoFilename) {
-  const file = (photoFilename ?? "").toString().trim()
-    || `${distilleryId}.${DEFAULT_PHOTO_EXT}`;
+  const file =
+    (photoFilename ?? "").toString().trim() ||
+    `${distilleryId}.${DEFAULT_PHOTO_EXT}`;
   return `${PHOTO_BASE}${file}`;
 }
 
 function buildMapsUrl(name, addressLine) {
   const q = encodeURIComponent(`${name} ${addressLine}`.trim());
   return `https://www.google.com/maps/search/?api=1&query=${q}`;
-}
-
-async function fetchDistilleryProfile(distilleryId) {
-  const { data, error } = await supabase
-    .from("v_distillery")
-    .select("*")
-    .eq("distillery_id", distilleryId)
-    .maybeSingle();
-
-  if (error) throw new Error(`v_distillery fetch failed: ${error.message}`);
-  if (!data) throw new Error("No distillery found for that distillery_id.");
-
-  return data;
-}
-
-async function fetchTastedBottles(distilleryId) {
-  const { data, error } = await supabase
-    .from("v_bottle_inventory")
-    .select("*")
-    .eq("distillery_id", distilleryId)
-    .limit(BOTTLES_LIMIT);
-
-  if (error) throw new Error(`v_bottle_inventory fetch failed: ${error.message}`);
-
-  return data ?? [];
 }
 
 function pickExpression(row) {
@@ -129,7 +127,32 @@ function pickExpression(row) {
 
 function barrelHref(singleBarrelId) {
   const id = (singleBarrelId ?? "").toString().trim();
-  return id ? `../barrel/index_skin2.html?single_barrel_id=${encodeURIComponent(id)}` : "";
+  return id
+    ? `../barrel/index_skin2.html?single_barrel_id=${encodeURIComponent(id)}`
+    : "";
+}
+
+async function fetchDistilleryProfile(distilleryId) {
+  const { data, error } = await supabase
+    .from("v_distillery")
+    .select("*")
+    .eq("distillery_id", distilleryId)
+    .maybeSingle();
+
+  if (error) throw new Error(`v_distillery fetch failed: ${error.message}`);
+  if (!data) throw new Error("No distillery found for that distillery_id.");
+  return data;
+}
+
+async function fetchTastedBottles(distilleryId) {
+  const { data, error } = await supabase
+    .from("v_bottle_inventory")
+    .select("*")
+    .eq("distillery_id", distilleryId)
+    .limit(BOTTLES_LIMIT);
+
+  if (error) throw new Error(`v_bottle_inventory fetch failed: ${error.message}`);
+  return data ?? [];
 }
 
 function renderProfile(dist) {
@@ -144,27 +167,33 @@ function renderProfile(dist) {
   setText("distillery-description", desc);
 
   const mapsLink = document.getElementById("maps-link");
-  mapsLink.href = buildMapsUrl(name, addressLine);
+  if (mapsLink) mapsLink.href = buildMapsUrl(name, addressLine);
 
-  // Photo
+  // Photo (optional)
   const img = document.getElementById("distillery-photo");
   const photoMissing = document.getElementById("photo-missing");
 
-  img.src = buildPhotoUrl(dist.distillery_id, dist.distillery_photo_filename);
-  img.onerror = () => {
-    show(img, false);
+  if (img) {
+    img.src = buildPhotoUrl(dist.distillery_id, dist.distillery_photo_filename);
+    img.onerror = () => {
+      show(img, false);
+      show(photoMissing, true);
+    };
+  } else {
+    // if image element isn't present, don't fail the page
     show(photoMissing, true);
-  };
+  }
 }
 
 function renderBottles(rows) {
   const countEl = document.getElementById("bottles-count");
-  countEl.textContent = rows.length ? `(${rows.length})` : "";
+  if (countEl) countEl.textContent = rows.length ? `(${rows.length})` : "";
 
   const emptyEl = document.getElementById("bottles-empty");
   const wrapEl = document.getElementById("bottles-table-wrap");
   const tbody = document.getElementById("bottles-tbody");
 
+  if (!tbody) return;
   tbody.innerHTML = "";
 
   if (!rows.length) {
@@ -176,7 +205,7 @@ function renderBottles(rows) {
   show(emptyEl, false);
   show(wrapEl, true);
 
-  // (Optional) lightweight ordering: highest score first if present
+  // Lightweight ordering: highest score first if present
   const sorted = [...rows].sort((a, b) => {
     const aa = Number(a.score ?? a.avg_score ?? a.composite_score);
     const bb = Number(b.score ?? b.avg_score ?? b.composite_score);
@@ -193,12 +222,19 @@ function renderBottles(rows) {
     const subtype = safeStr(row.spirit_subtype, "—");
 
     const scoreVal = row.score ?? row.avg_score ?? row.composite_score;
-    const proofVal = row.proof ?? row.bottling_strength ?? row.bottling_strength_type; // fallback if your view varies
+    const proofVal =
+      row.proof ?? row.bottling_strength ?? row.bottling_strength_type;
     const ageVal = row.age ?? row.age_years ?? row.age_in_years;
     const msrpVal = row.msrp;
 
+    // ✅ Bottle Expression links to Skin2 barrel page
+    const href = barrelHref(row.single_barrel_id);
+    const exprHtml = href
+      ? `<a class="skin2-link" target="_blank" rel="noopener noreferrer" href="${escapeHtml(href)}">${escapeHtml(expr)}</a>`
+      : escapeHtml(expr);
+
     tr.innerHTML = `
-      <td>${escapeHtml(expr)}</td>
+      <td>${exprHtml}</td>
       <td class="muted">${escapeHtml(subtype)}</td>
       <td class="num">${fmt1(scoreVal)}</td>
       <td class="num">${fmt1(proofVal)}</td>
@@ -210,17 +246,8 @@ function renderBottles(rows) {
   }
 }
 
-function escapeHtml(str) {
-  return (str ?? "").toString()
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
 (async function init() {
-  const distilleryId = qs("distillery_id") || qs("id");
+  const distilleryId = (qs("distillery_id") || qs("id") || "").trim();
 
   if (!distilleryId) {
     setLoading(false);
@@ -228,16 +255,22 @@ function escapeHtml(str) {
     return;
   }
 
+  setLoading(true);
+
   try {
-    setLoading(true);
-
-    const [dist, bottles] = await Promise.all([
-      fetchDistilleryProfile(distilleryId),
-      fetchTastedBottles(distilleryId)
-    ]);
-
+    // 1) Always render profile first (better UX)
+    const dist = await fetchDistilleryProfile(distilleryId);
     renderProfile(dist);
-    renderBottles(bottles);
+
+    // 2) Then load bottles (if this fails, we still keep the profile visible)
+    try {
+      const bottles = await fetchTastedBottles(distilleryId);
+      renderBottles(bottles);
+    } catch (bErr) {
+      // Keep page usable; just show an error message
+      renderBottles([]);
+      showError(bErr?.message || "Failed to load tasted bottles for this distillery.");
+    }
 
     setLoading(false);
   } catch (err) {
