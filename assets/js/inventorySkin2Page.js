@@ -114,7 +114,6 @@ function headerLabel(col) {
 }
 
 function selectColumns(keys) {
-  // EXACT order requested + keep ids for links
   const desired = [
     "score",
     "msrp",
@@ -124,10 +123,8 @@ function selectColumns(keys) {
     "distillery_name",
     "state",
     "single_barrel_id",
-    "distillery_id", // ✅ add
+    "distillery_id", // ✅ add this
   ];
-  return desired.filter((k) => keys.includes(k));
-}
 
 function renderCell(col, row) {
   const v = row[col];
