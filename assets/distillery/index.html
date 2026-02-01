@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Distillery • Skin2</title>
+
+  <!-- Skin2 theme -->
+  <link rel="stylesheet" href="../css/skin2.css" />
+
+  <style>
+    /* Page scaffold styles (kept minimal; uses Skin2 palette underneath) */
+    .skin2-wrap { max-width: 1100px; margin: 0 auto; padding: 16px; }
+    .dist-hero {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 16px;
+      align-items: start;
+      margin-top: 8px;
+    }
+    .dist-card {
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 12px;
+      padding: 12px;
+      background: rgba(0,0,0,.18);
+    }
+    .dist-photo {
+      width: 100%;
+      height: 260px;          /* consistent photo footprint */
+      object-fit: cover;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.08);
+      display: block;
+    }
+    .dist-name {
+      font-size: 22px;
+      font-weight: 800;
+      margin: 0 0 6px 0;
+    }
+    .dist-meta { margin: 0 0 10px 0; opacity: .92; }
+    .dist-desc { margin-top: 10px; line-height: 1.45; white-space: pre-wrap; }
+
+    .section-title {
+      margin: 18px 0 8px 0;
+      font-size: 14px;
+      opacity: .9;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 8px;
+    }
+
+    /* Compact table (compatible with Skin2 table vibe) */
+    table.dist-table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.12);
+    }
+    .dist-table thead th {
+      text-align: left;
+      font-size: 12px;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+      opacity: .9;
+      padding: 10px 10px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      white-space: nowrap;
+    }
+    .dist-table tbody td {
+      padding: 9px 10px;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      vertical-align: top;
+      font-size: 13px;
+    }
+    .dist-table tbody tr:last-child td { border-bottom: 0; }
+    .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .muted { opacity: .85; }
+    .small { font-size: 12px; opacity: .9; }
+
+    @media (max-width: 860px) {
+      .dist-hero { grid-template-columns: 1fr; }
+      .dist-photo { height: 220px; }
+    }
+  </style>
+</head>
+
+<body class="skin2-body">
+  <div id="site-header"></div>
+
+  <main class="skin2-wrap">
+    <div id="error" class="skin2-error" style="display:none;"></div>
+    <div id="loading" class="skin2-muted">Loading distillery…</div>
+
+    <section id="content" style="display:none;">
+      <!-- HERO -->
+      <div class="dist-hero">
+        <div class="dist-card">
+          <img id="distillery-photo" class="dist-photo" alt="Distillery photo" />
+          <div id="photo-missing" class="skin2-muted small" style="display:none; margin-top:8px;">
+            No photo available yet.
+          </div>
+        </div>
+
+        <div class="dist-card">
+          <h1 id="distillery-name" class="dist-name">—</h1>
+
+          <p class="dist-meta">
+            <span class="muted">Address:</span>
+            <span id="distillery-address">—</span>
+          </p>
+
+          <p class="dist-meta">
+            <span class="muted">State:</span>
+            <span id="distillery-state">—</span>
+          </p>
+
+          <div class="toolbar">
+            <a id="maps-link" class="skin2-link" target="_blank" rel="noopener">Open in Google Maps</a>
+            <a id="back-link" class="skin2-link" href="../../index_skin2.html">Back to Inventory</a>
+          </div>
+
+          <div class="section-title">About</div>
+          <div id="distillery-description" class="dist-desc skin2-muted">—</div>
+        </div>
+      </div>
+
+      <!-- BOTTLES -->
+      <div class="section-title">
+        Tasted bottles from this distillery
+        <span id="bottles-count" class="small muted"></span>
+      </div>
+
+      <div id="bottles-empty" class="skin2-muted" style="display:none;">
+        No tasted bottles found for this distillery yet.
+      </div>
+
+      <div id="bottles-table-wrap" style="display:none;">
+        <table class="dist-table">
+          <thead>
+            <tr>
+              <th>Bottle Expression</th>
+              <th>Spirit Subtype</th>
+              <th class="num">Score</th>
+              <th class="num">Proof</th>
+              <th class="num">Age</th>
+              <th class="num">MSRP</th>
+            </tr>
+          </thead>
+          <tbody id="bottles-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <!-- Skin2 header/footer injector -->
+  <script type="module" src="../js/layout_skin2.js"></script>
+
+  <!-- Distillery page controller -->
+  <script type="module" src="./distillerySkin2Page.js"></script>
+</body>
+</html>
