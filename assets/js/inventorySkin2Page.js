@@ -162,12 +162,12 @@ const displayCols = cols.filter((c) => c !== "single_barrel_id" && c !== "distil
 
   // Keep search string small and stable
   const searchableFields = [
-    "bottle_expression",
-    "distillery_name",
-    "state",
-    "single_barrel_id",
-  ];
-
+  "bottle_expression",
+  "distillery_name",
+  "state",
+  "single_barrel_id",
+  "distillery_id", // ✅ optional
+];
   const tbody = rows
     .map((r) => {
       const searchable = searchableFields
