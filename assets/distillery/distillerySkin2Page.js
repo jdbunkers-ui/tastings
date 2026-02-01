@@ -127,6 +127,11 @@ function pickExpression(row) {
   );
 }
 
+function barrelHref(singleBarrelId) {
+  const id = (singleBarrelId ?? "").toString().trim();
+  return id ? `../barrel/index_skin2.html?single_barrel_id=${encodeURIComponent(id)}` : "";
+}
+
 function renderProfile(dist) {
   const name = safeStr(dist.distillery_name, "Unknown Distillery");
   const state = safeStr(dist.state, "N/A");
