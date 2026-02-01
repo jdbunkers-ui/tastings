@@ -137,7 +137,7 @@ function renderTable(rows) {
 
   const keys = Object.keys(rows[0] || {});
   const cols = selectColumns(keys);
-  const displayCols = cols.filter((c) => c !== "single_barrel_id");
+const displayCols = cols.filter((c) => c !== "single_barrel_id" && c !== "distillery_id");
 
   const thead = displayCols
     .map((c) => `<th title="${escapeHtml(c)}">${escapeHtml(headerLabel(c))}</th>`)
