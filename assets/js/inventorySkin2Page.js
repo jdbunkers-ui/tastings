@@ -133,6 +133,8 @@ function renderCell(col, row) {
   const v = row[col];
 
   if (col === "bottle_expression") return barrelLink(row.single_barrel_id, row.bottle_expression);
+  if (col === "distillery_name") return distilleryLink(row.distillery_id, row.distillery_name); // ✅ add
+
   if (col === "msrp") return fmtMoney(v);
   if (col === "score") return fmt1(v);
   if (col === "proof") return fmt1(v);
