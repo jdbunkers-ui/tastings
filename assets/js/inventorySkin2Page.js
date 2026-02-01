@@ -69,21 +69,39 @@ function fmtAge(v) {
 
 /**
  * Bottle Expression hyperlink
- * index_skin2.html is at root; target page is assets/barrel/index.html
+ * index_skin2.html is at root; target page is assets/barrel/index_skin2.html
  */
 function barrelLink(singleBarrelId, label) {
   const id = singleBarrelId ?? "";
   const text = label ?? "";
   if (!id) return escapeHtml(text);
 
-  // ✅ Skin2 barrel page
-  const href = `assets/barrel/index_skin2.html?single_barrel_id=${encodeURIComponent(id)}`;
+  const href = `assets/barrel/index_skin2.html?single_barrel_id=${encodeURIComponent(
+    id
+  )}`;
 
   return `<a class="skin2-link" href="${href}" target="_blank" rel="noopener noreferrer">${escapeHtml(
     text
   )}</a>`;
 }
 
+/**
+ * Distillery Name hyperlink
+ * index_skin2.html is at root; target page is assets/distillery/index.html
+ */
+function distilleryLink(distilleryId, label) {
+  const id = distilleryId ?? "";
+  const text = label ?? "";
+  if (!id) return escapeHtml(text);
+
+  const href = `assets/distillery/index.html?distillery_id=${encodeURIComponent(
+    id
+  )}`;
+
+  return `<a class="skin2-link" href="${href}" target="_blank" rel="noopener noreferrer">${escapeHtml(
+    text
+  )}</a>`;
+}
 
 function headerLabel(col) {
   const map = {
@@ -99,7 +117,7 @@ function headerLabel(col) {
 }
 
 function selectColumns(keys) {
-  // EXACT order requested + keep id for link
+  // EXACT order requested + keep ids for links (hidden)
   const desired = [
     "score",
     "msrp",
@@ -109,6 +127,7 @@ function selectColumns(keys) {
     "distillery_name",
     "state",
     "single_barrel_id",
+    "distillery_id",
   ];
   return desired.filter((k) => keys.includes(k));
 }
@@ -116,7 +135,14 @@ function selectColumns(keys) {
 function renderCell(col, row) {
   const v = row[col];
 
-  if (col === "bottle_expression") return barrelLink(row.single_barrel_id, row.bottle_expression);
+  if (col === "bottle_expression") {
+    return barrelLink(row.single_barrel_id, row.bottle_expression);
+  }
+
+  if (col === "distillery_name") {
+    return distilleryLink(row.distillery_id, row.distillery_name);
+  }
+
   if (col === "msrp") return fmtMoney(v);
   if (col === "score") return fmt1(v);
   if (col === "proof") return fmt1(v);
@@ -136,7 +162,11 @@ function renderTable(rows) {
 
   const keys = Object.keys(rows[0] || {});
   const cols = selectColumns(keys);
-  const displayCols = cols.filter((c) => c !== "single_barrel_id");
+
+  // Hide technical ids from display (but keep them in the row object)
+  const displayCols = cols.filter(
+    (c) => c !== "single_barrel_id" && c !== "distillery_id"
+  );
 
   const thead = displayCols
     .map((c) => `<th title="${escapeHtml(c)}">${escapeHtml(headerLabel(c))}</th>`)
@@ -148,6 +178,7 @@ function renderTable(rows) {
     "distillery_name",
     "state",
     "single_barrel_id",
+    "distillery_id",
   ];
 
   const tbody = rows
