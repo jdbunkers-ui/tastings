@@ -386,7 +386,18 @@
         const id = fmt(barrel?.single_barrel_id, "");
 
         titleEl.textContent = brand;
+        const dist = fmt(barrel?.distillery_name, "Unknown distillery");
+        const distId = fmt(barrel?.distillery_id, "");
+        const st = fmt(barrel?.state, "");
+
+        if (distId) {
+        const href = `../distillery/index.html?distillery_id=${encodeURIComponent(distId)}`;
+        subtitleEl.innerHTML =
+        `<a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(dist)}</a>` +
+        (st ? ` • ${escapeHtml(st)}` : "");
+        } else {
         subtitleEl.textContent = `${dist}${st ? " • " + st : ""}`;
+        }
 
         const stats = [
           { k: "Avg Score", v: fmt(barrel?.avg_score) },
