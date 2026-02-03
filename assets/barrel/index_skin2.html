@@ -424,16 +424,26 @@
       const debugEl = document.getElementById("debug-json");
 
       function renderHero(barrel) {
-        const brand = fmt(barrel?.brand_name, "Unknown brand");
-        const dist = fmt(barrel?.distillery_name, "Unknown distillery");
-        const st = fmt(barrel?.state, "");
-        const expr = fmt(barrel?.expression_name, "");
-        const pick = fmt(barrel?.pick_name, "");
-        const subtype = fmt(barrel?.spirit_subtype, "");
-        const id = fmt(barrel?.single_barrel_id, "");
+      const brand = fmt(barrel?.brand_name, "Unknown brand");
+      const dist = fmt(barrel?.distillery_name, "Unknown distillery");
+      const distId = fmt(barrel?.distillery_id, "");   // ✅ NEW
+      const st = fmt(barrel?.state, "");
+      const expr = fmt(barrel?.expression_name, "");
+      const pick = fmt(barrel?.pick_name, "");
+      const subtype = fmt(barrel?.spirit_subtype, "");
+      const id = fmt(barrel?.single_barrel_id, "");
 
-        titleEl.textContent = brand;
-        subtitleEl.textContent = `${dist}${st ? " • " + st : ""}`;
+      titleEl.textContent = brand;
+
+      // ✅ Distillery → Distillery page link (Skin2)
+     if (distId) {
+         const href = `../distillery/index.html?distillery_id=${encodeURIComponent(distId)}`;
+         subtitleEl.innerHTML =
+         `<a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(dist)}</a>` +
+         (st ? ` • ${escapeHtml(st)}` : "");
+      } else {
+      subtitleEl.textContent = `${dist}${st ? " • " + st : ""}`;
+     }
 
         const stats = [
           { k: "Avg Score", v: fmt1(barrel?.avg_score) },
@@ -668,8 +678,6 @@
         renderHero(barrel);
         renderTastings(payload?.tastings || []);
         renderFoes({ foe_beat: payload?.foe_beat || [], foe_lost: payload?.foe_lost || [] });
-
-        subtitleEl.textContent = `${fmt(barrel?.distillery_name, "Loaded")} • ${fmt(barrel?.state, "")}`.replace(/\s•\s$/, "");
       }
 
       document.querySelector(".wrap").addEventListener("click", (e) => {
