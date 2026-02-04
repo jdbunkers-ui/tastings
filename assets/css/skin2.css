@@ -188,3 +188,153 @@ table.skin2-table tbody tr:hover {
   background: #fdecec;
   border-top: 1px solid #f5c2c2;
 }
+
+/* =========================================================
+   Flight Fight Ticker — Inventory (Skin2 only)
+   Eye-catching but subtle • Whiskey palette
+   ========================================================= */
+
+.flight-ticker-mount {
+  margin: 14px 16px 10px;
+}
+
+/* Main banner */
+.flight-ticker {
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+  border-radius: 10px;
+  padding: 14px 14px 12px;
+  border: 1px solid var(--s2-border);
+  background: linear-gradient(
+    90deg,
+    rgba(59,42,32,0.96),
+    rgba(106,74,50,0.94)
+  );
+  color: var(--s2-text-invert);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.18);
+}
+
+.flight-ticker:hover {
+  box-shadow: 0 10px 22px rgba(0,0,0,0.22);
+}
+
+/* Top line */
+.flight-ticker__top {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding-right: 34px; /* room for close button */
+  margin-bottom: 8px;
+}
+
+.flight-ticker__title {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.95;
+}
+
+.flight-ticker__flight {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+/* Pulsing dark-gold emphasis */
+.flight-ticker__flight.pulse-gold {
+  animation: pulseGold 2.4s ease-in-out infinite;
+}
+
+@keyframes pulseGold {
+  0%, 100% {
+    color: rgba(181,122,42,0.85);
+    text-shadow: none;
+  }
+  50% {
+    color: rgba(225,182,106,1);
+    text-shadow: 0 0 8px rgba(225,182,106,0.35);
+  }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .flight-ticker__flight.pulse-gold {
+    animation: none;
+  }
+}
+
+/* Results table */
+.flight-ticker__table {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.flight-ticker__row {
+  display: grid;
+  grid-template-columns: 34px 1fr 64px;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 10px;
+  background: rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  font-size: 12px;
+}
+
+.flight-ticker__row:nth-child(odd) {
+  background: rgba(255,255,255,0.04);
+}
+
+.flight-ticker__row:last-child {
+  border-bottom: none;
+}
+
+.flight-ticker__rank {
+  font-weight: 800;
+  text-align: center;
+  opacity: 0.9;
+}
+
+.flight-ticker__bottle {
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.flight-ticker__score {
+  text-align: right;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+/* CTA */
+.flight-ticker__cta {
+  margin-top: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  opacity: 0.8;
+  text-align: right;
+}
+
+/* Close button */
+.flight-ticker__close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.25);
+  background: rgba(0,0,0,0.25);
+  color: rgba(255,255,255,0.85);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.flight-ticker__close:hover {
+  background: rgba(0,0,0,0.35);
+}
