@@ -268,7 +268,7 @@ function buildFlightTickerHtml({ flight_date, flight_name, rows }) {
         <div class="flight-ticker__row">
           <div class="flight-ticker__rank">${i + 1}</div>
           <div class="flight-ticker__bottle">${safe(r.bottle_expression)}</div>
-          <div class="flight-ticker__score">${safe(r.score)}</div>
+          <div class="flight-ticker__score">${Number(r.score).toFixed(1)}</div>
         </div>
       `;
     })
