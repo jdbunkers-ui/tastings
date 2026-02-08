@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Barrel Picker | The Speakeasy</title>
+
+    <link rel="stylesheet" href="../assets/css/site.css" />
+  </head>
+
+  <body>
+    <div id="site-header"></div>
+
+    <main class="page">
+      <h1 id="bp-title">Barrel Picker</h1>
+      <p class="muted" id="bp-subtitle">Loading…</p>
+
+      <section class="bp-hero">
+        <div class="bp-photo" id="bp-photo"></div>
+        <div class="bp-card" id="bp-card"></div>
+      </section>
+
+      <section class="bp-table-wrap">
+        <div class="bp-table-title" id="bp-table-title">Barrel picks</div>
+        <div id="bp-table"></div>
+      </section>
+
+      <details style="margin-top:18px;">
+        <summary>Debug</summary>
+        <pre id="bp-debug"></pre>
+      </details>
+    </main>
+
+    <div id="site-footer"></div>
+
+    <script src="../assets/js/layout.js"></script>
+    <script type="module" src="../assets/js/barrelPickerPage.js"></script>
+  </body>
+</html>
