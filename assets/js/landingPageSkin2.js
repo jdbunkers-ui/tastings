@@ -49,7 +49,7 @@ function groupByState(rows) {
 
 function buildPickerHref(barrelPickerId) {
   const id = encodeURIComponent(barrelPickerId ?? "");
-  return `./barrel_picker/index.html?barrel_picker_id=${id}`;
+  return `./barrel_pickers/index.html?barrel_picker_id=${id}`;
 }
 
 function render(rows) {
