@@ -24,14 +24,23 @@
 
     <!-- Header band (optional; layout_skin2.js also injects header at top) -->
     <div class="skin2-controls">
-          <input
-            id="filter"
-            type="text"
-            placeholder="Search inventory…"
-            aria-label="Search bottle inventory"
-          />
-          <span class="skin2-status" id="status">Loading…</span>
-        </div>
+      <button
+        type="button"
+        class="skin2-btn"
+        onclick="window.location.href='./index.html'">
+        Home
+      </button>
+    
+      <input
+        id="filter"
+        type="text"
+        placeholder="Search inventory…"
+        aria-label="Search bottle inventory"
+      />
+    
+      <span class="skin2-status" id="status">Loading…</span>
+    </div>
+
 
         <!-- Inventory Render Target -->
         <div class="skin2-table-wrap">
