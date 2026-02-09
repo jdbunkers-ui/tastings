@@ -8,23 +8,31 @@
     <style>
       /* ---------- CSS Variables (Theme) ---------- */
       :root {
-        --s2-bg: #f6f1ea;
+        /* Core palette */
+        --s2-bg: #f6f1ea;                 /* parchment / light oak */
         --s2-panel: #ffffff;
         --s2-border: #d8cfc3;
 
-        --s2-brown-dark: #3b2a20;
-        --s2-brown-mid: #6a4a32;
-        --s2-amber: #b57a2a;
+        /* Browns / whiskey hues */
+        --s2-brown-dark: #3b2a20;         /* dark barrel */
+        --s2-brown-mid: #6a4a32;          /* toasted oak */
+        --s2-amber: #b57a2a;              /* whiskey */
         --s2-amber-soft: #e1b66a;
 
+        /* Text */
         --s2-text: #2b1d14;
         --s2-text-muted: #7a6758;
+        --s2-text-invert: #ffffff;
 
+        /* Accents */
         --s2-link: #8a5a20;
         --s2-link-hover: #b57a2a;
 
+        /* Fonts */
         --s2-font-sans: ui-sans-serif, system-ui, -apple-system,
                         Segoe UI, Roboto, Helvetica, Arial;
+        --s2-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco,
+                        Consolas, "Liberation Mono", monospace;
       }
 
       html, body { height: 100%; }
@@ -38,75 +46,259 @@
           var(--s2-bg);
       }
 
+      a { color: var(--s2-link); text-decoration: underline; }
+      a:hover { color: var(--s2-link-hover); }
+
       .wrap {
         max-width: 980px;
         margin: 0 auto;
-        padding: 24px 14px 60px;
+        padding: 18px 14px 46px;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 14px;
+      }
+
+      .brand h1 {
+        margin: 0;
+        font-size: 22px;
+        letter-spacing: 0.2px;
+      }
+      .brand .sub {
+        margin-top: 6px;
+        color: var(--s2-text-muted);
+        font-size: 13px;
+        line-height: 1.35;
       }
 
       .card {
         border: 1px solid var(--s2-border);
         background: rgba(255, 255, 255, 0.86);
-        border-radius: 18px;
-        padding: 28px;
-        text-align: center;
+        border-radius: 16px;
+        padding: 14px;
       }
 
-      h1 {
-        margin: 0;
-        font-size: 28px;
-        letter-spacing: 0.4px;
-      }
-
-      .sub {
-        margin-top: 10px;
-        font-size: 14px;
-        color: var(--s2-text-muted);
-      }
-
-      .under {
-        margin-top: 14px;
-        font-weight: 800;
-        letter-spacing: 0.8px;
-        color: var(--s2-brown-mid);
-      }
-
-      .actions {
-        margin-top: 22px;
-        display: flex;
-        justify-content: center;
+      .hero {
+        display: grid;
         gap: 12px;
+        margin-bottom: 14px;
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 12px;
+        align-items: start;
+      }
+
+      .stats {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+
+      .stat {
+        border: 1px solid var(--s2-border);
+        background: rgba(255, 255, 255, 0.60);
+        border-radius: 12px;
+        padding: 8px 10px;
+        min-width: 110px;
+      }
+      .stat .k { font-size: 11px; color: rgba(122, 103, 88, 0.78); }
+      .stat .v { font-size: 16px; font-weight: 800; margin-top: 2px; }
+
+      @media (max-width: 860px) {
+        .hero-grid { grid-template-columns: 1fr; }
+        .stats { justify-content: flex-start; }
+      }
+
+      .controls {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .search {
+        flex: 1 1 260px;
+        border: 1px solid var(--s2-border);
+        background: rgba(255, 255, 255, 0.70);
+        border-radius: 12px;
+        padding: 10px 12px;
+        font-size: 13px;
+        color: var(--s2-text);
+        outline: none;
       }
 
       .pill {
         border: 1px solid var(--s2-border);
         background: rgba(255, 255, 255, 0.55);
         border-radius: 999px;
-        padding: 8px 14px;
-        font-size: 13px;
+        padding: 7px 10px;
+        font-size: 12px;
+        color: var(--s2-text);
         cursor: pointer;
+        user-select: none;
       }
-      .pill:hover {
-        background: rgba(255, 255, 255, 0.70);
+      .pill:hover { background: rgba(255, 255, 255, 0.70); }
+
+      .section-title {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 10px;
+        margin: 18px 2px 10px;
       }
+      .section-title h2 {
+        margin: 0;
+        font-size: 14px;
+        letter-spacing: 0.3px;
+        color: rgba(43, 29, 20, 0.90);
+        text-transform: uppercase;
+      }
+      .section-title .hint {
+        color: rgba(122, 103, 88, 0.78);
+        font-size: 12px;
+      }
+
+      .state-block { margin-top: 12px; }
+      .state-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        margin: 10px 2px 8px;
+      }
+      .state-header .state {
+        font-weight: 900;
+        letter-spacing: 0.4px;
+        color: rgba(43, 29, 20, 0.92);
+      }
+      .state-header .meta {
+        color: rgba(122, 103, 88, 0.78);
+        font-size: 12px;
+      }
+
+      .list {
+        display: grid;
+        gap: 8px;
+      }
+
+      .row {
+        border: 1px solid var(--s2-border);
+        background: rgba(255, 255, 255, 0.62);
+        border-radius: 14px;
+        padding: 10px 10px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        align-items: start;
+      }
+      .row:hover { background: rgba(255, 255, 255, 0.74); }
+
+      .row .title {
+        font-weight: 800;
+        font-size: 13px;
+      }
+      .row .sub {
+        margin-top: 2px;
+        font-size: 12px;
+        color: var(--s2-text-muted);
+      }
+      .row .right {
+        text-align: right;
+        white-space: nowrap;
+      }
+      .row .big {
+        font-weight: 900;
+        font-size: 14px;
+      }
+      .row .small {
+        margin-top: 2px;
+        font-size: 12px;
+        color: rgba(122, 103, 88, 0.78);
+      }
+
+      .muted-card {
+        border: 1px solid var(--s2-border);
+        background: rgba(255, 255, 255, 0.55);
+        border-radius: 16px;
+        padding: 14px;
+        color: var(--s2-text-muted);
+      }
+
+      .mono { font-family: var(--s2-font-mono); }
+
+      .error {
+        border: 1px solid rgba(231, 76, 60, 0.35);
+        background: rgba(231, 76, 60, 0.10);
+        color: rgba(43, 29, 20, 0.92);
+      }
+
+      .under-construction {
+      margin-top: 6px;
+      font-weight: 800;
+      letter-spacing: 0.6px;
+      color: var(--s2-amber);
+      }
+
     </style>
   </head>
 
   <body>
     <div class="wrap">
-      <div class="card">
-        <h1>Welcome to the Honey Barrel Hunter Portal</h1>
-        <div class="under">*** Under Construction ***</div>
-
-        <div class="actions">
-          <button
-            class="pill"
-            type="button"
-            onclick="window.location.href='./index_skin2.html'">
-            Inventory
-          </button>
+      <!-- ✅ Updated top header message -->
+      <div class="topbar">
+        <div class="brand">
+          <h1>Welcome to the Honey Barrel Hunter Portal</h1>
+        <div class="sub under-construction">*** Under Construction ***</div>
         </div>
       </div>
+
+      <!-- ✅ Keep the rest of the page intact (search + inventory + stats + store list) -->
+      <div class="card hero">
+        <div class="hero-grid">
+          <div>
+            <div class="controls">
+              <input id="search" class="search" type="search" placeholder="Search stores or cities…" />
+              <button id="clear" class="pill" type="button">Clear</button>
+              <button id="openInventory" class="pill" type="button">Inventory</button>
+            </div>
+            <div class="sub" style="margin-top:10px;">
+              Click a store to view details and barrels.
+            </div>
+          </div>
+
+          <div class="stats" aria-label="Summary">
+            <div class="stat">
+              <div class="k">Stores</div>
+              <div class="v" id="stat-stores">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">Barrel Picks</div>
+              <div class="v" id="stat-barrels">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">Tastings</div>
+              <div class="v" id="stat-tastings">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title">
+        <h2>Retail Stores</h2>
+        <div class="hint" id="hint">Loading…</div>
+      </div>
+
+      <div id="content"></div>
     </div>
+
+    <script type="module" src="./assets/js/landingPageSkin2.js"></script>
   </body>
 </html>
