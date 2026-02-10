@@ -246,7 +246,5 @@ elOpenInventory.addEventListener("click", () => {
   window.location.href = "./inventory/index.html";
 });
 
-});
-
 // Boot
 load();
