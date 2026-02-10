@@ -241,7 +241,7 @@ function renderBottles(rows) {
       <td class="num">${fmt1(scoreVal)}</td>
       <td class="num">${fmt1(proofVal)}</td>
       <td class="num">${fmtAge(ageVal)}</td>
-      <td class="num">${fmt2(msrpVal)}</td>
+      <td class="num">$${fmt2(msrpVal)}</td>
     `;
 
     tbody.appendChild(tr);
