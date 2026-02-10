@@ -95,14 +95,10 @@ function distilleryLink(distilleryId, label) {
   const text = label ?? "";
   if (!id) return escapeHtml(text);
 
-  const href = `assets/distillery/index.html?distillery_id=${encodeURIComponent(
-    id
-  )}`;
-
-  return `<a class="skin2-link" href="${href}" target="_blank" rel="noopener noreferrer">${escapeHtml(
-    text
-  )}</a>`;
+  const href = `../distilleries/index.html?distillery_id=${encodeURIComponent(id)}`;
+  return `<a href="${href}" class="skin2-link">${escapeHtml(text)}</a>`;
 }
+
 
 function headerLabel(col) {
   const map = {
