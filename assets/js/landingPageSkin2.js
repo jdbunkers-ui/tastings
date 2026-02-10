@@ -243,7 +243,9 @@ elClear.addEventListener("click", () => {
 });
 
 elOpenInventory.addEventListener("click", () => {
-  window.location.href = "./index_skin2.html";
+  window.location.href = "./inventory/index.html";
+});
+
 });
 
 // Boot
