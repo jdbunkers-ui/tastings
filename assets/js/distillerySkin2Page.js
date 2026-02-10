@@ -1,4 +1,5 @@
-import { supabase } from "../js/supabaseClient.js";
+import { supabase } from "./supabaseClient.js";
+
 
 /**
  * Distillery Skin2 Page
@@ -18,6 +19,7 @@ import { supabase } from "../js/supabaseClient.js";
 // Folder expected: assets/img/distilleries/
 // (relative from assets/distillery/ => "../img/distilleries/")
 const PHOTO_BASE = "../img/distilleries/";
+
 const DEFAULT_PHOTO_EXT = "jpg";
 
 // Keep the first test simple: load up to N tasted bottles for this distillery.
@@ -128,7 +130,7 @@ function pickExpression(row) {
 function barrelHref(singleBarrelId) {
   const id = (singleBarrelId ?? "").toString().trim();
   return id
-    ? `../barrel/index_skin2.html?single_barrel_id=${encodeURIComponent(id)}`
+    ? `../bottles/index.html?single_barrel_id=${encodeURIComponent(id)}`
     : "";
 }
 
