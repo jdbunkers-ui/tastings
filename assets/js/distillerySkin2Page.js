@@ -18,7 +18,7 @@ import { supabase } from "./supabaseClient.js";
 // - Else fallback to "<distillery_id>.jpg"
 // Folder expected: assets/img/distilleries/
 // (relative from assets/distillery/ => "../img/distilleries/")
-const PHOTO_BASE = "../img/distilleries/";
+const PHOTO_BASE = "../assets/img/distilleries/";
 
 const DEFAULT_PHOTO_EXT = "jpg";
 
