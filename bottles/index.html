@@ -334,7 +334,7 @@
     </div>
 
     <script type="module">
-      <!-- import { supabase } from "../js/supabaseClient.js"; -->
+      // import { supabase } from "../js/supabaseClient.js"; 
         import { supabase } from "../assets/js/supabaseClient.js";
 
 
@@ -413,9 +413,6 @@
         return `${window.location.pathname}?single_barrel_id=${id}`;
       }
   
-}
-
-
       // -----------------------------
       // Rendering
       // -----------------------------
@@ -442,7 +439,7 @@
 
       // ✅ Distillery → Distillery page link (Skin2)
      if (distId) {
-         <!--const href = `../distillery/index.html?distillery_id=${encodeURIComponent(distId)}`;-->
+         //const href = `../distillery/index.html?distillery_id=${encodeURIComponent(distId)}`;
          const href = `../distilleries/index.html?distillery_id=${encodeURIComponent(distId)}`;
 
          subtitleEl.innerHTML =
