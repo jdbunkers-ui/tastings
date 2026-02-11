@@ -26,33 +26,35 @@
 
   const rootPrefix = isRoot ? "./" : "../";
 
+  // ---------- Logo path ----------
+  const logoSrc = `${rootPrefix}assets/img/logo/honey_barrel_hunter.png`;
+
   // ---------- Page-specific subtitle / pills ----------
-  let subtitle = "Honey Barrel Hunter • Skin2";
-  let pills = ["Skin2"];
+  let subtitle = "Honey Barrel Hunter";
+  let pills = [];
 
   if (pageKey === "inventory") {
     subtitle = "inventory • data-driven view";
-    pills = ["Skin2", "v_bottle_inventory"];
+    pills = ["v_bottle_inventory"];
   } else if (pageKey === "distilleries") {
     subtitle = "distilleries • explore";
-    pills = ["Skin2", "v_distillery"];
+    pills = ["v_distillery"];
   } else if (pageKey === "bottles") {
     subtitle = "bottles • catalog";
-    pills = ["Skin2", "bottles"];
+    pills = ["bottles"];
   } else if (pageKey === "barrel_pickers") {
     subtitle = "barrel pickers • profiles";
-    pills = ["Skin2", "barrel_pickers"];
+    pills = ["barrel_pickers"];
   } else if (pageKey === "home") {
     subtitle = "home • Honey Barrel Hunter";
-    pills = ["Skin2"];
   } else if (pageKey === "about") {
     subtitle = "about • story & contact";
-    pills = ["Skin2", "About"];
+    pills = ["About"];
   }
 
-  const pillsHtml = pills
-    .map((p) => `<span class="skin2-pill">${p}</span>`)
-    .join("");
+  const pillsHtml = pills.length
+    ? pills.map((p) => `<span class="skin2-pill">${p}</span>`).join("")
+    : "";
 
   // ---------- Navigation ----------
   function navLink(label, target, key) {
@@ -76,8 +78,17 @@
         <div class="subtitle">${subtitle}</div>
       </div>
 
-      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-        ${pillsHtml}
+      <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; justify-content:flex-end;">
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          ${pillsHtml}
+        </div>
+
+        <img
+          src="${logoSrc}"
+          alt="Honey Barrel Hunter logo"
+          loading="lazy"
+          style="height:44px; width:auto; display:block;"
+        />
       </div>
     </header>
     ${navHtml}
@@ -88,7 +99,7 @@
 
   const footerLabel = pageKey
     ? pageKey.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
-    : "Skin2";
+    : "Honey Barrel Hunter";
 
   const footerHtml = `
     <footer class="skin2-footer" role="contentinfo">
