@@ -1,6 +1,6 @@
 /* =========================================================
    Velvet Room — Skin2 Inventory Page
-   File: assets/js/inventorySkin2Page.js
+   File: assets/js/inventory-page.js
    ========================================================= */
 
 import { supabase } from "./supabaseClient.js";
@@ -70,22 +70,23 @@ function fmtAge(v) {
 
 /**
  * Bottle Expression hyperlink
- * index_skin2.html is at root; target page is assets/barrel/index_skin2.html
+ * inventory/index.html -> ../bottles/index.html
  */
 function barrelLink(singleBarrelId, label) {
   const id = (singleBarrelId ?? "").toString().trim();
   const text = label ?? "";
   if (!id) return escapeHtml(text);
 
-  // inventory/index.html -> ../bottles/index.html
   const href = `../bottles/index.html?single_barrel_id=${encodeURIComponent(id)}`;
 
-  return `<a class="skin2-link" href="${href}" target="_blank" rel="noopener noreferrer">${escapeHtml(text)}</a>`;
+  return `<a class="skin2-link" href="${href}" target="_blank" rel="noopener noreferrer">${escapeHtml(
+    text
+  )}</a>`;
 }
 
 /**
  * Distillery Name hyperlink
- * index_skin2.html is at root; target page is assets/distillery/index.html
+ * inventory/index.html -> ../distilleries/index.html
  */
 function distilleryLink(distilleryId, label) {
   const id = distilleryId ?? "";
@@ -95,7 +96,6 @@ function distilleryLink(distilleryId, label) {
   const href = `../distilleries/index.html?distillery_id=${encodeURIComponent(id)}`;
   return `<a href="${href}" class="skin2-link">${escapeHtml(text)}</a>`;
 }
-
 
 function headerLabel(col) {
   const map = {
@@ -108,6 +108,21 @@ function headerLabel(col) {
     state: "State",
   };
   return map[col] || col;
+}
+
+/**
+ * Column classes so CSS can target & center specific columns.
+ * (We keep state separate from barrel-picker centering to avoid collisions.)
+ */
+function invColClass(col) {
+  const map = {
+    score: "col-score",
+    msrp: "col-msrp",
+    proof: "col-proof",
+    age: "col-age",
+    state: "col-inv-state",
+  };
+  return map[col] || "";
 }
 
 function selectColumns(keys) {
@@ -130,16 +145,16 @@ function renderCell(col, row) {
   const v = row[col];
 
   if (col === "bottle_expression") {
-  const star = row.new_update
-    ? `<img
-         src="../assets/img/logo/gold_spinning_star.gif"
-         alt="New"
-         style="height:18px; vertical-align:middle; margin-right:6px;"
-       />`
-    : "";
+    const star = row.new_update
+      ? `<img
+           src="../assets/img/logo/gold_spinning_star.gif"
+           alt="New"
+           style="height:18px; vertical-align:middle; margin-right:6px;"
+         />`
+      : "";
 
-  return `${star}${barrelLink(row.single_barrel_id, row.bottle_expression)}`;
-}
+    return `${star}${barrelLink(row.single_barrel_id, row.bottle_expression)}`;
+  }
 
   if (col === "distillery_name") {
     return distilleryLink(row.distillery_id, row.distillery_name);
@@ -171,7 +186,12 @@ function renderTable(rows) {
   );
 
   const thead = displayCols
-    .map((c) => `<th title="${escapeHtml(c)}">${escapeHtml(headerLabel(c))}</th>`)
+    .map((c) => {
+      const cls = invColClass(c);
+      return `<th class="${escapeHtml(cls)}" title="${escapeHtml(c)}">${escapeHtml(
+        headerLabel(c)
+      )}</th>`;
+    })
     .join("");
 
   // Keep search string small and stable
@@ -191,7 +211,13 @@ function renderTable(rows) {
         .join(" | ")
         .toLowerCase();
 
-      const tds = displayCols.map((c) => `<td>${renderCell(c, r)}</td>`).join("");
+      const tds = displayCols
+        .map((c) => {
+          const cls = invColClass(c);
+          return `<td class="${escapeHtml(cls)}">${renderCell(c, r)}</td>`;
+        })
+        .join("");
+
       return `<tr class="inv-row" data-search="${escapeHtml(searchable)}">${tds}</tr>`;
     })
     .join("");
