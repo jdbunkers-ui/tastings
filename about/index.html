@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>About | Velvet Room</title>
+
+    <!-- Skin2 shared styles -->
+    <link rel="stylesheet" href="../assets/css/skin2.css" />
+
+    <style>
+      :root {
+        --s2-bg: #f6f1ea;
+        --s2-border: #d8cfc3;
+        --s2-text: #2b1d14;
+        --s2-text-muted: #7a6758;
+        --s2-amber: #b57a2a;
+      }
+
+      html, body { height: 100%; }
+
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+        color: var(--s2-text);
+        background:
+          radial-gradient(1200px 800px at 20% -10%, rgba(181, 122, 42, 0.14), transparent 55%),
+          radial-gradient(900px 700px at 90% 0%, rgba(225, 182, 106, 0.12), transparent 50%),
+          var(--s2-bg);
+      }
+
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 18px 14px 60px;
+      }
+
+      .card {
+        border: 1px solid var(--s2-border);
+        background: rgba(255,255,255,0.86);
+        border-radius: 16px;
+        padding: 28px;
+        text-align: center;
+      }
+
+      .card h2 {
+        margin: 0 0 12px;
+        font-size: 20px;
+        letter-spacing: 0.3px;
+      }
+
+      .card p {
+        margin: 0;
+        font-size: 14px;
+        color: var(--s2-text-muted);
+      }
+
+      .construction {
+        margin-top: 16px;
+        font-weight: 800;
+        letter-spacing: 0.6px;
+        color: var(--s2-amber);
+      }
+    </style>
+  </head>
+
+  <body data-page="about">
+    <div class="wrap">
+      <!-- Site Chrome Header Injection -->
+      <div id="site-header"></div>
+
+      <section class="card">
+        <h2>About Velvet Room</h2>
+        <p>This page will tell the story behind the project and how to get in touch.</p>
+        <div class="construction">*** Under Construction ***</div>
+      </section>
+
+      <!-- Site Chrome Footer Injection -->
+      <div id="site-footer"></div>
+    </div>
+
+    <!-- Site Chrome -->
+    <script src="../assets/js/site-chrome.js"></script>
+  </body>
+</html>
