@@ -50,28 +50,36 @@ function renderJournalTable(rows) {
         <table class="skin2-table">
           <thead>
             <tr>
-              <th style="width:120px;">Date</th>
+              <th style="width:140px;">Date</th>
               <th>Update</th>
-              <th style="width:90px;">New</th>
             </tr>
           </thead>
           <tbody>
             ${
               rows.length
                 ? rows
-                    .map((r) => `
-                      <tr>
-                        <td class="mono">${escapeHtml(r.create_date)}</td>
-                        <td>${escapeHtml(r.change_notes)}</td>
-                        <td>
-                          ${r.new_update ? `<span class="skin2-pill">NEW</span>` : ""}
-                        </td>
-                      </tr>
-                    `)
+                    .map((r) => {
+                      const star = r.new_update
+                        ? `<img 
+                             src="./assets/img/logo/gold_spinning_star.gif"
+                             alt="New update"
+                             style="height:18px; vertical-align:middle; margin-right:6px;"
+                           />`
+                        : "";
+
+                      return `
+                        <tr>
+                          <td class="mono">
+                            ${star}${escapeHtml(r.create_date)}
+                          </td>
+                          <td>${escapeHtml(r.change_notes)}</td>
+                        </tr>
+                      `;
+                    })
                     .join("")
                 : `
                   <tr>
-                    <td colspan="3" style="padding:12px 10px;">
+                    <td colspan="2" style="padding:12px 10px;">
                       No updates yet.
                     </td>
                   </tr>
