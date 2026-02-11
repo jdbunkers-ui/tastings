@@ -217,6 +217,25 @@ table.skin2-table tbody tr:hover {
 }
 
 /* =========================================================
+   NEW: Centered Columns for Inventory (Skin2)
+   score, MSRP, proof, age, state
+   ========================================================= */
+
+.skin2-table th.col-score,
+.skin2-table td.col-score,
+.skin2-table th.col-msrp,
+.skin2-table td.col-msrp,
+.skin2-table th.col-proof,
+.skin2-table td.col-proof,
+.skin2-table th.col-age,
+.skin2-table td.col-age,
+.skin2-table th.col-inv-state,
+.skin2-table td.col-inv-state {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* =========================================================
    NEW: Spinning Star Styling
    ========================================================= */
 
