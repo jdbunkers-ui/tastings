@@ -52,14 +52,14 @@
           src="${logoLeftSrc}"
           alt="Honey Barrel Hunter"
           loading="lazy"
-          style="height:200px; width:auto; display:block;"
+          style="height:125px; width:auto; display:block;"
         />
 
         <img
           src="${logoRightSrc}"
           alt="Honey Barrel Hunter logo"
           loading="lazy"
-          style="height:115px; width:auto; display:block;"
+          style="height:85px; width:auto; display:block;"
         />
       </div>
     </header>
