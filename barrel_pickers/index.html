@@ -200,8 +200,11 @@
     </style>
   </head>
 
-  <body>
+  <body data-page="barrel_pickers">
     <div class="wrap">
+      <!-- Skin2 Header Injection Target -->
+      <div id="site-header"></div>
+
       <div class="topbar">
         <div class="brand">
           <h1 id="bp-title">Barrel Picker</h1>
@@ -229,9 +232,15 @@
         <summary>Debug</summary>
         <pre id="bp-debug">{}</pre>
       </details>
+
+      <!-- Skin2 Footer Injection Target -->
+      <div id="site-footer"></div>
     </div>
 
-  <script type="module" src="../assets/js/barrel-picker-page.js"></script>
+    <!-- Skin2 layout injector -->
+    <script src="../assets/js/site-chrome.js"></script>
+
+    <script type="module" src="../assets/js/barrel-picker-page.js"></script>
 
     <script>
       // lightweight nav buttons (no dependency on layout.js/site.css)
@@ -239,7 +248,7 @@
         window.location.href = "../index.html";
       });
       document.getElementById("bp-inventory")?.addEventListener("click", () => {
-        window.location.href = "../index_skin2.html";
+        window.location.href = "../inventory/index.html";
       });
     </script>
   </body>
