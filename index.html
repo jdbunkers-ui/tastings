@@ -24,34 +24,6 @@
         padding: 18px 14px 46px;
       }
 
-      .topbar {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 14px;
-        margin-bottom: 14px;
-      }
-
-      .brand h1 {
-        margin: 0;
-        font-size: 22px;
-        letter-spacing: 0.2px;
-      }
-
-      .brand .sub {
-        margin-top: 6px;
-        color: var(--s2-text-muted);
-        font-size: 13px;
-        line-height: 1.35;
-      }
-
-      .under-construction {
-        margin-top: 6px;
-        font-weight: 800;
-        letter-spacing: 0.6px;
-        color: var(--s2-amber);
-      }
-
       .section-title {
         display: flex;
         align-items: baseline;
@@ -62,10 +34,10 @@
 
       .section-title h2 {
         margin: 0;
-        font-size: 14px;
+        font-size: 16px;
         letter-spacing: 0.3px;
         color: rgba(43, 29, 20, 0.90);
-        text-transform: uppercase;
+        /* Removed text-transform so it stays Camel Case */
       }
 
       .mono { font-family: var(--s2-font-mono); }
@@ -90,14 +62,6 @@
     <div class="wrap">
       <!-- Skin2 Header Injection Target -->
       <div id="site-header"></div>
-
-      <!-- Top message (optional) -->
-      <div class="topbar">
-        <div class="brand">
-          <h1>Honey Barrel Hunter</h1>
-          <div class="sub under-construction">*** Under Construction ***</div>
-        </div>
-      </div>
 
       <!-- Journal -->
       <div class="section-title">
