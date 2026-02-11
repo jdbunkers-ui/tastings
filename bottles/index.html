@@ -295,8 +295,11 @@
     </style>
   </head>
 
-  <body>
+  <body data-page="bottles">
     <div class="wrap">
+      <!-- Skin2 Header Injection Target -->
+      <div id="site-header"></div>
+
       <div class="topbar">
         <div class="brand">
           <h1 id="page-title">Barrel</h1>
@@ -330,7 +333,13 @@
         <summary>Show raw JSON</summary>
         <pre id="debug-json" class="mono">{}</pre>
       </details>
+
+      <!-- Skin2 Footer Injection Target -->
+      <div id="site-footer"></div>
     </div>
+
+    <!-- Skin2 layout injector -->
+    <script src="../assets/js/site-chrome.js"></script>
 
     <!-- Page controller -->
     <script type="module" src="../assets/js/bottles-page.js"></script>
