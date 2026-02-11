@@ -87,7 +87,7 @@
         src="${logoSrc}"
         alt="Honey Barrel Hunter logo"
         loading="lazy"
-        style="height:198px; width:auto; display:block;"
+        style="height:148px; width:auto; display:block;"
       />
       
       </div>
