@@ -71,6 +71,7 @@ function fmtAge(v) {
 /**
  * Bottle Expression hyperlink
  * inventory/index.html -> ../bottles/index.html
+ * (Opens in SAME tab — like distilleryLink)
  */
 function barrelLink(singleBarrelId, label) {
   const id = (singleBarrelId ?? "").toString().trim();
@@ -79,9 +80,8 @@ function barrelLink(singleBarrelId, label) {
 
   const href = `../bottles/index.html?single_barrel_id=${encodeURIComponent(id)}`;
 
-  return `<a class="skin2-link" href="${href}" target="_blank" rel="noopener noreferrer">${escapeHtml(
-    text
-  )}</a>`;
+  // ✅ same-tab behavior (no target="_blank")
+  return `<a class="skin2-link" href="${href}">${escapeHtml(text)}</a>`;
 }
 
 /**
