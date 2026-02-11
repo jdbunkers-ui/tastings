@@ -83,13 +83,12 @@
           ${pillsHtml}
         </div>
 
-         <img
-           src="${logoSrc}"
-           alt="Honey Barrel Hunter logo"
-           loading="lazy"
-           style="height:132px; width:auto; display:block;"
-         />
-
+      <img
+        src="${logoSrc}"
+        alt="Honey Barrel Hunter logo"
+        loading="lazy"
+        style="height:198px; width:auto; display:block;"
+      />
       
       </div>
     </header>
