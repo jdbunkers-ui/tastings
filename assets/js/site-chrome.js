@@ -1,16 +1,6 @@
 /* =========================================================
-   Velvet Room — Skin2 Layout Injector
-   File: assets/js/layout_skin2.js
-
-   Purpose:
-   - Inject a Skin2-only header/footer into:
-       #site-header and #site-footer
-   - Does NOT modify or depend on your existing layout.js
-   - Safe to include only on index_skin2.html
-
-   Notes:
-   - Keeps markup minimal + "data-driven" look
-   - If #site-header / #site-footer don't exist, it does nothing
+// Site Chrome
+// Injects shared header and footer used across all pages
    ========================================================= */
 
 (function () {
