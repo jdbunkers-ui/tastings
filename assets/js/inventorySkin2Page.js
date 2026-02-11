@@ -73,17 +73,14 @@ function fmtAge(v) {
  * index_skin2.html is at root; target page is assets/barrel/index_skin2.html
  */
 function barrelLink(singleBarrelId, label) {
-  const id = singleBarrelId ?? "";
+  const id = (singleBarrelId ?? "").toString().trim();
   const text = label ?? "";
   if (!id) return escapeHtml(text);
 
-  const href = `assets/barrel/index_skin2.html?single_barrel_id=${encodeURIComponent(
-    id
-  )}`;
+  // inventory/index.html -> ../bottles/index.html
+  const href = `../bottles/index.html?single_barrel_id=${encodeURIComponent(id)}`;
 
-  return `<a class="skin2-link" href="${href}" target="_blank" rel="noopener noreferrer">${escapeHtml(
-    text
-  )}</a>`;
+  return `<a class="skin2-link" href="${href}" target="_blank" rel="noopener noreferrer">${escapeHtml(text)}</a>`;
 }
 
 /**
