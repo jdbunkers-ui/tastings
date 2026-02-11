@@ -55,11 +55,17 @@
   `;
 
   const year = new Date().getFullYear();
-  const footerHtml = `
-    <footer class="skin2-footer" role="contentinfo">
-      <span>© ${year} Velvet Room</span>
-      <span>${pageKey ? pageKey.replaceAll("_", " ") : "Skin2"}</span>
-    </footer>
+const footerLabel = pageKey
+  ? pageKey.replaceAll("_", " ").replace(/\b\w/g, (c) => c.toUpperCase())
+  : "Skin2";
+
+const footerHtml = `
+  <footer class="skin2-footer" role="contentinfo">
+    <span>© ${year} Velvet Room</span>
+    <span>${footerLabel}</span>
+  </footer>
+`;
+
   `;
 
   inject(headerHost, headerHtml);
