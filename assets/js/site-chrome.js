@@ -13,7 +13,9 @@
     el.innerHTML = html;
   }
 
-  const pageKey = (document.body?.dataset?.page || "").toLowerCase();
+  const pageKey = (document.body && document.body.dataset && document.body.dataset.page
+    ? document.body.dataset.page
+    : "").toLowerCase();
 
   // Defaults
   let subtitle = "Velvet Room • Skin2";
@@ -35,38 +37,35 @@
   } else if (pageKey === "home") {
     subtitle = "home • Velvet Room";
     pills = ["Skin2"];
+  } else if (pageKey === "about") {
+    subtitle = "about • story & contact";
+    pills = ["Skin2", "About"];
   }
 
-  const pillsHtml = pills
-    .map((p) => `<span class="skin2-pill">${p}</span>`)
-    .join("");
+  const pillsHtml = pills.map((p) => `<span class="skin2-pill">${p}</span>`).join("");
 
-  const headerHtml = `
-    <header class="skin2-header" role="banner">
-      <div>
-        <h1>Velvet Room</h1>
-        <div class="subtitle">${subtitle}</div>
-      </div>
-
-      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-        ${pillsHtml}
-      </div>
-    </header>
-  `;
+  const headerHtml =
+    `<header class="skin2-header" role="banner">` +
+      `<div>` +
+        `<h1>Velvet Room</h1>` +
+        `<div class="subtitle">${subtitle}</div>` +
+      `</div>` +
+      `<div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">` +
+        pillsHtml +
+      `</div>` +
+    `</header>`;
 
   const year = new Date().getFullYear();
-const footerLabel = pageKey
-  ? pageKey.replaceAll("_", " ").replace(/\b\w/g, (c) => c.toUpperCase())
-  : "Skin2";
 
-const footerHtml = `
-  <footer class="skin2-footer" role="contentinfo">
-    <span>© ${year} Velvet Room</span>
-    <span>${footerLabel}</span>
-  </footer>
-`;
+  const footerLabel = pageKey
+    ? pageKey.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+    : "Skin2";
 
-  `;
+  const footerHtml =
+    `<footer class="skin2-footer" role="contentinfo">` +
+      `<span>© ${year} Velvet Room</span>` +
+      `<span>${footerLabel}</span>` +
+    `</footer>`;
 
   inject(headerHost, headerHtml);
   inject(footerHost, footerHtml);
