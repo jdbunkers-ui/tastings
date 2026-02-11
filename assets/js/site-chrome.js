@@ -26,35 +26,9 @@
 
   const rootPrefix = isRoot ? "./" : "../";
 
-  // ---------- Logo path ----------
-  const logoSrc = `${rootPrefix}assets/img/logo/honey_barrel_hunter.png`;
-
-  // ---------- Page-specific subtitle / pills ----------
-  let subtitle = "Honey Barrel Hunter";
-  let pills = [];
-
-  if (pageKey === "inventory") {
-    subtitle = "inventory • data-driven view";
-    pills = ["v_bottle_inventory"];
-  } else if (pageKey === "distilleries") {
-    subtitle = "distilleries • explore";
-    pills = ["v_distillery"];
-  } else if (pageKey === "bottles") {
-    subtitle = "bottles • catalog";
-    pills = ["bottles"];
-  } else if (pageKey === "barrel_pickers") {
-    subtitle = "barrel pickers • profiles";
-    pills = ["barrel_pickers"];
-  } else if (pageKey === "home") {
-    subtitle = "home • Honey Barrel Hunter";
-  } else if (pageKey === "about") {
-    subtitle = "about • story & contact";
-    pills = ["About"];
-  }
-
-  const pillsHtml = pills.length
-    ? pills.map((p) => `<span class="skin2-pill">${p}</span>`).join("")
-    : "";
+  // ---------- Logo paths ----------
+  const logoRightSrc = `${rootPrefix}assets/img/logo/honey_barrel_hunter.png`;
+  const logoLeftSrc  = `${rootPrefix}assets/img/logo/honey_barrel_hunter_text.png`;
 
   // ---------- Navigation ----------
   function navLink(label, target, key) {
@@ -70,26 +44,23 @@
     </nav>
   `;
 
-  // ---------- Header ----------
+  // ---------- Header (logos only) ----------
   const headerHtml = `
     <header class="skin2-header" role="banner">
-      <div>
-        <h1>Honey Barrel Hunter</h1>
-        <div class="subtitle">${subtitle}</div>
-      </div>
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%;">
+        <img
+          src="${logoLeftSrc}"
+          alt="Honey Barrel Hunter"
+          loading="lazy"
+          style="height:148px; width:auto; display:block;"
+        />
 
-      <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; justify-content:flex-end;">
-        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-          ${pillsHtml}
-        </div>
-
-      <img
-        src="${logoSrc}"
-        alt="Honey Barrel Hunter logo"
-        loading="lazy"
-        style="height:148px; width:auto; display:block;"
-      />
-      
+        <img
+          src="${logoRightSrc}"
+          alt="Honey Barrel Hunter logo"
+          loading="lazy"
+          style="height:148px; width:auto; display:block;"
+        />
       </div>
     </header>
     ${navHtml}
