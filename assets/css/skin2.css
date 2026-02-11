@@ -96,8 +96,8 @@ html, body {
 .skin2-nav-row {
   display: flex;
   justify-content: center;
-  gap: 32px;               /* more spacing between buttons */
-  padding: 18px 0 22px;    /* taller nav band */
+  gap: 16px;               /* reduced spacing */
+  padding: 9px 0 11px;     /* reduced nav band height */
   background: linear-gradient(
     90deg,
     #3b2a20,
@@ -107,13 +107,13 @@ html, body {
 }
 
 .skin2-nav {
-  font-size: 20px;         /* bigger text */
+  font-size: 10px;         /* 50% of 20px */
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--s2-amber-soft);
   text-decoration: none;
-  padding: 10px 18px;
+  padding: 5px 9px;        /* half of 10px 18px */
   border-radius: 6px;
   transition: all 0.2s ease;
 }
@@ -127,7 +127,6 @@ html, body {
   background-color: rgba(255, 255, 255, 0.15);
   color: #ffffff;
 }
-
 
 /* ---------- Controls ---------- */
 .skin2-controls {
