@@ -80,8 +80,6 @@ function renderHero(rows) {
     </p>
 
     <p>${escapeHtml(r.barrel_picker_description || "")}</p>
-
-    <p><a href="../index.html">← Back to Home</a></p>
   `;
 }
 
