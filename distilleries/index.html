@@ -192,10 +192,14 @@
         <div class="hero">
           <!-- Photo card -->
           <div class="photo" id="distillery-photo-wrap">
-            <img id="distillery-photo" alt="Distillery photo" style="display:none;" />
+            <img
+              id="distillery-photo"
+              alt="Distillery photo"
+              style="width:100%; height:auto; display:block; object-fit:cover;"
+              onerror="this.style.display='none'; document.getElementById('photo-missing').style.display='block';"
+            />
             <div id="photo-missing" style="display:none;">No photo available yet.</div>
           </div>
-
           <!-- Details card -->
           <div class="card" id="distillery-card">
             <h1 id="distillery-name" class="title">—</h1>
