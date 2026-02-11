@@ -122,9 +122,9 @@ function renderPickerTable(rows) {
           <thead>
             <tr>
               <th>Picker</th>
-              <th style="width:90px;">State</th>
-              <th style="width:90px;">Picks</th>
-              <th style="width:110px;">Tastings</th>
+              <th class="col-state" style="width:90px;">State</th>
+              <th class="col-picks" style="width:90px;">Picks</th>
+              <th class="col-tastings" style="width:110px;">Tastings</th>
             </tr>
           </thead>
           <tbody>
@@ -140,6 +140,15 @@ function renderPickerTable(rows) {
 
                       const barrels = toInt(r.barrel_pick_count);
                       const tastings = toInt(r.total_tastings);
+
+                      // ✅ Add star when this picker has a tasting created in last 7 days
+                      const star = r.new_update
+                        ? `<img 
+                             src="./assets/img/logo/gold_spinning_star.gif"
+                             alt="New tasting"
+                             style="height:18px; vertical-align:middle; margin-left:6px;"
+                           />`
+                        : "";
 
                       return `
                         <tr>
@@ -157,12 +166,12 @@ function renderPickerTable(rows) {
                                 : ""
                             }
                           </td>
-                          <td class="mono">${escapeHtml(state)}</td>
-                          <td class="mono" style="text-align:right;">
+                          <td class="mono col-state">${escapeHtml(state)}</td>
+                          <td class="mono col-picks">
                             ${escapeHtml(String(barrels))}
                           </td>
-                          <td class="mono" style="text-align:right;">
-                            ${escapeHtml(String(tastings))}
+                          <td class="mono col-tastings">
+                            ${escapeHtml(String(tastings))}${star}
                           </td>
                         </tr>
                       `;
@@ -190,7 +199,7 @@ async function loadPickerSection() {
 
   const { data, error } = await supabase
     .from(VIEW_PICKERS)
-    .select("state,barrel_picker_name,city,barrel_picker_id,barrel_pick_count,total_tastings")
+    .select("state,barrel_picker_name,city,barrel_picker_id,barrel_pick_count,total_tastings,new_update")
     .order("state", { ascending: true })
     .order("barrel_picker_name", { ascending: true });
 
