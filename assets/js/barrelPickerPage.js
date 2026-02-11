@@ -49,8 +49,8 @@ function imgUrl(f) {
   return f ? `../assets/img/barrel_pickers/${encodeURIComponent(f)}` : "";
 }
 
-function hrefBarrel(id) {
-  return `../barrel/index.html?single_barrel_id=${encodeURIComponent(id)}`;
+function hrefBottle(singleBarrelId) {
+  return `../bottles/index.html?single_barrel_id=${encodeURIComponent(singleBarrelId)}`;
 }
 
 function hrefDistillery(id) {
@@ -109,7 +109,7 @@ function renderTable(rows) {
           <tr>
             <td><a href="${hrefBarrel(r.single_barrel_id)}">${escapeHtml(r.pick_name)}</a></td>
             <td><a href="${hrefDistillery(r.distillery_id)}">${escapeHtml(r.distillery_name)}</a></td>
-            <td><a href="${hrefBottle(r.bottle_id)}">${escapeHtml(r.brand_name)} — ${escapeHtml(r.expression_name)}</a></td>
+            <td><a href="${hrefBottle(r.single_barrel_id)}">${escapeHtml(r.brand_name)} — ${escapeHtml(r.expression_name)}</a></td>
             <td class="num"><b>${fmt1(r.score)}</b></td>
             <td class="num">${fmt1(r.proof)}</td>
             <td class="num">${fmtAge(r.age_statement)}</td>
