@@ -64,24 +64,6 @@
         letter-spacing: 0.2px;
       }
 
-      .brand .sub {
-        margin-top: 6px;
-        color: var(--s2-text-muted);
-        font-size: 13px;
-        line-height: 1.35;
-      }
-
-      .btn {
-        cursor: pointer;
-        border: 1px solid var(--s2-border);
-        background: rgba(255, 255, 255, 0.55);
-        color: var(--s2-text);
-        border-radius: 12px;
-        padding: 8px 10px;
-        font-size: 13px;
-      }
-      .btn:hover { background: rgba(255, 255, 255, 0.70); }
-
       .card {
         border: 1px solid var(--s2-border);
         background: rgba(255, 255, 255, 0.86);
@@ -147,7 +129,7 @@
         font-size: 14px;
         letter-spacing: 0.3px;
         color: rgba(43, 29, 20, 0.90);
-        text-transform: uppercase;
+        /* removed text-transform: uppercase; to keep Camel Case */
       }
       .section-title .hint {
         color: rgba(122, 103, 88, 0.78);
@@ -209,12 +191,6 @@
       <div class="topbar">
         <div class="brand">
           <h1 id="bp-title">Barrel Picker</h1>
-          <div class="sub" id="bp-subtitle">Loading…</div>
-        </div>
-
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <button class="btn" id="bp-home" type="button">Home</button>
-          <button class="btn" id="bp-inventory" type="button">Inventory</button>
         </div>
       </div>
 
@@ -242,15 +218,5 @@
     <script src="../assets/js/site-chrome.js"></script>
 
     <script type="module" src="../assets/js/barrel-picker-page.js"></script>
-
-    <script>
-      // lightweight nav buttons (no dependency on layout.js/site.css)
-      document.getElementById("bp-home")?.addEventListener("click", () => {
-        window.location.href = "../index.html";
-      });
-      document.getElementById("bp-inventory")?.addEventListener("click", () => {
-        window.location.href = "../inventory/index.html";
-      });
-    </script>
   </body>
 </html>
