@@ -2,12 +2,6 @@ import { supabase } from "./supabaseClient.js";
 
 const VIEW_NAME = "v_barrel_picker_detail";
 
-/**
- * Path to your spinning star GIF (transparent background recommended).
- * Update this path if your asset lives elsewhere.
- */
-const STAR_SRC = "../assets/img/spinning-star.gif";
-
 // DOM
 const elTitle = document.getElementById("bp-title");
 const elSubtitle = document.getElementById("bp-subtitle"); // may be null (HTML removed)
@@ -75,26 +69,6 @@ function cityState(r) {
   return line || "—";
 }
 
-/**
- * new_update is returned by the view as boolean.
- * If ANY row is true, show the star.
- */
-function anyNewUpdate(rows) {
-  return rows.some((r) => r?.new_update === true);
-}
-
-/**
- * tasting_count is an aggregate in the view; sum it across returned rows
- * so we can show total tastings for the picker on this page.
- */
-function sumTastingCount(rows) {
-  return rows.reduce((acc, r) => acc + (Number(r?.tasting_count) || 0), 0);
-}
-
-function starImgHtml() {
-  return `<img class="new-tasting-star" src="${STAR_SRC}" alt="New tasting" />`;
-}
-
 // ---------------- Render ----------------
 function renderHero(rows) {
   const r = rows[0] || {};
@@ -153,22 +127,14 @@ function renderHero(rows) {
         }
       </p>
 
-      ${
-        r.barrel_picker_description
-          ? `<p style="margin:0;">${escapeHtml(r.barrel_picker_description)}</p>`
-          : ``
-      }
+      ${r.barrel_picker_description ? `<p style="margin:0;">${escapeHtml(r.barrel_picker_description)}</p>` : ``}
     `;
   }
 }
 
 function renderTable(rows) {
-  // Show picks count + total tastings, with star if any "new_update" is true
-  if (elTableTitle) {
-    const tastingsTotal = sumTastingCount(rows);
-    const star = anyNewUpdate(rows) ? ` ${starImgHtml()}` : "";
-    elTableTitle.innerHTML = `Barrel Picks (${rows.length}) · Tastings (${tastingsTotal})${star}`;
-  }
+  // Camel Case title (and CSS on the page should not force uppercase)
+  if (elTableTitle) elTableTitle.textContent = `Barrel Picks (${rows.length})`;
 
   if (!rows.length) {
     if (elTable) {
@@ -202,18 +168,14 @@ function renderTable(rows) {
               : "—";
 
             const distCell = r.distillery_id
-              ? `<a href="${hrefDistillery(r.distillery_id)}">${escapeHtml(
-                  r.distillery_name || ""
-                )}</a>`
+              ? `<a href="${hrefDistillery(r.distillery_id)}">${escapeHtml(r.distillery_name || "")}</a>`
               : "—";
 
             const bottleLabel = `${escapeHtml(r.brand_name || "")}${
               r.expression_name ? ` — ${escapeHtml(r.expression_name)}` : ""
             }`;
 
-            const bottleCell = sbid
-              ? `<a href="${hrefBottle(sbid)}">${bottleLabel}</a>`
-              : "—";
+            const bottleCell = sbid ? `<a href="${hrefBottle(sbid)}">${bottleLabel}</a>` : "—";
 
             return `
               <tr>
@@ -237,9 +199,7 @@ function renderError(msg) {
   // Subtitle might not exist now; guard it
   if (elSubtitle) elSubtitle.textContent = msg;
   if (elCard) {
-    elCard.innerHTML = `<div class="muted-card error"><b>Error:</b> ${escapeHtml(
-      msg
-    )}</div>`;
+    elCard.innerHTML = `<div class="muted-card error"><b>Error:</b> ${escapeHtml(msg)}</div>`;
   }
   if (elTable) elTable.innerHTML = "";
 }
@@ -248,15 +208,8 @@ function renderError(msg) {
 async function load() {
   const id = getId();
   if (!id) {
-    renderError(
-      "Missing barrel_picker_id in URL. Expected ?barrel_picker_id=<uuid>."
-    );
-    if (elDebug)
-      elDebug.textContent = JSON.stringify(
-        { error: "Missing barrel_picker_id" },
-        null,
-        2
-      );
+    renderError("Missing barrel_picker_id in URL. Expected ?barrel_picker_id=<uuid>.");
+    if (elDebug) elDebug.textContent = JSON.stringify({ error: "Missing barrel_picker_id" }, null, 2);
     return;
   }
 
@@ -274,12 +227,7 @@ async function load() {
   const rows = data || [];
   if (!rows.length) {
     renderError(`No rows returned for barrel_picker_id=${id}`);
-    if (elDebug)
-      elDebug.textContent = JSON.stringify(
-        { barrel_picker_id: id, rows: 0 },
-        null,
-        2
-      );
+    if (elDebug) elDebug.textContent = JSON.stringify({ barrel_picker_id: id, rows: 0 }, null, 2);
     return;
   }
 
