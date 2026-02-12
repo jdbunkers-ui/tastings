@@ -36,6 +36,19 @@ function fmtBool(b) {
   return "—";
 }
 
+function fmtMoney(x, fallback = "—") {
+  if (x === null || x === undefined || x === "") return fallback;
+  const n = Number(x);
+  if (Number.isNaN(n)) return fallback;
+  return `$${n.toFixed(2)}`;
+}
+
+function fmtAgeYears(ageYears) {
+  const n = Number(ageYears);
+  if (!Number.isFinite(n) || n < 1) return "NAS";
+  return Number.isInteger(n) ? `${n}` : n.toFixed(1);
+}
+
 function sortByDateDesc(arr, key) {
   return [...(arr || [])].sort((a, b) => {
     const da = new Date(a?.[key] || 0).getTime();
@@ -47,7 +60,7 @@ function sortByDateDesc(arr, key) {
 function getBarrelIdFromUrl() {
   const url = new URL(window.location.href);
 
-  // ✅ Support Skin2 links (?single_barrel_id=<uuid>)
+  // Support Skin2 links (?single_barrel_id=<uuid>)
   const qpSingle = (url.searchParams.get("single_barrel_id") || "").trim();
   if (qpSingle) return qpSingle;
 
@@ -79,6 +92,7 @@ const titleEl = document.getElementById("page-title");
 const subtitleEl = document.getElementById("page-subtitle");
 const hintEl = document.getElementById("tastings-hint");
 const debugEl = document.getElementById("debug-json");
+
 const pickerLineEl = document.getElementById("picker-line");
 const msrpLineEl = document.getElementById("msrp-line");
 const specsEl = document.getElementById("bottle-specs");
@@ -86,58 +100,39 @@ const specsEl = document.getElementById("bottle-specs");
 // -----------------------------
 // Rendering
 // -----------------------------
-function fmtMoney(x, fallback = "—") {
-  if (x === null || x === undefined || x === "") return fallback;
-  const n = Number(x);
-  if (Number.isNaN(n)) return fallback;
-  return `$${n.toFixed(2)}`;
-}
-
-function fmtAgeYears(ageYears) {
-  const n = Number(ageYears);
-  if (!Number.isFinite(n) || n < 1) return "NAS";
-  // show 1 decimal if not an integer
-  return Number.isInteger(n) ? `${n}` : n.toFixed(1);
-}
-
 function renderSpecsTable(specs) {
-  // Expect exactly 10 items → 2 rows x 5 columns
+  // Expect exactly 10 items → 2 rows x 5 columns (labels for both rows)
   const top = specs.slice(0, 5);
   const bot = specs.slice(5, 10);
+
+  if (!specsEl) return;
 
   specsEl.innerHTML = `
     <table>
       <thead>
         <tr>
-          ${top.map(s => `<th>${escapeHtml(s.label)}</th>`).join("")}
+          ${top.map((s) => `<th>${escapeHtml(s.label)}</th>`).join("")}
         </tr>
       </thead>
       <tbody>
         <tr>
-          ${top.map(s => `<td><b>${escapeHtml(fmt(s.value))}</b></td>`).join("")}
+          ${top.map((s) => `<td><b>${escapeHtml(fmt(s.value))}</b></td>`).join("")}
         </tr>
         <tr>
-          ${bot.map(s => `<th>${escapeHtml(s.label)}</th>`).join("")}
+          ${bot.map((s) => `<th>${escapeHtml(s.label)}</th>`).join("")}
         </tr>
         <tr>
-          ${bot.map(s => `<td><b>${escapeHtml(fmt(s.value))}</b></td>`).join("")}
+          ${bot.map((s) => `<td><b>${escapeHtml(fmt(s.value))}</b></td>`).join("")}
         </tr>
       </tbody>
     </table>
   `;
 }
 
-function fmtAgeYears(ageYears) {
-  const n = Number(ageYears);
-  if (!Number.isFinite(n) || n < 1) return "NAS";
-  return Number.isInteger(n) ? `${n}` : n.toFixed(1);
-}
-
 function renderHero(barrel) {
   const brand = fmt(barrel?.brand_name, "Unknown brand");
   const expr = fmt(barrel?.expression_name, "");
   const pick = fmt(barrel?.pick_name, "");
-  const msrp = fmtMoney(barrel?.msrp);
 
   const dist = fmt(barrel?.distillery_name, "Unknown distillery");
   const distId = fmt(barrel?.distillery_id, "");
@@ -145,16 +140,18 @@ function renderHero(barrel) {
   const pickerName = fmt(barrel?.barrel_picker_name, "");
   const pickerId = fmt(barrel?.barrel_picker_id, "");
 
-  // Headline: Brand - Expression (Pick)  (NO MSRP here anymore)
+  const msrp = fmtMoney(barrel?.msrp);
+
+  // Headline: Brand - Expression (Pick)
   const headline =
     `${brand}` +
     (expr ? ` - ${expr}` : "") +
     (pick ? ` (${pick})` : "");
 
-  titleEl.textContent = headline;
+  if (titleEl) titleEl.textContent = headline;
 
-  // Make the distillery/picker lines 2× bigger than the old sub text
-  const bigLineStyle = `font-size:26px; line-height:1.15; font-weight:700; margin-top:6px;`;
+  const bigLineStyle =
+    "font-size:26px; line-height:1.15; font-weight:700; margin-top:6px;";
 
   // Distillery line (labeled)
   if (subtitleEl) {
@@ -175,7 +172,7 @@ function renderHero(barrel) {
     }
   }
 
-  // Barrel picker line (labeled)
+  // Picker line (labeled)
   if (pickerLineEl) {
     if (pickerId) {
       const href = `../barrel_pickers/index.html?barrel_picker_id=${encodeURIComponent(pickerId)}`;
@@ -196,14 +193,15 @@ function renderHero(barrel) {
     }
   }
 
-  // MSRP line directly under picker (prominent; “same font feel” as before)
+  // MSRP line under picker
   if (msrpLineEl) {
-    msrpLineEl.innerHTML = msrp !== "—"
-      ? `<div style="font-size:20px; font-weight:700; margin-top:8px;">MSRP: ${escapeHtml(msrp)}</div>`
-      : "";
+    msrpLineEl.innerHTML =
+      msrp !== "—"
+        ? `<div style="font-size:20px; font-weight:700; margin-top:8px;">MSRP: ${escapeHtml(msrp)}</div>`
+        : "";
   }
 
-  // Specs table (2 rows x 5 cols)
+  // Specs table (2 x 5)
   const specs = [
     { label: "Proof", value: fmt1(barrel?.proof) },
     { label: "Strength", value: fmt(barrel?.bottling_strength_type) },
@@ -220,54 +218,25 @@ function renderHero(barrel) {
 
   renderSpecsTable(specs);
 
-  // Remove the blank white “ellipse” area: hide the hero card for now.
-  // (We’ll reuse this later for your 2nd visible section.)
+  // Remove blank white panel: hide hero card for now
   if (heroEl) {
     heroEl.style.display = "none";
     heroEl.innerHTML = "";
   }
 }
 
-  // 3) Barrel picker hyperlink line
-  if (pickerLineEl) {
-    if (pickerId) {
-      const href = `../barrel_pickers/index.html?barrel_picker_id=${encodeURIComponent(pickerId)}`;
-      pickerLineEl.innerHTML =
-        `Picker: <a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(pickerName || "—")}</a>`;
-    } else {
-      pickerLineEl.textContent = pickerName ? `Picker: ${pickerName}` : "";
-    }
-  }
-
-  // 4) Specs table (2 rows x 5 cols)
-  const specs = [
-  { label: "Proof", value: fmt1(barrel?.proof) },
-  { label: "Strength", value: fmt(barrel?.bottling_strength_type) },
-  { label: "Subtype", value: fmt(barrel?.spirit_subtype) },
-  { label: "Age", value: fmtAgeYears(barrel?.age_in_years) },
-  { label: "Size", value: barrel?.size_ml ? `${barrel.size_ml} ml` : "—" },
-
-  { label: "Mash Bill", value: fmt(barrel?.mash_bill) },
-  { label: "Single Barrel", value: fmtBool(barrel?.single_barrel_ind) },
-  { label: "Chill Filtered", value: fmtBool(barrel?.chill_filtered_ind) },
-  { label: "Finished", value: fmtBool(barrel?.finished_ind) },
-  { label: "Finish Type", value: fmt(barrel?.finished_type) },
-];
-
-  renderSpecsTable(specs);
-
-  // Leave the old hero card empty for now (your “second visible section” later)
-  heroEl.innerHTML = "";
-}
-
 function renderTastings(tastings) {
   const sorted = sortByDateDesc(tastings, "flight_date");
-  hintEl.textContent = `${sorted.length} tasting${sorted.length === 1 ? "" : "s"} • sorted by flight date (desc)`;
+  if (hintEl) {
+    hintEl.textContent = `${sorted.length} tasting${sorted.length === 1 ? "" : "s"} • sorted by flight date (desc)`;
+  }
 
   if (!sorted.length) {
-    tastingsEl.innerHTML = `<div class="card muted">No tastings found.</div>`;
+    if (tastingsEl) tastingsEl.innerHTML = `<div class="card muted">No tastings found.</div>`;
     return;
   }
+
+  if (!tastingsEl) return;
 
   tastingsEl.innerHTML = `
     <table>
@@ -317,82 +286,87 @@ function renderFoes({ foe_beat, foe_lost }) {
   const wins = foe_beat || [];
   const losses = foe_lost || [];
 
-  winsEl.innerHTML = `
-    <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px;">
-      <div style="font-weight:800;">🟩 Wins</div>
-      <div class="muted" style="font-size:12px;">${wins.length} item${wins.length === 1 ? "" : "s"}</div>
-    </div>
-    <div class="list" id="wins-list">
-      ${
-        wins.length
-          ? wins
-              .map((w) => {
-                const id = fmt(w.single_barrel_id, "");
-                const href = id ? selfUrlForId(id) : "#";
-                return `
-                  <div class="row">
-                    <div>
-                      <div class="title">
-                        <a href="${escapeHtml(href)}" data-barrel-link="1" data-barrel-id="${escapeHtml(id)}">
-                          ${escapeHtml(bottleLabel(w) || "(unknown bottle)")}
-                        </a>
+  if (winsEl) {
+    winsEl.innerHTML = `
+      <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px;">
+        <div style="font-weight:800;">🟩 Wins</div>
+        <div class="muted" style="font-size:12px;">${wins.length} item${wins.length === 1 ? "" : "s"}</div>
+      </div>
+      <div class="list" id="wins-list">
+        ${
+          wins.length
+            ? wins
+                .map((w) => {
+                  const id = fmt(w.single_barrel_id, "");
+                  const href = id ? selfUrlForId(id) : "#";
+                  return `
+                    <div class="row">
+                      <div>
+                        <div class="title">
+                          <a href="${escapeHtml(href)}" data-barrel-link="1" data-barrel-id="${escapeHtml(id)}">
+                            ${escapeHtml(bottleLabel(w) || "(unknown bottle)")}
+                          </a>
+                        </div>
+                        <div class="sub">
+                          ${escapeHtml(fmt(w.flight_date, ""))}${w.flight_date ? " • " : ""}${escapeHtml(fmt(w.proof ? `Proof ${w.proof}` : ""))}
+                        </div>
                       </div>
-                      <div class="sub">
-                        ${escapeHtml(fmt(w.flight_date, ""))}${w.flight_date ? " • " : ""}${escapeHtml(fmt(w.proof ? `Proof ${w.proof}` : ""))}
+                      <div class="right">
+                        <div class="score">${escapeHtml(fmt1(w.score))}</div>
+                        <div class="meta2">${escapeHtml(fmt(w.size_ml ? `${w.size_ml} ml` : ""))}</div>
                       </div>
                     </div>
-                    <div class="right">
-                      <div class="score">${escapeHtml(fmt1(w.score))}</div>
-                      <div class="meta2">${escapeHtml(fmt(w.size_ml ? `${w.size_ml} ml` : ""))}</div>
-                    </div>
-                  </div>
-                `;
-              })
-              .join("")
-          : `<div class="muted">No wins found.</div>`
-      }
-    </div>
-  `;
+                  `;
+                })
+                .join("")
+            : `<div class="muted">No wins found.</div>`
+        }
+      </div>
+    `;
+  }
 
-  lossesEl.innerHTML = `
-    <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px;">
-      <div style="font-weight:800;">🟥 Losses</div>
-      <div class="muted" style="font-size:12px;">${losses.length} item${losses.length === 1 ? "" : "s"}</div>
-    </div>
-    <div class="list" id="losses-list">
-      ${
-        losses.length
-          ? losses
-              .map((l) => {
-                const id = fmt(l.single_barrel_id, "");
-                const href = id ? selfUrlForId(id) : "#";
-                return `
-                  <div class="row">
-                    <div>
-                      <div class="title">
-                        <a href="${escapeHtml(href)}" data-barrel-link="1" data-barrel-id="${escapeHtml(id)}">
-                          ${escapeHtml(bottleLabel(l) || "(unknown bottle)")}
-                        </a>
+  if (lossesEl) {
+    lossesEl.innerHTML = `
+      <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px;">
+        <div style="font-weight:800;">🟥 Losses</div>
+        <div class="muted" style="font-size:12px;">${losses.length} item${losses.length === 1 ? "" : "s"}</div>
+      </div>
+      <div class="list" id="losses-list">
+        ${
+          losses.length
+            ? losses
+                .map((l) => {
+                  const id = fmt(l.single_barrel_id, "");
+                  const href = id ? selfUrlForId(id) : "#";
+                  return `
+                    <div class="row">
+                      <div>
+                        <div class="title">
+                          <a href="${escapeHtml(href)}" data-barrel-link="1" data-barrel-id="${escapeHtml(id)}">
+                            ${escapeHtml(bottleLabel(l) || "(unknown bottle)")}
+                          </a>
+                        </div>
+                        <div class="sub">
+                          ${escapeHtml(fmt(l.flight_date, ""))}${l.flight_date ? " • " : ""}${escapeHtml(fmt(l.proof ? `Proof ${l.proof}` : ""))}
+                        </div>
                       </div>
-                      <div class="sub">
-                        ${escapeHtml(fmt(l.flight_date, ""))}${l.flight_date ? " • " : ""}${escapeHtml(fmt(l.proof ? `Proof ${l.proof}` : ""))}
+                      <div class="right">
+                        <div class="score">${escapeHtml(fmt1(l.score))}</div>
+                        <div class="meta2">${escapeHtml(fmt(l.size_ml ? `${l.size_ml} ml` : ""))}</div>
                       </div>
                     </div>
-                    <div class="right">
-                      <div class="score">${escapeHtml(fmt1(l.score))}</div>
-                      <div class="meta2">${escapeHtml(fmt(l.size_ml ? `${l.size_ml} ml` : ""))}</div>
-                    </div>
-                  </div>
-                `;
-              })
-              .join("")
-          : `<div class="muted">No losses found.</div>`
-      }
-    </div>
-  `;
+                  `;
+                })
+                .join("")
+            : `<div class="muted">No losses found.</div>`
+        }
+      </div>
+    `;
+  }
 }
 
 function renderDebug(payload) {
+  if (!debugEl) return;
   try {
     debugEl.textContent = JSON.stringify(payload, null, 2);
   } catch {
@@ -401,35 +375,38 @@ function renderDebug(payload) {
 }
 
 // -----------------------------
-// Events
+// Events / Load
 // -----------------------------
-
 async function load() {
   const barrelId = getBarrelIdFromUrl();
   if (!barrelId) {
-    subtitleEl.textContent =
-      "Missing barrel id in URL (expected /barrel/<id> or ?id=<id> or ?single_barrel_id=<id>)";
-    heroEl.innerHTML = `<div class="muted">No barrel id provided.</div>`;
-    tastingsEl.innerHTML = `<div class="card muted">No tastings.</div>`;
-    winsEl.innerHTML = `<div class="muted">No wins.</div>`;
-    lossesEl.innerHTML = `<div class="muted">No losses.</div>`;
+    if (subtitleEl) {
+      subtitleEl.textContent =
+        "Missing barrel id in URL (expected /barrel/<id> or ?id=<id> or ?single_barrel_id=<id>)";
+    }
+    if (heroEl) heroEl.innerHTML = `<div class="muted">No barrel id provided.</div>`;
+    if (tastingsEl) tastingsEl.innerHTML = `<div class="card muted">No tastings.</div>`;
+    if (winsEl) winsEl.innerHTML = `<div class="muted">No wins.</div>`;
+    if (lossesEl) lossesEl.innerHTML = `<div class="muted">No losses.</div>`;
     renderDebug({ error: "Missing id" });
     return;
   }
 
-  subtitleEl.textContent = `Loading payload for ${barrelId}…`;
+  if (subtitleEl) subtitleEl.textContent = `Loading payload for ${barrelId}…`;
 
   const { data, error } = await supabase.rpc("f_get_barrel_payload", {
     p_single_barrel_id: barrelId,
   });
 
   if (error) {
-    subtitleEl.textContent = "Error loading barrel payload";
-    heroEl.innerHTML = `
-      <div class="muted">
-        <b>Error:</b> ${escapeHtml(error.message || String(error))}
-      </div>
-    `;
+    if (subtitleEl) subtitleEl.textContent = "Error loading barrel payload";
+    if (heroEl) {
+      heroEl.innerHTML = `
+        <div class="muted">
+          <b>Error:</b> ${escapeHtml(error.message || String(error))}
+        </div>
+      `;
+    }
     renderDebug({ error: error.message || String(error) });
     return;
   }
