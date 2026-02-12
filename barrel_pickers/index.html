@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Barrel Picker | Honey Barrel Hunter</title>
+    <link rel="stylesheet" href="../assets/css/skin2.css" />
+
+    <style>
+      /* ---------- Skin2 Theme Vars (same as your new landing page) ---------- */
+      :root {
+        --s2-bg: #f6f1ea;
+        --s2-panel: #ffffff;
+        --s2-border: #d8cfc3;
+
+        --s2-brown-dark: #3b2a20;
+        --s2-brown-mid: #6a4a32;
+        --s2-amber: #b57a2a;
+        --s2-amber-soft: #e1b66a;
+
+        --s2-text: #2b1d14;
+        --s2-text-muted: #7a6758;
+        --s2-text-invert: #ffffff;
+
+        --s2-link: #8a5a20;
+        --s2-link-hover: #b57a2a;
+
+        --s2-font-sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+        --s2-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      }
+
+      html, body { height: 100%; }
+      body {
+        margin: 0;
+        font-family: var(--s2-font-sans);
+        color: var(--s2-text);
+        background:
+          radial-gradient(1200px 800px at 20% -10%, rgba(181, 122, 42, 0.14), transparent 55%),
+          radial-gradient(900px 700px at 90% 0%, rgba(225, 182, 106, 0.12), transparent 50%),
+          var(--s2-bg);
+      }
+
+      a { color: var(--s2-link); text-decoration: underline; }
+      a:hover { color: var(--s2-link-hover); }
+
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 18px 14px 46px;
+      }
+
+      /* top line similar to other Skin2 pages */
+      .topbar {
+        display:flex;
+        align-items:flex-start;
+        justify-content:space-between;
+        gap: 14px;
+        margin-bottom: 14px;
+      }
+
+      .brand h1 {
+        margin: 0;
+        font-size: 22px;
+        letter-spacing: 0.2px;
+      }
+
+      .card {
+        border: 1px solid var(--s2-border);
+        background: rgba(255, 255, 255, 0.86);
+        border-radius: 16px;
+        padding: 14px;
+      }
+
+      .hero {
+        display:grid;
+        grid-template-columns: 360px 1fr;
+        gap: 14px;
+        align-items: start;
+        margin-top: 10px;
+      }
+      @media (max-width: 860px) {
+        .hero { grid-template-columns: 1fr; }
+      }
+
+      .photo {
+        border: 1px solid var(--s2-border);
+        background: rgba(255,255,255,0.62);
+        border-radius: 16px;
+        overflow: hidden;
+        min-height: 220px;
+        display:grid;
+        place-items:center;
+        color: var(--s2-text-muted);
+        font-size: 12px;
+      }
+      .photo img {
+        width: 100%;
+        height: auto;
+        display:block;
+        object-fit: cover;
+      }
+
+      .meta {
+        display:grid;
+        gap: 6px;
+        margin-top: 8px;
+        color: rgba(43, 29, 20, 0.80);
+        font-size: 13px;
+        line-height: 1.35;
+      }
+
+      .links {
+        display:flex;
+        flex-wrap:wrap;
+        gap: 12px;
+        margin-top: 10px;
+        font-size: 13px;
+      }
+
+      .section-title {
+        display:flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 10px;
+        margin: 18px 2px 10px;
+      }
+      .section-title h2 {
+        margin: 0;
+        font-size: 14px;
+        letter-spacing: 0.3px;
+        color: rgba(43, 29, 20, 0.90);
+        /* removed text-transform: uppercase; to keep Camel Case */
+      }
+      .section-title .hint {
+        color: rgba(122, 103, 88, 0.78);
+        font-size: 12px;
+      }
+
+      .muted-card {
+        border: 1px solid var(--s2-border);
+        background: rgba(255,255,255,0.55);
+        border-radius: 16px;
+        padding: 14px;
+        color: var(--s2-text-muted);
+      }
+
+      .mono { font-family: var(--s2-font-mono); }
+
+      /* Keep your existing ids for JS */
+      #bp-debug {
+        white-space: pre-wrap;
+        font-family: var(--s2-font-mono);
+        font-size: 12px;
+        color: rgba(43, 29, 20, 0.90);
+      }
+    </style>
+  </head>
+
+  <body data-page="barrel_pickers">
+    <div class="wrap">
+      <!-- Skin2 Header Injection Target -->
+      <div id="site-header"></div>
+
+      <div class="topbar">
+        <div class="brand">
+          <h1 id="bp-title">Barrel Picker</h1>
+        </div>
+      </div>
+
+      <div class="hero">
+        <div class="photo" id="bp-photo"></div>
+        <div class="card" id="bp-card"></div>
+      </div>
+
+      <div class="section-title">
+        <h2 id="bp-table-title">Barrel Picks</h2>
+        <div class="hint" id="bp-table-hint"></div>
+      </div>
+      <div id="bp-table"></div>
+
+      <details style="margin-top:18px;">
+        <summary>Debug</summary>
+        <pre id="bp-debug">{}</pre>
+      </details>
+
+      <!-- Skin2 Footer Injection Target -->
+      <div id="site-footer"></div>
+    </div>
+
+    <!-- Skin2 layout injector -->
+    <script src="../assets/js/site-chrome.js"></script>
+
+    <script type="module" src="../assets/js/barrel-picker-page.js"></script>
+  </body>
+</html>
