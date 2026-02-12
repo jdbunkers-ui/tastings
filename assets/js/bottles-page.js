@@ -79,86 +79,106 @@ const titleEl = document.getElementById("page-title");
 const subtitleEl = document.getElementById("page-subtitle");
 const hintEl = document.getElementById("tastings-hint");
 const debugEl = document.getElementById("debug-json");
-const closeBtn = document.getElementById("close-btn");
+const pickerLineEl = document.getElementById("picker-line");
+const specsEl = document.getElementById("bottle-specs");
 
 // -----------------------------
 // Rendering
 // -----------------------------
+function fmtMoney(x, fallback = "—") {
+  if (x === null || x === undefined || x === "") return fallback;
+  const n = Number(x);
+  if (Number.isNaN(n)) return fallback;
+  return `$${n.toFixed(2)}`;
+}
+
+function fmtAgeYears(ageYears) {
+  const n = Number(ageYears);
+  if (!Number.isFinite(n) || n < 1) return "NAS";
+  // show 1 decimal if not an integer
+  return Number.isInteger(n) ? `${n}` : n.toFixed(1);
+}
+
+function renderSpecsTable(specs) {
+  // Expect exactly 10 items → 2 rows x 5 columns
+  specsEl.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          ${specs.slice(0, 5).map(s => `<th>${escapeHtml(s.label)}</th>`).join("")}
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          ${specs.slice(0, 5).map(s => `<td><b>${escapeHtml(fmt(s.value))}</b></td>`).join("")}
+        </tr>
+        <tr>
+          ${specs.slice(5, 10).map(s => `<td><b>${escapeHtml(fmt(s.value))}</b></td>`).join("")}
+        </tr>
+      </tbody>
+    </table>
+  `;
+}
+
 function renderHero(barrel) {
   const brand = fmt(barrel?.brand_name, "Unknown brand");
-  const dist = fmt(barrel?.distillery_name, "Unknown distillery");
-  const distId = fmt(barrel?.distillery_id, "");
-  const st = fmt(barrel?.state, "");
   const expr = fmt(barrel?.expression_name, "");
   const pick = fmt(barrel?.pick_name, "");
-  const subtype = fmt(barrel?.spirit_subtype, "");
-  const id = fmt(barrel?.single_barrel_id, "");
+  const msrp = fmtMoney(barrel?.msrp);
 
-  titleEl.textContent = brand;
+  const dist = fmt(barrel?.distillery_name, "Unknown distillery");
+  const distId = fmt(barrel?.distillery_id, "");
 
-  // Distillery → Distillery page link (Skin2)
+  const pickerName = fmt(barrel?.barrel_picker_name, "");
+  const pickerId = fmt(barrel?.barrel_picker_id, "");
+
+  // 1) Prominent headline: brand - expression (pick) then MSRP
+  const headline =
+    `${brand}` +
+    (expr ? ` - ${expr}` : "") +
+    (pick ? ` (${pick})` : "") +
+    (msrp !== "—" ? ` • ${msrp}` : "");
+
+  titleEl.textContent = headline;
+
+  // 2) Distillery hyperlink line
   if (distId) {
     const href = `../distilleries/index.html?distillery_id=${encodeURIComponent(distId)}`;
-    subtitleEl.innerHTML =
-      `<a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(dist)}</a>` +
-      (st ? ` • ${escapeHtml(st)}` : "");
+    subtitleEl.innerHTML = `<a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(dist)}</a>`;
   } else {
-    subtitleEl.textContent = `${dist}${st ? " • " + st : ""}`;
+    subtitleEl.textContent = dist;
   }
 
-  const stats = [
-    { k: "Avg Score", v: fmt1(barrel?.avg_score) },
-    { k: "Composite", v: fmt1(barrel?.score) },
-    { k: "Tastings", v: fmt(barrel?.tasting_count ?? barrel?.tastings) },
-    { k: "Proof", v: fmt1(barrel?.proof) },
-    { k: "Size", v: barrel?.size_ml ? `${barrel.size_ml} ml` : "—" },
-    { k: "MSRP", v: `$${fmt2(barrel?.msrp)}` },
-  ];
-
-  heroEl.innerHTML = `
-    <div class="hero-top">
-      <div>
-        <div class="pill-row">
-          ${expr ? `<span class="pill">${escapeHtml(expr)}</span>` : ""}
-          ${pick ? `<span class="pill">${escapeHtml(pick)}</span>` : ""}
-          ${subtype ? `<span class="pill">${escapeHtml(subtype)}</span>` : ""}
-          <span class="pill">Finished: ${escapeHtml(fmtBool(barrel?.finished_ind))}</span>
-          <span class="pill">Chill Filtered: ${escapeHtml(fmtBool(barrel?.chill_filtered_ind))}</span>
-        </div>
-
-        <div class="meta" style="margin-top:10px;">
-          <span class="mono">ID: ${escapeHtml(id)}</span>
-          <button class="btn" id="copy-id" type="button">Copy</button>
-        </div>
-      </div>
-
-      <div class="stats">
-        ${stats
-          .map(
-            (s) => `
-              <div class="stat">
-                <div class="k">${escapeHtml(s.k)}</div>
-                <div class="v">${escapeHtml(fmt(s.v))}</div>
-              </div>
-            `
-          )
-          .join("")}
-      </div>
-    </div>
-  `;
-
-  const copyBtn = document.getElementById("copy-id");
-  if (copyBtn) {
-    copyBtn.addEventListener("click", async () => {
-      try {
-        await navigator.clipboard.writeText(id);
-        copyBtn.textContent = "Copied!";
-        setTimeout(() => (copyBtn.textContent = "Copy"), 900);
-      } catch {
-        // ignore
-      }
-    });
+  // 3) Barrel picker hyperlink line
+  if (pickerLineEl) {
+    if (pickerId) {
+      const href = `../barrel_pickers/index.html?barrel_picker_id=${encodeURIComponent(pickerId)}`;
+      pickerLineEl.innerHTML =
+        `Picker: <a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(pickerName || "—")}</a>`;
+    } else {
+      pickerLineEl.textContent = pickerName ? `Picker: ${pickerName}` : "";
+    }
   }
+
+  // 4) Specs table (2 rows x 5 cols)
+  const specs = [
+  { label: "Proof", value: fmt1(barrel?.proof) },
+  { label: "Strength", value: fmt(barrel?.bottling_strength_type) },
+  { label: "Subtype", value: fmt(barrel?.spirit_subtype) },
+  { label: "Age", value: fmtAgeYears(barrel?.age_in_years) },
+  { label: "Size", value: barrel?.size_ml ? `${barrel.size_ml} ml` : "—" },
+
+  { label: "Mash Bill", value: fmt(barrel?.mash_bill) },
+  { label: "Single Barrel", value: fmtBool(barrel?.single_barrel_ind) },
+  { label: "Chill Filtered", value: fmtBool(barrel?.chill_filtered_ind) },
+  { label: "Finished", value: fmtBool(barrel?.finished_ind) },
+  { label: "Finish Type", value: fmt(barrel?.finished_type) },
+];
+
+  renderSpecsTable(specs);
+
+  // Leave the old hero card empty for now (your “second visible section” later)
+  heroEl.innerHTML = "";
 }
 
 function renderTastings(tastings) {
@@ -304,17 +324,6 @@ function renderDebug(payload) {
 // -----------------------------
 // Events
 // -----------------------------
-closeBtn?.addEventListener("click", () => {
-  try {
-    window.close();
-  } catch {}
-  setTimeout(() => {
-    if (!window.closed) {
-      if (window.history.length > 1) window.history.back();
-      else window.location.href = new URL("../", window.location.href).toString();
-    }
-  }, 50);
-});
 
 async function load() {
   const barrelId = getBarrelIdFromUrl();
