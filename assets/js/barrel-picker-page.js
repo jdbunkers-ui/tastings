@@ -263,7 +263,7 @@ function renderTable(rows) {
     return bb - aa;
   });
 
-  const displayCols = ["score", "msrp", "proof", "age", "distillery_name", "bottle_expression"];
+  const displayCols = ["score", "msrp", "proof", "age", "bottle_expression", "distillery_name"];
 
   const thead = displayCols
     .map((c) => {
