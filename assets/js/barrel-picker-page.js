@@ -1,18 +1,24 @@
+/* =========================================================
+   Honey Barrel Hunter — Skin2 Barrel Picker Page
+   File: assets/js/barrel-picker-page.js
+   ========================================================= */
+
 import { supabase } from "./supabaseClient.js";
 
 const VIEW_NAME = "v_barrel_picker_detail";
 
 /**
- * Path to your spinning star GIF (transparent background recommended).
- * Update this path if your asset lives elsewhere.
+ * Use the SAME star asset as Inventory/Distillery pages
  */
-const STAR_SRC = "../assets/img/spinning-star.gif";
+const STAR_SRC = "../assets/img/logo/gold_spinning_star.gif";
 
-// DOM
+// DOM (hero + existing layout)
 const elTitle = document.getElementById("bp-title");
-const elSubtitle = document.getElementById("bp-subtitle"); // may be null (HTML removed)
+const elSubtitle = document.getElementById("bp-subtitle"); // may be null
 const elPhoto = document.getElementById("bp-photo");
 const elCard = document.getElementById("bp-card");
+
+// Bottom-half mount(s) (we will render Skin2 table into bp-table)
 const elTable = document.getElementById("bp-table");
 const elTableTitle = document.getElementById("bp-table-title");
 const elDebug = document.getElementById("bp-debug");
@@ -32,40 +38,61 @@ function num(x) {
   return Number.isFinite(n) ? n : NaN;
 }
 
-function fmt1(x) {
-  const n = num(x);
-  return Number.isFinite(n) ? n.toFixed(1) : "—";
+function isNumberLike(v) {
+  if (v == null) return false;
+  const n = Number(v);
+  return Number.isFinite(n);
 }
 
-function fmtUsd(x) {
-  const n = num(x);
-  return Number.isFinite(n) ? `$${n.toFixed(2)}` : "—";
+function fmt1(v) {
+  if (!isNumberLike(v)) return "—";
+  return Number(v).toFixed(1);
 }
 
-function fmtAge(x) {
-  const n = num(x);
-  return Number.isFinite(n) && n >= 1 ? n.toFixed(1) : "NAS";
+function fmtUsd(v) {
+  if (!isNumberLike(v)) return "—";
+  return `$${Number(v).toFixed(2)}`;
+}
+
+function fmtAge(v) {
+  if (!isNumberLike(v)) return "NAS";
+  const n = Number(v);
+  if (n < 1.0) return "NAS";
+  return n.toFixed(1);
 }
 
 function getId() {
-  return (
-    new URL(window.location.href).searchParams.get("barrel_picker_id") || ""
-  ).trim();
+  return (new URL(window.location.href).searchParams.get("barrel_picker_id") || "").trim();
 }
 
 function imgUrl(f) {
   return f ? `../assets/img/barrel_pickers/${encodeURIComponent(f)}` : "";
 }
 
-// Canonical details page is bottles/index.html (takes single_barrel_id)
-function hrefBottle(singleBarrelId) {
-  return `../bottles/index.html?single_barrel_id=${encodeURIComponent(
-    singleBarrelId
-  )}`;
+/**
+ * Bottle Expression hyperlink (same-tab)
+ * barrel_pickers/index.html -> ../bottles/index.html
+ */
+function barrelLink(singleBarrelId, label) {
+  const id = (singleBarrelId ?? "").toString().trim();
+  const text = label ?? "";
+  if (!id) return escapeHtml(text);
+
+  const href = `../bottles/index.html?single_barrel_id=${encodeURIComponent(id)}`;
+  return `<a class="skin2-link" href="${href}">${escapeHtml(text)}</a>`;
 }
 
-function hrefDistillery(id) {
-  return `../distilleries/index.html?distillery_id=${encodeURIComponent(id)}`;
+/**
+ * Distillery Name hyperlink
+ * barrel_pickers/index.html -> ../distilleries/index.html
+ */
+function distilleryLink(distilleryId, label) {
+  const id = (distilleryId ?? "").toString().trim();
+  const text = label ?? "";
+  if (!id) return escapeHtml(text);
+
+  const href = `../distilleries/index.html?distillery_id=${encodeURIComponent(id)}`;
+  return `<a class="skin2-link" href="${href}">${escapeHtml(text)}</a>`;
 }
 
 function cityState(r) {
@@ -76,33 +103,28 @@ function cityState(r) {
 }
 
 /**
- * new_update is returned by the view as boolean.
- * If ANY row is true, show the star.
+ * new_update returned by view as boolean
  */
 function anyNewUpdate(rows) {
   return rows.some((r) => r?.new_update === true);
 }
 
 /**
- * tasting_count is an aggregate in the view; sum it across returned rows
- * so we can show total tastings for the picker on this page.
+ * tasting_count is an aggregate in the view; sum across rows
  */
 function sumTastingCount(rows) {
   return rows.reduce((acc, r) => acc + (Number(r?.tasting_count) || 0), 0);
 }
 
 function starImgHtml() {
-  return `<img class="new-tasting-star" src="${STAR_SRC}" alt="New tasting" />`;
+  return `<img class="new-tasting-star" src="${STAR_SRC}" alt="New" />`;
 }
 
-// ---------------- Render ----------------
+// ---------------- Render (Hero unchanged) ----------------
 function renderHero(rows) {
   const r = rows[0] || {};
 
-  // Title is required on page; guard anyway
   if (elTitle) elTitle.textContent = r.barrel_picker_name || "Barrel Picker";
-
-  // Subtitle is optional; only set it if element exists
   if (elSubtitle) elSubtitle.textContent = cityState(r);
 
   if (elPhoto) {
@@ -121,7 +143,6 @@ function renderHero(rows) {
           : ``
       }
 
-      <!-- City/State now lives INSIDE the card (not standalone) -->
       ${
         locationLine && locationLine !== "—"
           ? `<p class="mono" style="margin:0 0 10px; opacity:0.8;">${escapeHtml(locationLine)}</p>`
@@ -162,84 +183,151 @@ function renderHero(rows) {
   }
 }
 
+/**
+ * ---------------- Bottom-half (Skin2 inventory-style table)
+ * Columns:
+ * Score | MSRP | Proof | Age | Distillery Name | Bottle Expression
+ * ----------------
+ */
+function headerLabel(col) {
+  const map = {
+    score: "Score",
+    msrp: "MSRP",
+    proof: "Proof",
+    age: "Age",
+    distillery_name: "Distillery Name",
+    bottle_expression: "Bottle Expression",
+  };
+  return map[col] || col;
+}
+
+function invColClass(col) {
+  const map = {
+    score: "col-score",
+    msrp: "col-msrp",
+    proof: "col-proof",
+    age: "col-age",
+    distillery_name: "col-distillery",
+    bottle_expression: "col-expression",
+  };
+  return map[col] || "";
+}
+
+function pickExpression(row) {
+  // tolerate different view field naming
+  return (
+    row.bottle_expression ??
+    row.expression_name ??
+    row.bottle_type ??
+    row.label ??
+    row.brand_name ??
+    "—"
+  );
+}
+
+function renderCell(col, row) {
+  if (col === "bottle_expression") {
+    const expr = pickExpression(row);
+    const star = row.new_update
+      ? `<img
+           src="../assets/img/logo/gold_spinning_star.gif"
+           alt="New"
+           style="height:18px; vertical-align:middle; margin-right:6px;"
+         />`
+      : "";
+
+    return `${star}${barrelLink(row.single_barrel_id, expr)}`;
+  }
+
+  if (col === "distillery_name") {
+    return distilleryLink(row.distillery_id, row.distillery_name);
+  }
+
+  if (col === "msrp") return fmtUsd(row.msrp);
+  if (col === "score") return fmt1(row.score ?? row.avg_score ?? row.composite_score);
+  if (col === "proof") return fmt1(row.proof ?? row.bottling_strength ?? row.bottling_strength_type);
+  if (col === "age") return fmtAge(row.age ?? row.age_years ?? row.age_in_years ?? row.age_statement);
+
+  return escapeHtml(row[col]);
+}
+
 function renderTable(rows) {
-  // Show picks count + total tastings, with star if any "new_update" is true
   if (elTableTitle) {
     const tastingsTotal = sumTastingCount(rows);
     const star = anyNewUpdate(rows) ? ` ${starImgHtml()}` : "";
     elTableTitle.innerHTML = `Barrel Picks (${rows.length}) · Tastings (${tastingsTotal})${star}`;
   }
 
+  if (!elTable) return;
+
   if (!rows.length) {
-    if (elTable) {
-      elTable.innerHTML = `<div class="muted-card">No barrel picks found for this barrel picker.</div>`;
-    }
+    elTable.innerHTML = `<div class="muted-card">No barrel picks found for this barrel picker.</div>`;
     return;
   }
 
-  if (!elTable) return;
+  // Sort: highest score first (same feel as distillery-page)
+  const sorted = [...rows].sort((a, b) => {
+    const aa = Number(a.score ?? a.avg_score ?? a.composite_score);
+    const bb = Number(b.score ?? b.avg_score ?? b.composite_score);
+    if (!Number.isFinite(bb) && !Number.isFinite(aa)) return 0;
+    if (!Number.isFinite(bb)) return -1;
+    if (!Number.isFinite(aa)) return 1;
+    return bb - aa;
+  });
+
+  const displayCols = ["score", "msrp", "proof", "age", "distillery_name", "bottle_expression"];
+
+  const thead = displayCols
+    .map((c) => {
+      const cls = invColClass(c);
+      return `<th class="${escapeHtml(cls)}" title="${escapeHtml(c)}">${escapeHtml(
+        headerLabel(c)
+      )}</th>`;
+    })
+    .join("");
+
+  const searchableFields = [
+    "bottle_expression",
+    "distillery_name",
+    "blender_name",
+    "single_barrel_id",
+    "distillery_id",
+    "blender_id",
+  ];
+
+  const tbody = sorted
+    .map((r) => {
+      const searchable = searchableFields
+        .filter((c) => c in r)
+        .map((c) => (r[c] == null ? "" : String(r[c])))
+        .join(" | ")
+        .toLowerCase();
+
+      const tds = displayCols
+        .map((c) => {
+          const cls = invColClass(c);
+          return `<td class="${escapeHtml(cls)}">${renderCell(c, r)}</td>`;
+        })
+        .join("");
+
+      return `<tr class="inv-row" data-search="${escapeHtml(searchable)}">${tds}</tr>`;
+    })
+    .join("");
 
   elTable.innerHTML = `
-    <table class="bp-table">
-      <thead>
-        <tr>
-          <th>Barrel</th>
-          <th>Distillery</th>
-          <th>Bottle</th>
-          <th class="num">Score</th>
-          <th class="num">Proof</th>
-          <th class="num">Age</th>
-          <th class="num">MSRP</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${rows
-          .map((r) => {
-            const sbid = r.single_barrel_id;
-
-            const barrelCell = sbid
-              ? `<a href="${hrefBottle(sbid)}">${escapeHtml(r.pick_name || "View")}</a>`
-              : "—";
-
-            const distCell = r.distillery_id
-              ? `<a href="${hrefDistillery(r.distillery_id)}">${escapeHtml(
-                  r.distillery_name || ""
-                )}</a>`
-              : "—";
-
-            const bottleLabel = `${escapeHtml(r.brand_name || "")}${
-              r.expression_name ? ` — ${escapeHtml(r.expression_name)}` : ""
-            }`;
-
-            const bottleCell = sbid
-              ? `<a href="${hrefBottle(sbid)}">${bottleLabel}</a>`
-              : "—";
-
-            return `
-              <tr>
-                <td>${barrelCell}</td>
-                <td>${distCell}</td>
-                <td>${bottleCell}</td>
-                <td class="num"><b>${fmt1(r.score)}</b></td>
-                <td class="num">${fmt1(r.proof)}</td>
-                <td class="num">${fmtAge(r.age_statement)}</td>
-                <td class="num">${fmtUsd(r.msrp)}</td>
-              </tr>
-            `;
-          })
-          .join("")}
-      </tbody>
-    </table>
+    <div class="skin2-table-wrap" style="overflow-x: visible;">
+      <table class="skin2-table" aria-label="Barrel picker inventory table">
+        <thead><tr>${thead}</tr></thead>
+        <tbody>${tbody}</tbody>
+      </table>
+    </div>
   `;
 }
 
 function renderError(msg) {
-  // Subtitle might not exist now; guard it
   if (elSubtitle) elSubtitle.textContent = msg;
   if (elCard) {
-    elCard.innerHTML = `<div class="muted-card error"><b>Error:</b> ${escapeHtml(
-      msg
-    )}</div>`;
+    elCard.innerHTML = `<div class="muted-card error"><b>Error:</b> ${escapeHtml(msg)}</div>`;
   }
   if (elTable) elTable.innerHTML = "";
 }
@@ -248,15 +336,8 @@ function renderError(msg) {
 async function load() {
   const id = getId();
   if (!id) {
-    renderError(
-      "Missing barrel_picker_id in URL. Expected ?barrel_picker_id=<uuid>."
-    );
-    if (elDebug)
-      elDebug.textContent = JSON.stringify(
-        { error: "Missing barrel_picker_id" },
-        null,
-        2
-      );
+    renderError("Missing barrel_picker_id in URL. Expected ?barrel_picker_id=<uuid>.");
+    if (elDebug) elDebug.textContent = JSON.stringify({ error: "Missing barrel_picker_id" }, null, 2);
     return;
   }
 
@@ -274,12 +355,7 @@ async function load() {
   const rows = data || [];
   if (!rows.length) {
     renderError(`No rows returned for barrel_picker_id=${id}`);
-    if (elDebug)
-      elDebug.textContent = JSON.stringify(
-        { barrel_picker_id: id, rows: 0 },
-        null,
-        2
-      );
+    if (elDebug) elDebug.textContent = JSON.stringify({ barrel_picker_id: id, rows: 0 }, null, 2);
     return;
   }
 

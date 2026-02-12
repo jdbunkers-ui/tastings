@@ -183,11 +183,6 @@ html, body {
   overflow-x: visible;
 }
 
-/* Barrel Picker page: allow table to fit without horizontal scroll (wrap instead) */
-#bp-table .skin2-table-wrap {
-  overflow-x: visible;
-}
-
 table.skin2-table {
   width: 100%;
   border-collapse: collapse;
@@ -231,7 +226,7 @@ table.skin2-table tbody tr:hover {
 }
 
 /* =========================================================
-   Centered Columns for Barrel Pickers Picker List
+   Centered Columns for Barrel Pickers Page (Picker List)
    ========================================================= */
 
 .skin2-table th.col-state,
@@ -244,11 +239,9 @@ table.skin2-table tbody tr:hover {
 }
 
 /* =========================================================
-   Skin2: Column Alignment + Widths
-   Common order patterns:
-   - Inventory: Score | MSRP | Proof | Age | Bottle Expression | Distillery Name
-   - Distillery bottom: Score | MSRP | Proof | Age | Barrel Picker Name | Bottle Expression (no Distillery)
-   - Barrel Picker bottom: Score | MSRP | Proof | Age | Distillery Name | Bottle Expression
+   Inventory (Skin2): Column Alignment + Widths
+   Order:
+   Score | MSRP | Proof | Age | Barrel Picker Name | Bottle Expression | Distillery Name
    ========================================================= */
 
 /* Tight numeric columns */
@@ -278,36 +271,35 @@ table.skin2-table tbody tr:hover {
 .skin2-table th.col-age,
 .skin2-table td.col-age { width: 70px; }
 
-/* Text columns (wrap enabled) */
-.skin2-table th.col-expression,
-.skin2-table td.col-expression {
-  text-align: left;
-  width: 360px;
-}
-
-.skin2-table th.col-distillery,
-.skin2-table td.col-distillery {
-  text-align: left;
-  width: 280px;
-}
-
-/* Optional: used only on pages that still display a barrel picker column */
+/* Wide text columns (WRAP ENABLED) */
 .skin2-table th.col-barrel-picker,
 .skin2-table td.col-barrel-picker {
   text-align: left;
   width: 220px;
 }
 
-/* Wrap long names/expressions nicely */
+.skin2-table th.col-expression,
+.skin2-table td.col-expression {
+  text-align: left;
+  width: 340px;
+}
+
+.skin2-table th.col-distillery,
+.skin2-table td.col-distillery {
+  text-align: left;
+  width: 260px;
+}
+
+/* ✅ Wrap long names/expressions nicely (no ellipsis) */
 .skin2-table td.col-barrel-picker,
 .skin2-table td.col-expression,
 .skin2-table td.col-distillery {
   white-space: normal;
-  overflow-wrap: anywhere;
-  word-break: break-word;
+  overflow-wrap: anywhere; /* breaks very long tokens safely */
+  word-break: break-word;  /* fallback for older browsers */
 }
 
-/* Keep headers tidy even if cells wrap */
+/* Keep headers tidy even if text wraps in cells */
 .skin2-table th.col-barrel-picker,
 .skin2-table th.col-expression,
 .skin2-table th.col-distillery {
