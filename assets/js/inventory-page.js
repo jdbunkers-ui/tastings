@@ -100,26 +100,12 @@ function distilleryLink(distilleryId, label) {
   return `<a class="skin2-link" href="${href}">${escapeHtml(text)}</a>`;
 }
 
-/**
- * Barrel Picker Name hyperlink
- * inventory/index.html -> ../barrel_pickers/index.html
- */
-function barrelPickerLink(barrelPickerId, label) {
-  const id = (barrelPickerId ?? "").toString().trim();
-  const text = label ?? "";
-  if (!id) return escapeHtml(text);
-
-  const href = `../barrel_pickers/index.html?barrel_picker_id=${encodeURIComponent(id)}`;
-  return `<a class="skin2-link" href="${href}">${escapeHtml(text)}</a>`;
-}
-
 function headerLabel(col) {
   const map = {
     score: "Score",
     msrp: "MSRP",
     proof: "Proof",
     age: "Age",
-    barrel_picker_name: "Barrel Picker Name",
     bottle_expression: "Bottle Expression",
     distillery_name: "Distillery Name",
   };
@@ -135,7 +121,6 @@ function invColClass(col) {
     msrp: "col-msrp",
     proof: "col-proof",
     age: "col-age",
-    barrel_picker_name: "col-barrel-picker",
     bottle_expression: "col-expression",
     distillery_name: "col-distillery",
   };
@@ -143,25 +128,25 @@ function invColClass(col) {
 }
 
 function selectColumns(keys) {
-  // EXACT order requested
-  // Keep ids for links (hidden), and include new ids/names (even if not displayed)
+  // Display order (barrel_picker_name removed)
+  // Keep ids for links (hidden) + extra fields for future use
   const desired = [
     "score",
     "msrp",
     "proof",
     "age",
-    "barrel_picker_name",
     "bottle_expression",
     "distillery_name",
 
     // hidden/link-only + utility fields
-    "barrel_picker_id",
     "single_barrel_id",
     "distillery_id",
+    "barrel_picker_id",
 
-    // newly-added fields (not displayed right now, but present for future use)
+    // present for future use (not displayed)
     "blender_id",
     "blender_name",
+    "barrel_picker_name",
   ];
 
   return desired.filter((k) => keys.includes(k));
@@ -186,10 +171,6 @@ function renderCell(col, row) {
     return distilleryLink(row.distillery_id, row.distillery_name);
   }
 
-  if (col === "barrel_picker_name") {
-    return barrelPickerLink(row.barrel_picker_id, row.barrel_picker_name);
-  }
-
   if (col === "msrp") return fmtMoney(v);
   if (col === "score") return fmt1(v);
   if (col === "proof") return fmt1(v);
@@ -210,14 +191,15 @@ function renderTable(rows) {
   const keys = Object.keys(rows[0] || {});
   const cols = selectColumns(keys);
 
-  // Only display the requested columns (do NOT display ids or blender fields)
+  // Only display the requested columns (do NOT display ids or non-displayed fields)
   const displayCols = cols.filter(
     (c) =>
       c !== "single_barrel_id" &&
       c !== "distillery_id" &&
       c !== "barrel_picker_id" &&
       c !== "blender_id" &&
-      c !== "blender_name"
+      c !== "blender_name" &&
+      c !== "barrel_picker_name"
   );
 
   const thead = displayCols
@@ -229,11 +211,10 @@ function renderTable(rows) {
     })
     .join("");
 
-  // Searchable fields (State removed)
+  // Searchable fields (barrel_picker_name removed since it is not displayed)
   const searchableFields = [
     "bottle_expression",
     "distillery_name",
-    "barrel_picker_name",
     "blender_name",
     "single_barrel_id",
     "distillery_id",
