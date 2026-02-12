@@ -1,0 +1,352 @@
+/* =========================================================
+   Honey Barrel Hunter — Skin2
+   Compact • Data-driven • Whiskey palette
+   ========================================================= */
+
+/* ---------- CSS Variables (Theme) ---------- */
+:root {
+  /* Core palette */
+  --s2-bg: #f6f1ea;                 /* parchment / light oak */
+  --s2-panel: #ffffff;
+  --s2-border: #d8cfc3;
+
+  /* Browns / whiskey hues */
+  --s2-brown-dark: #3b2a20;         /* dark barrel */
+  --s2-brown-mid: #6a4a32;          /* toasted oak */
+  --s2-amber: #b57a2a;              /* whiskey */
+  --s2-amber-soft: #e1b66a;
+
+  /* Text */
+  --s2-text: #2b1d14;
+  --s2-text-muted: #7a6758;
+  --s2-text-invert: #ffffff;
+
+  /* Accents */
+  --s2-link: #8a5a20;
+  --s2-link-hover: #b57a2a;
+
+  /* Fonts */
+  --s2-font-sans: ui-sans-serif, system-ui, -apple-system,
+                  Segoe UI, Roboto, Helvetica, Arial;
+  --s2-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco,
+                  Consolas, "Liberation Mono", monospace;
+}
+
+/* ---------- Page Reset / Base ---------- */
+html, body {
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(
+    180deg,
+    #efe6d9 0%,
+    #f6f1ea 45%
+  );
+  color: var(--s2-text);
+  font-family: var(--s2-font-sans);
+  font-size: 13px;
+}
+
+/* ---------- Layout Containers ---------- */
+.skin2-wrap {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 14px 16px 40px;
+}
+
+.skin2-card {
+  background: var(--s2-panel);
+  border: 1px solid var(--s2-border);
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+/* ---------- Header ---------- */
+.skin2-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--s2-border);
+  background: linear-gradient(
+    90deg,
+    #4a3326,
+    #2f2119
+  );
+  color: var(--s2-text-invert);
+}
+
+.skin2-header h1 {
+  margin: 0;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.skin2-header .subtitle {
+  font-size: 11px;
+  color: #e6d3b8;
+  font-family: var(--s2-font-mono);
+}
+
+/* ---------- Navigation ---------- */
+.skin2-nav-row {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding: 9px 0 11px;
+  background: linear-gradient(
+    90deg,
+    #3b2a20,
+    #2a1d16
+  );
+  border-bottom: 1px solid var(--s2-border);
+}
+
+.skin2-nav {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--s2-amber-soft);
+  text-decoration: none;
+  padding: 5px 9px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.skin2-nav:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.skin2-nav-active {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+/* ---------- Controls ---------- */
+.skin2-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--s2-border);
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.95),
+    rgba(250,247,242,0.95)
+  );
+}
+
+/* Slightly more prominent search input (visual only) */
+.skin2-controls input#filter,
+.skin2-controls input[type="text"] {
+  width: 300px;
+  max-width: 100%;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1px solid var(--s2-border);
+  background: #ffffff;
+  color: var(--s2-text);
+}
+
+.skin2-controls input::placeholder {
+  color: var(--s2-text-muted);
+  font-weight: 500;
+}
+
+.skin2-controls input#filter:focus,
+.skin2-controls input[type="text"]:focus {
+  outline: none;
+  border-color: var(--s2-amber);
+  box-shadow: 0 0 0 3px rgba(181, 122, 42, 0.18);
+}
+
+.skin2-status {
+  font-size: 11px;
+  color: var(--s2-text-muted);
+  font-family: var(--s2-font-mono);
+}
+
+/* ---------- Table ---------- */
+.skin2-table-wrap {
+  overflow-x: auto;
+}
+
+/* Distillery page: allow table to fit without horizontal scroll (wrap instead) */
+#inventory-table-wrap.skin2-table-wrap {
+  overflow-x: visible;
+}
+
+/* Barrel Picker page: allow table to fit without horizontal scroll (wrap instead) */
+#bp-table .skin2-table-wrap {
+  overflow-x: visible;
+}
+
+table.skin2-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  table-layout: fixed; /* makes widths + wrapping behave consistently */
+}
+
+table.skin2-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  text-align: left;
+  padding: 8px 10px;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--s2-text-muted);
+  background: #f3ede5;
+  border-bottom: 1px solid var(--s2-border);
+}
+
+table.skin2-table tbody td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #ece4da;
+  vertical-align: middle;
+}
+
+table.skin2-table tbody tr:nth-child(even) {
+  background: #fbf8f4;
+}
+
+table.skin2-table tbody tr:hover {
+  background: rgba(181, 122, 42, 0.08);
+}
+
+/* Optional numeric alignment (generic) */
+.skin2-table td.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* =========================================================
+   Centered Columns for Barrel Pickers Picker List
+   ========================================================= */
+
+.skin2-table th.col-state,
+.skin2-table td.col-state,
+.skin2-table th.col-picks,
+.skin2-table td.col-picks,
+.skin2-table th.col-tastings,
+.skin2-table td.col-tastings {
+  text-align: center;
+}
+
+/* =========================================================
+   Skin2: Column Alignment + Widths
+   Common order patterns:
+   - Inventory: Score | MSRP | Proof | Age | Bottle Expression | Distillery Name
+   - Distillery bottom: Score | MSRP | Proof | Age | Barrel Picker Name | Bottle Expression (no Distillery)
+   - Barrel Picker bottom: Score | MSRP | Proof | Age | Distillery Name | Bottle Expression
+   ========================================================= */
+
+/* Tight numeric columns */
+.skin2-table th.col-score,
+.skin2-table td.col-score,
+.skin2-table th.col-msrp,
+.skin2-table td.col-msrp,
+.skin2-table th.col-proof,
+.skin2-table td.col-proof,
+.skin2-table th.col-age,
+.skin2-table td.col-age {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Width tuning for numeric columns */
+.skin2-table th.col-score,
+.skin2-table td.col-score { width: 80px; }
+
+.skin2-table th.col-msrp,
+.skin2-table td.col-msrp { width: 95px; }
+
+.skin2-table th.col-proof,
+.skin2-table td.col-proof { width: 85px; }
+
+.skin2-table th.col-age,
+.skin2-table td.col-age { width: 70px; }
+
+/* Text columns (wrap enabled) */
+.skin2-table th.col-expression,
+.skin2-table td.col-expression {
+  text-align: left;
+  width: 360px;
+}
+
+.skin2-table th.col-distillery,
+.skin2-table td.col-distillery {
+  text-align: left;
+  width: 280px;
+}
+
+/* Optional: used only on pages that still display a barrel picker column */
+.skin2-table th.col-barrel-picker,
+.skin2-table td.col-barrel-picker {
+  text-align: left;
+  width: 220px;
+}
+
+/* Wrap long names/expressions nicely */
+.skin2-table td.col-barrel-picker,
+.skin2-table td.col-expression,
+.skin2-table td.col-distillery {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Keep headers tidy even if cells wrap */
+.skin2-table th.col-barrel-picker,
+.skin2-table th.col-expression,
+.skin2-table th.col-distillery {
+  white-space: nowrap;
+}
+
+/* =========================================================
+   Spinning Star Styling
+   ========================================================= */
+
+.new-tasting-star {
+  height: 1.5em;
+  width: auto;
+  margin-left: 6px;
+  vertical-align: -0.2em;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35));
+  pointer-events: none;
+}
+
+/* ---------- Links ---------- */
+.skin2-link {
+  color: var(--s2-link);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.skin2-link:hover {
+  color: var(--s2-link-hover);
+  text-decoration: underline;
+}
+
+/* ---------- Error ---------- */
+.skin2-error {
+  padding: 10px 16px;
+  color: #9b2c2c;
+  font-size: 12px;
+  font-family: var(--s2-font-mono);
+  background: #fdecec;
+  border-top: 1px solid #f5c2c2;
+}
+
+/* (Flight Ticker section remains unchanged below) */
