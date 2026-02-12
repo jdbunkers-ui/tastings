@@ -10,10 +10,9 @@ import { supabase } from "./supabaseClient.js";
  *  - Distillery profile from public.v_distillery
  *  - Inventory table from public.v_bottle_inventory filtered by distillery_id
  *
- * Table behavior matches assets/js/inventory-page.js styling/feel, BUT:
- *  - ✅ Distillery column removed (redundant on this page)
- *  - ✅ Still uses same formatting + hyperlinks for Bottle Expression + Barrel Picker
- *  - ✅ Same new_update spinning star on Bottle Expression
+ * Table behavior matches assets/js/inventory-page.js:
+ *  - Same columns, same order, same formatting, same hyperlinks
+ *  - Same new_update spinning star on Bottle Expression
  */
 
 // Views / limits
@@ -30,7 +29,7 @@ const elError = document.getElementById("error");
 const elLoading = document.getElementById("loading");
 const elContent = document.getElementById("content");
 
-// Distillery profile fields
+// Distillery profile fields (existing ids in your distillery/index.html)
 const elName = document.getElementById("distillery-name");
 const elState = document.getElementById("distillery-state");
 const elAddress = document.getElementById("distillery-address");
@@ -40,7 +39,7 @@ const elMapsLink = document.getElementById("maps-link");
 const elPhoto = document.getElementById("distillery-photo");
 const elPhotoMissing = document.getElementById("photo-missing");
 
-// Bottom-half table mount
+// Bottom-half table mount (recommended to exist in distillery/index.html)
 const elInvWrap = document.getElementById("inventory-table-wrap");
 const elInvContent = document.getElementById("inventory-content");
 const elInvStatus = document.getElementById("inventory-status");
@@ -157,13 +156,14 @@ function buildMapsUrl(name, addressLine) {
 
 /**
  * =========================
- * Link helpers
+ * Link helpers (match inventory-page.js)
  * =========================
  */
 
 /**
- * Bottle Expression hyperlink (Same-tab)
+ * Bottle Expression hyperlink
  * distilleries/index.html -> ../bottles/index.html
+ * (Same-tab behavior)
  */
 function barrelLink(singleBarrelId, label) {
   const id = (singleBarrelId ?? "").toString().trim();
@@ -171,6 +171,19 @@ function barrelLink(singleBarrelId, label) {
   if (!id) return escapeHtml(text);
 
   const href = `../bottles/index.html?single_barrel_id=${encodeURIComponent(id)}`;
+  return `<a class="skin2-link" href="${href}">${escapeHtml(text)}</a>`;
+}
+
+/**
+ * Distillery Name hyperlink
+ * (Not used on this page by default, but kept identical for consistency)
+ */
+function distilleryLink(distilleryId, label) {
+  const id = (distilleryId ?? "").toString().trim();
+  const text = label ?? "";
+  if (!id) return escapeHtml(text);
+
+  const href = `../distilleries/index.html?distillery_id=${encodeURIComponent(id)}`;
   return `<a class="skin2-link" href="${href}">${escapeHtml(text)}</a>`;
 }
 
@@ -189,9 +202,7 @@ function barrelPickerLink(barrelPickerId, label) {
 
 /**
  * =========================
- * Inventory table logic (inventory feel, distillery-specific columns)
- * Columns:
- * Score | MSRP | Proof | Age | Barrel Picker Name | Bottle Expression
+ * Inventory table logic (copied/ported from inventory-page.js)
  * =========================
  */
 
@@ -203,6 +214,7 @@ function headerLabel(col) {
     age: "Age",
     barrel_picker_name: "Barrel Picker Name",
     bottle_expression: "Bottle Expression",
+    distillery_name: "Distillery Name",
   };
   return map[col] || col;
 }
@@ -215,12 +227,12 @@ function invColClass(col) {
     age: "col-age",
     barrel_picker_name: "col-barrel-picker",
     bottle_expression: "col-expression",
+    distillery_name: "col-distillery",
   };
   return map[col] || "";
 }
 
 function selectColumns(keys) {
-  // Distillery name removed on this page
   const desired = [
     "score",
     "msrp",
@@ -228,10 +240,12 @@ function selectColumns(keys) {
     "age",
     "barrel_picker_name",
     "bottle_expression",
+    "distillery_name",
 
     // hidden/link-only + utility fields
     "barrel_picker_id",
     "single_barrel_id",
+    "distillery_id",
 
     // present for future use
     "blender_id",
@@ -254,6 +268,10 @@ function renderCell(col, row) {
       : "";
 
     return `${star}${barrelLink(row.single_barrel_id, row.bottle_expression)}`;
+  }
+
+  if (col === "distillery_name") {
+    return distilleryLink(row.distillery_id, row.distillery_name);
   }
 
   if (col === "barrel_picker_name") {
@@ -280,10 +298,11 @@ function renderInventoryTable(rows) {
   const keys = Object.keys(rows[0] || {});
   const cols = selectColumns(keys);
 
-  // Hide technical fields and future fields
+  // Only display the requested columns (do NOT display ids or blender fields)
   const displayCols = cols.filter(
     (c) =>
       c !== "single_barrel_id" &&
+      c !== "distillery_id" &&
       c !== "barrel_picker_id" &&
       c !== "blender_id" &&
       c !== "blender_name"
@@ -300,9 +319,11 @@ function renderInventoryTable(rows) {
 
   const searchableFields = [
     "bottle_expression",
+    "distillery_name",
     "barrel_picker_name",
     "blender_name",
     "single_barrel_id",
+    "distillery_id",
     "barrel_picker_id",
     "blender_id",
   ];
@@ -367,7 +388,7 @@ async function fetchInventoryForDistillery(distilleryId) {
 
 /**
  * =========================
- * Profile render
+ * Profile render (top half)
  * =========================
  */
 
@@ -426,7 +447,8 @@ function renderProfile(dist) {
     try {
       const rows = await fetchInventoryForDistillery(distilleryId);
 
-      // Keep "highest score first" feel
+      // Optional: keep inventory feeling similar to old page (highest score first)
+      // without changing the displayed columns/formatting.
       const sorted = [...rows].sort((a, b) => {
         const aa = Number(a.score ?? a.avg_score ?? a.composite_score);
         const bb = Number(b.score ?? b.avg_score ?? b.composite_score);
