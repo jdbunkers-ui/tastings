@@ -133,9 +133,32 @@
         font-size: 12px;
       }
 
-      /* ✅ IMPORTANT:
-         Removed the global table/thead/tbody styles so Skin2 table styling applies cleanly.
-         If you ever need table styles here, scope them tightly (e.g. #some-wrap table { ... }). */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid var(--s2-border);
+        border-radius: 16px;
+        overflow: hidden;
+        background: rgba(255,255,255,0.62);
+      }
+      thead th {
+        text-align: left;
+        font-size: 12px;
+        color: rgba(43, 29, 20, 0.72);
+        padding: 10px 10px;
+        border-bottom: 1px solid var(--s2-border);
+        background: rgba(255,255,255,0.50);
+        white-space: nowrap;
+      }
+      tbody td {
+        padding: 10px 10px;
+        border-bottom: 1px solid rgba(216, 207, 195, 0.85);
+        font-size: 13px;
+        color: rgba(43, 29, 20, 0.92);
+        vertical-align: top;
+      }
+      tbody tr:last-child td { border-bottom: none; }
+      .num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
 
       .muted-card {
         border: 1px solid var(--s2-border);
@@ -177,7 +200,6 @@
             />
             <div id="photo-missing" style="display:none;">No photo available yet.</div>
           </div>
-
           <!-- Details card -->
           <div class="card" id="distillery-card">
             <h1 id="distillery-name" class="title">—</h1>
@@ -206,15 +228,32 @@
           </div>
         </div>
 
-        <!-- ✅ Inventory-style Bottles section (Skin2 table rendered by distillery-page.js) -->
+        <!-- Bottles section -->
         <div class="section-title" style="margin-top:22px;">
-          <h2>Tasted Bottles</h2>
-          <div class="hint" id="inventory-status"></div>
+          <h2>
+            Tasted Bottles
+          </h2>
+          <div class="hint" id="bottles-count"></div>
         </div>
 
-        <!-- Table mount (JS will inject <table class="skin2-table"> ... ) -->
-        <div id="inventory-table-wrap" class="skin2-table-wrap">
-          <div id="inventory-content"></div>
+        <div id="bottles-empty" class="muted-card" style="display:none;">
+          No tasted bottles found for this distillery yet.
+        </div>
+
+        <div id="bottles-table-wrap" style="display:none;">
+          <table>
+            <thead>
+              <tr>
+                <th>Bottle Expression</th>
+                <th>Spirit Subtype</th>
+                <th class="num">Score</th>
+                <th class="num">Proof</th>
+                <th class="num">Age</th>
+                <th class="num">MSRP</th>
+              </tr>
+            </thead>
+            <tbody id="bottles-tbody"></tbody>
+          </table>
         </div>
       </div>
 

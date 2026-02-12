@@ -131,17 +131,25 @@ html, body {
 .skin2-controls {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 16px;
+  gap: 12px;
+  padding: 12px 16px;
   border-bottom: 1px solid var(--s2-border);
-  background: #faf7f2;
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.95),
+    rgba(250,247,242,0.95)
+  );
 }
 
+/* Slightly more prominent search input (visual only) */
+.skin2-controls input#filter,
 .skin2-controls input[type="text"] {
-  width: 260px;
-  padding: 6px 8px;
-  font-size: 12px;
-  border-radius: 6px;
+  width: 300px;
+  max-width: 100%;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
   border: 1px solid var(--s2-border);
   background: #ffffff;
   color: var(--s2-text);
@@ -149,6 +157,14 @@ html, body {
 
 .skin2-controls input::placeholder {
   color: var(--s2-text-muted);
+  font-weight: 500;
+}
+
+.skin2-controls input#filter:focus,
+.skin2-controls input[type="text"]:focus {
+  outline: none;
+  border-color: var(--s2-amber);
+  box-shadow: 0 0 0 3px rgba(181, 122, 42, 0.18);
 }
 
 .skin2-status {

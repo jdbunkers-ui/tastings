@@ -1,30 +1,50 @@
+/* =========================================================
+   Honey Barrel Hunter — Skin2 Distillery Page
+   File: assets/js/distillery-page.js
+   ========================================================= */
+
 import { supabase } from "./supabaseClient.js";
 
-
 /**
- * Distillery Skin2 Page
- * File: assets/distillery/distillerySkin2Page.js
- *
  * Renders:
  *  - Distillery profile from public.v_distillery
- *  - Tasted bottles list from public.v_bottle_inventory filtered by distillery_id
+ *  - Inventory table from public.v_bottle_inventory filtered by distillery_id
  *
- * Links:
- *  - Bottle Expression in table links to ../barrel/index_skin2.html?single_barrel_id=<uuid>
+ * Table behavior matches assets/js/inventory-page.js:
+ *  - Same columns, same order, same formatting, same hyperlinks
+ *  - Same new_update spinning star on Bottle Expression
  */
 
-// Photo strategy:
-// - If v_distillery.distillery_photo_filename exists -> use that
-// - Else fallback to "<distillery_id>.jpg"
-// Folder expected: assets/img/distilleries/
-// (relative from assets/distillery/ => "../img/distilleries/")
-const PHOTO_BASE = "../assets/img/distilleries/";
-
-const DEFAULT_PHOTO_EXT = "jpg";
-
-// Keep the first test simple: load up to N tasted bottles for this distillery.
+// Views / limits
+const VIEW_PROFILE = "v_distillery";
+const VIEW_INVENTORY = "v_bottle_inventory";
 const BOTTLES_LIMIT = 500;
 
+// Photo strategy
+const PHOTO_BASE = "../assets/img/distilleries/";
+const DEFAULT_PHOTO_EXT = "jpg";
+
+// ---------- DOM ----------
+const elError = document.getElementById("error");
+const elLoading = document.getElementById("loading");
+const elContent = document.getElementById("content");
+
+// Distillery profile fields (existing ids in your distillery/index.html)
+const elName = document.getElementById("distillery-name");
+const elState = document.getElementById("distillery-state");
+const elAddress = document.getElementById("distillery-address");
+const elDesc = document.getElementById("distillery-description");
+const elMapsLink = document.getElementById("maps-link");
+
+const elPhoto = document.getElementById("distillery-photo");
+const elPhotoMissing = document.getElementById("photo-missing");
+
+// Bottom-half table mount (recommended to exist in distillery/index.html)
+const elInvWrap = document.getElementById("inventory-table-wrap");
+const elInvContent = document.getElementById("inventory-content");
+const elInvStatus = document.getElementById("inventory-status");
+
+// ---------- Helpers ----------
 function qs(name) {
   return new URLSearchParams(window.location.search).get(name);
 }
@@ -34,48 +54,41 @@ function show(el, isShown) {
   el.style.display = isShown ? "" : "none";
 }
 
-function setText(id, value) {
-  const el = document.getElementById(id);
+function setLoading(isLoading) {
+  show(elLoading, isLoading);
+  show(elContent, !isLoading);
+}
+
+function setText(el, value) {
   if (!el) return;
   el.textContent = value ?? "";
 }
 
-function showError(msg) {
-  const el = document.getElementById("error");
-  if (!el) return;
-  el.textContent = msg;
-  show(el, true);
+function setStatus(text) {
+  if (!elInvStatus) return;
+  elInvStatus.textContent = text ?? "";
 }
 
-function setLoading(isLoading) {
-  show(document.getElementById("loading"), isLoading);
-  show(document.getElementById("content"), !isLoading);
+function clearError() {
+  if (!elError) return;
+  show(elError, false);
+  elError.textContent = "";
 }
 
-function safeStr(v, fallback = "N/A") {
-  const s = (v ?? "").toString().trim();
-  return s.length ? s : fallback;
+function showError(message, details) {
+  if (!elError) return;
+  show(elError, true);
+  const extra =
+    details && typeof details === "object"
+      ? `\n\n${JSON.stringify(details, null, 2)}`
+      : details
+      ? `\n\n${String(details)}`
+      : "";
+  elError.textContent = `${message}${extra}`;
 }
 
-function fmt1(v) {
-  const n = Number(v);
-  return Number.isFinite(n) ? n.toFixed(1) : "—";
-}
-
-function fmt2(v) {
-  const n = Number(v);
-  return Number.isFinite(n) ? n.toFixed(2) : "—";
-}
-
-function fmtAge(v) {
-  const n = Number(v);
-  if (!Number.isFinite(n)) return "—";
-  return n < 1.0 ? "NAS" : n.toFixed(1);
-}
-
-function escapeHtml(str) {
-  return (str ?? "")
-    .toString()
+function escapeHtml(v) {
+  return String(v ?? "")
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
@@ -83,12 +96,38 @@ function escapeHtml(str) {
     .replaceAll("'", "&#039;");
 }
 
+function safeStr(v, fallback = "N/A") {
+  const s = (v ?? "").toString().trim();
+  return s.length ? s : fallback;
+}
+
+function isNumberLike(v) {
+  if (v == null) return false;
+  const n = Number(v);
+  return Number.isFinite(n);
+}
+
+function fmtMoney(v) {
+  if (!isNumberLike(v)) return escapeHtml(v);
+  return `$${Number(v).toFixed(2)}`;
+}
+
+function fmt1(v) {
+  if (!isNumberLike(v)) return escapeHtml(v);
+  return Number(v).toFixed(1);
+}
+
+function fmtAge(v) {
+  if (!isNumberLike(v)) return "NAS";
+  const n = Number(v);
+  if (n < 1.0) return "NAS";
+  return n.toFixed(1);
+}
+
 function buildFullAddress(dist) {
-  // Prefer full_address if you have it
   const full = (dist.full_address ?? "").toString().trim();
   if (full) return full;
 
-  // Else build from parts (if present in your view/table)
   const parts = [
     dist.address_line_1,
     dist.address_line_2,
@@ -115,28 +154,218 @@ function buildMapsUrl(name, addressLine) {
   return `https://www.google.com/maps/search/?api=1&query=${q}`;
 }
 
-function pickExpression(row) {
-  // Try likely field names (since your view may differ)
-  return (
-    row.bottle_expression ??
-    row.expression_name ??
-    row.bottle_type ??
-    row.label ??
-    row.brand_name ??
-    "—"
-  );
+/**
+ * =========================
+ * Link helpers (match inventory-page.js)
+ * =========================
+ */
+
+/**
+ * Bottle Expression hyperlink
+ * distilleries/index.html -> ../bottles/index.html
+ * (Same-tab behavior)
+ */
+function barrelLink(singleBarrelId, label) {
+  const id = (singleBarrelId ?? "").toString().trim();
+  const text = label ?? "";
+  if (!id) return escapeHtml(text);
+
+  const href = `../bottles/index.html?single_barrel_id=${encodeURIComponent(id)}`;
+  return `<a class="skin2-link" href="${href}">${escapeHtml(text)}</a>`;
 }
 
-function barrelHref(singleBarrelId) {
-  const id = (singleBarrelId ?? "").toString().trim();
-  return id
-    ? `../bottles/index.html?single_barrel_id=${encodeURIComponent(id)}`
-    : "";
+/**
+ * Distillery Name hyperlink
+ * (Not used on this page by default, but kept identical for consistency)
+ */
+function distilleryLink(distilleryId, label) {
+  const id = (distilleryId ?? "").toString().trim();
+  const text = label ?? "";
+  if (!id) return escapeHtml(text);
+
+  const href = `../distilleries/index.html?distillery_id=${encodeURIComponent(id)}`;
+  return `<a class="skin2-link" href="${href}">${escapeHtml(text)}</a>`;
 }
+
+/**
+ * Barrel Picker Name hyperlink
+ * distilleries/index.html -> ../barrel_pickers/index.html
+ */
+function barrelPickerLink(barrelPickerId, label) {
+  const id = (barrelPickerId ?? "").toString().trim();
+  const text = label ?? "";
+  if (!id) return escapeHtml(text);
+
+  const href = `../barrel_pickers/index.html?barrel_picker_id=${encodeURIComponent(id)}`;
+  return `<a class="skin2-link" href="${href}">${escapeHtml(text)}</a>`;
+}
+
+/**
+ * =========================
+ * Inventory table logic (copied/ported from inventory-page.js)
+ * =========================
+ */
+
+function headerLabel(col) {
+  const map = {
+    score: "Score",
+    msrp: "MSRP",
+    proof: "Proof",
+    age: "Age",
+    barrel_picker_name: "Barrel Picker Name",
+    bottle_expression: "Bottle Expression",
+    distillery_name: "Distillery Name",
+  };
+  return map[col] || col;
+}
+
+function invColClass(col) {
+  const map = {
+    score: "col-score",
+    msrp: "col-msrp",
+    proof: "col-proof",
+    age: "col-age",
+    barrel_picker_name: "col-barrel-picker",
+    bottle_expression: "col-expression",
+    distillery_name: "col-distillery",
+  };
+  return map[col] || "";
+}
+
+function selectColumns(keys) {
+  const desired = [
+    "score",
+    "msrp",
+    "proof",
+    "age",
+    "barrel_picker_name",
+    "bottle_expression",
+    "distillery_name",
+
+    // hidden/link-only + utility fields
+    "barrel_picker_id",
+    "single_barrel_id",
+    "distillery_id",
+
+    // present for future use
+    "blender_id",
+    "blender_name",
+  ];
+
+  return desired.filter((k) => keys.includes(k));
+}
+
+function renderCell(col, row) {
+  const v = row[col];
+
+  if (col === "bottle_expression") {
+    const star = row.new_update
+      ? `<img
+           src="../assets/img/logo/gold_spinning_star.gif"
+           alt="New"
+           style="height:18px; vertical-align:middle; margin-right:6px;"
+         />`
+      : "";
+
+    return `${star}${barrelLink(row.single_barrel_id, row.bottle_expression)}`;
+  }
+
+  if (col === "distillery_name") {
+    return distilleryLink(row.distillery_id, row.distillery_name);
+  }
+
+  if (col === "barrel_picker_name") {
+    return barrelPickerLink(row.barrel_picker_id, row.barrel_picker_name);
+  }
+
+  if (col === "msrp") return fmtMoney(v);
+  if (col === "score") return fmt1(v);
+  if (col === "proof") return fmt1(v);
+  if (col === "age") return fmtAge(v);
+
+  return escapeHtml(v);
+}
+
+function renderInventoryTable(rows) {
+  if (!elInvContent) return;
+
+  if (!rows || rows.length === 0) {
+    elInvContent.innerHTML = `<div style="padding:12px;">No inventory rows returned.</div>`;
+    window.dispatchEvent(new Event("skin2:inventoryRendered"));
+    return;
+  }
+
+  const keys = Object.keys(rows[0] || {});
+  const cols = selectColumns(keys);
+
+  // Only display the requested columns (do NOT display ids or blender fields)
+  const displayCols = cols.filter(
+    (c) =>
+      c !== "single_barrel_id" &&
+      c !== "distillery_id" &&
+      c !== "barrel_picker_id" &&
+      c !== "blender_id" &&
+      c !== "blender_name"
+  );
+
+  const thead = displayCols
+    .map((c) => {
+      const cls = invColClass(c);
+      return `<th class="${escapeHtml(cls)}" title="${escapeHtml(c)}">${escapeHtml(
+        headerLabel(c)
+      )}</th>`;
+    })
+    .join("");
+
+  const searchableFields = [
+    "bottle_expression",
+    "distillery_name",
+    "barrel_picker_name",
+    "blender_name",
+    "single_barrel_id",
+    "distillery_id",
+    "barrel_picker_id",
+    "blender_id",
+  ];
+
+  const tbody = rows
+    .map((r) => {
+      const searchable = searchableFields
+        .filter((c) => c in r)
+        .map((c) => (r[c] == null ? "" : String(r[c])))
+        .join(" | ")
+        .toLowerCase();
+
+      const tds = displayCols
+        .map((c) => {
+          const cls = invColClass(c);
+          return `<td class="${escapeHtml(cls)}">${renderCell(c, r)}</td>`;
+        })
+        .join("");
+
+      return `<tr class="inv-row" data-search="${escapeHtml(searchable)}">${tds}</tr>`;
+    })
+    .join("");
+
+  elInvContent.innerHTML = `
+    <table class="skin2-table" aria-label="Bottle inventory table">
+      <thead><tr>${thead}</tr></thead>
+      <tbody>${tbody}</tbody>
+    </table>
+  `;
+
+  window.dispatchEvent(new Event("skin2:inventoryRendered"));
+}
+
+/**
+ * =========================
+ * Supabase fetches
+ * =========================
+ */
 
 async function fetchDistilleryProfile(distilleryId) {
   const { data, error } = await supabase
-    .from("v_distillery")
+    .from(VIEW_PROFILE)
     .select("*")
     .eq("distillery_id", distilleryId)
     .maybeSingle();
@@ -146,9 +375,9 @@ async function fetchDistilleryProfile(distilleryId) {
   return data;
 }
 
-async function fetchTastedBottles(distilleryId) {
+async function fetchInventoryForDistillery(distilleryId) {
   const { data, error } = await supabase
-    .from("v_bottle_inventory")
+    .from(VIEW_INVENTORY)
     .select("*")
     .eq("distillery_id", distilleryId)
     .limit(BOTTLES_LIMIT);
@@ -157,96 +386,41 @@ async function fetchTastedBottles(distilleryId) {
   return data ?? [];
 }
 
+/**
+ * =========================
+ * Profile render (top half)
+ * =========================
+ */
+
 function renderProfile(dist) {
   const name = safeStr(dist.distillery_name, "Unknown Distillery");
   const state = safeStr(dist.state, "N/A");
   const addressLine = buildFullAddress(dist);
   const desc = safeStr(dist.distillery_description, "No description available yet.");
 
-  setText("distillery-name", name);
-  setText("distillery-state", state);
-  setText("distillery-address", addressLine);
-  setText("distillery-description", desc);
+  setText(elName, name);
+  setText(elState, state);
+  setText(elAddress, addressLine);
+  setText(elDesc, desc);
 
-  const mapsLink = document.getElementById("maps-link");
-  if (mapsLink) mapsLink.href = buildMapsUrl(name, addressLine);
+  if (elMapsLink) elMapsLink.href = buildMapsUrl(name, addressLine);
 
-  // Photo (optional)
-  const img = document.getElementById("distillery-photo");
-  const photoMissing = document.getElementById("photo-missing");
-
-  if (img) {
-    img.src = buildPhotoUrl(dist.distillery_id, dist.distillery_photo_filename);
-    img.onerror = () => {
-      show(img, false);
-      show(photoMissing, true);
+  if (elPhoto) {
+    elPhoto.src = buildPhotoUrl(dist.distillery_id, dist.distillery_photo_filename);
+    elPhoto.onerror = () => {
+      show(elPhoto, false);
+      show(elPhotoMissing, true);
     };
   } else {
-    // if image element isn't present, don't fail the page
-    show(photoMissing, true);
+    show(elPhotoMissing, true);
   }
 }
 
-function renderBottles(rows) {
-  const countEl = document.getElementById("bottles-count");
-  if (countEl) countEl.textContent = rows.length ? `(${rows.length})` : "";
-
-  const emptyEl = document.getElementById("bottles-empty");
-  const wrapEl = document.getElementById("bottles-table-wrap");
-  const tbody = document.getElementById("bottles-tbody");
-
-  if (!tbody) return;
-  tbody.innerHTML = "";
-
-  if (!rows.length) {
-    show(emptyEl, true);
-    show(wrapEl, false);
-    return;
-  }
-
-  show(emptyEl, false);
-  show(wrapEl, true);
-
-  // Lightweight ordering: highest score first if present
-  const sorted = [...rows].sort((a, b) => {
-    const aa = Number(a.score ?? a.avg_score ?? a.composite_score);
-    const bb = Number(b.score ?? b.avg_score ?? b.composite_score);
-    if (!Number.isFinite(bb) && !Number.isFinite(aa)) return 0;
-    if (!Number.isFinite(bb)) return -1;
-    if (!Number.isFinite(aa)) return 1;
-    return bb - aa;
-  });
-
-  for (const row of sorted) {
-    const tr = document.createElement("tr");
-
-    const expr = pickExpression(row);
-    const subtype = safeStr(row.spirit_subtype, "—");
-
-    const scoreVal = row.score ?? row.avg_score ?? row.composite_score;
-    const proofVal =
-      row.proof ?? row.bottling_strength ?? row.bottling_strength_type;
-    const ageVal = row.age ?? row.age_years ?? row.age_in_years;
-    const msrpVal = row.msrp;
-
-    // ✅ Bottle Expression links to Skin2 barrel page
-    const href = barrelHref(row.single_barrel_id);
-    const exprHtml = href
-      ? `<a class="skin2-link" target="_blank" rel="noopener noreferrer" href="${escapeHtml(href)}">${escapeHtml(expr)}</a>`
-      : escapeHtml(expr);
-
-    tr.innerHTML = `
-      <td>${exprHtml}</td>
-      <td class="muted">${escapeHtml(subtype)}</td>
-      <td class="num">${fmt1(scoreVal)}</td>
-      <td class="num">${fmt1(proofVal)}</td>
-      <td class="num">${fmtAge(ageVal)}</td>
-      <td class="num">$${fmt2(msrpVal)}</td>
-    `;
-
-    tbody.appendChild(tr);
-  }
-}
+/**
+ * =========================
+ * Boot
+ * =========================
+ */
 
 (async function init() {
   const distilleryId = (qs("distillery_id") || qs("id") || "").trim();
@@ -257,26 +431,45 @@ function renderBottles(rows) {
     return;
   }
 
+  clearError();
   setLoading(true);
+  setStatus("Loading distillery…");
 
   try {
-    // 1) Always render profile first (better UX)
+    // 1) Profile first
     const dist = await fetchDistilleryProfile(distilleryId);
     renderProfile(dist);
 
-    // 2) Then load bottles (if this fails, we still keep the profile visible)
+    // 2) Inventory table (bottom half)
+    setStatus("Loading inventory…");
+    show(elInvWrap, true);
+
     try {
-      const bottles = await fetchTastedBottles(distilleryId);
-      renderBottles(bottles);
-    } catch (bErr) {
-      // Keep page usable; just show an error message
-      renderBottles([]);
-      showError(bErr?.message || "Failed to load tasted bottles for this distillery.");
+      const rows = await fetchInventoryForDistillery(distilleryId);
+
+      // Optional: keep inventory feeling similar to old page (highest score first)
+      // without changing the displayed columns/formatting.
+      const sorted = [...rows].sort((a, b) => {
+        const aa = Number(a.score ?? a.avg_score ?? a.composite_score);
+        const bb = Number(b.score ?? b.avg_score ?? b.composite_score);
+        if (!Number.isFinite(bb) && !Number.isFinite(aa)) return 0;
+        if (!Number.isFinite(bb)) return -1;
+        if (!Number.isFinite(aa)) return 1;
+        return bb - aa;
+      });
+
+      renderInventoryTable(sorted);
+      setStatus(`Loaded ${sorted?.length ?? 0} rows`);
+    } catch (invErr) {
+      renderInventoryTable([]);
+      setStatus("Error loading inventory");
+      showError(invErr?.message || "Failed to load inventory for this distillery.");
     }
 
     setLoading(false);
   } catch (err) {
     setLoading(false);
+    setStatus("Error loading distillery");
     showError(err?.message || "Unknown error loading distillery page.");
   }
 })();
