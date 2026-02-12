@@ -201,6 +201,7 @@ async function loadPickerSection() {
     .from(VIEW_PICKERS)
     .select("state,barrel_picker_name,city,barrel_picker_id,barrel_pick_count,total_tastings,new_update")
     .order("state", { ascending: true })
+    .order("city", { ascending: true })
     .order("barrel_picker_name", { ascending: true });
 
   if (error) {
