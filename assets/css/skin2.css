@@ -178,6 +178,11 @@ html, body {
   overflow-x: auto;
 }
 
+/* Distillery page: allow table to fit without horizontal scroll (wrap instead) */
+#inventory-table-wrap.skin2-table-wrap {
+  overflow-x: visible;
+}
+
 table.skin2-table {
   width: 100%;
   border-collapse: collapse;
