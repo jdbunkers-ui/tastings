@@ -1,5 +1,5 @@
 /* =========================================================
-   Honey Barrel Hunter — Skin2
+   Velvet Room — Skin2 (Inventory)
    Compact • Data-driven • Whiskey palette
    ========================================================= */
 
@@ -166,7 +166,6 @@ table.skin2-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 12px;
-  table-layout: fixed; /* makes widths + wrapping behave consistently */
 }
 
 table.skin2-table thead th {
@@ -198,14 +197,14 @@ table.skin2-table tbody tr:hover {
   background: rgba(181, 122, 42, 0.08);
 }
 
-/* Optional numeric alignment (generic) */
+/* Optional numeric alignment */
 .skin2-table td.num {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
 /* =========================================================
-   Centered Columns for Barrel Pickers Page (Picker List)
+   NEW: Centered Columns for Barrel Pickers
    ========================================================= */
 
 .skin2-table th.col-state,
@@ -218,12 +217,9 @@ table.skin2-table tbody tr:hover {
 }
 
 /* =========================================================
-   Inventory (Skin2): Column Alignment + Widths
-   Order:
-   Score | MSRP | Proof | Age | Barrel Picker Name | Bottle Expression | Distillery Name
+   NEW: Centered Columns for Inventory (Skin2)
    ========================================================= */
 
-/* Tight numeric columns */
 .skin2-table th.col-score,
 .skin2-table td.col-score,
 .skin2-table th.col-msrp,
@@ -231,62 +227,16 @@ table.skin2-table tbody tr:hover {
 .skin2-table th.col-proof,
 .skin2-table td.col-proof,
 .skin2-table th.col-age,
-.skin2-table td.col-age {
+.skin2-table td.col-age,
+.skin2-table th.col-inv-state,
+.skin2-table td.col-inv-state {
   text-align: center;
   font-variant-numeric: tabular-nums;
-  white-space: nowrap;
 }
 
-/* Width tuning for numeric columns */
-.skin2-table th.col-score,
-.skin2-table td.col-score { width: 80px; }
-
-.skin2-table th.col-msrp,
-.skin2-table td.col-msrp { width: 95px; }
-
-.skin2-table th.col-proof,
-.skin2-table td.col-proof { width: 85px; }
-
-.skin2-table th.col-age,
-.skin2-table td.col-age { width: 70px; }
-
-/* Wide text columns (WRAP ENABLED) */
-.skin2-table th.col-barrel-picker,
-.skin2-table td.col-barrel-picker {
-  text-align: left;
-  width: 220px;
-}
-
-.skin2-table th.col-expression,
-.skin2-table td.col-expression {
-  text-align: left;
-  width: 340px;
-}
-
-.skin2-table th.col-distillery,
-.skin2-table td.col-distillery {
-  text-align: left;
-  width: 260px;
-}
-
-/* ✅ Wrap long names/expressions nicely (no ellipsis) */
-.skin2-table td.col-barrel-picker,
-.skin2-table td.col-expression,
-.skin2-table td.col-distillery {
-  white-space: normal;
-  overflow-wrap: anywhere; /* breaks very long tokens safely */
-  word-break: break-word;  /* fallback for older browsers */
-}
-
-/* Keep headers tidy even if text wraps in cells */
-.skin2-table th.col-barrel-picker,
-.skin2-table th.col-expression,
-.skin2-table th.col-distillery {
-  white-space: nowrap;
-}
 
 /* =========================================================
-   Spinning Star Styling
+   NEW: Spinning Star Styling
    ========================================================= */
 
 .new-tasting-star {

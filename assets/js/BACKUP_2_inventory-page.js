@@ -6,21 +6,15 @@
 import { supabase } from "./supabaseClient.js";
 
 const VIEW_NAME = "v_bottle_inventory";
-const ROW_LIMIT = 300;
 
 // DOM
 const elContent = document.getElementById("inventory-content");
 const elStatus = document.getElementById("status");
 const elError = document.getElementById("error");
 
-function show(el, isShown) {
-  if (!el) return;
-  el.style.display = isShown ? "" : "none";
-}
-
 function showError(message, details) {
   if (!elError) return;
-  show(elError, true);
+  elError.style.display = "block";
   const extra =
     details && typeof details === "object"
       ? `\n\n${JSON.stringify(details, null, 2)}`
@@ -32,13 +26,13 @@ function showError(message, details) {
 
 function clearError() {
   if (!elError) return;
-  show(elError, false);
+  elError.style.display = "none";
   elError.textContent = "";
 }
 
 function setStatus(text) {
   if (!elStatus) return;
-  elStatus.textContent = text ?? "";
+  elStatus.textContent = text;
 }
 
 function escapeHtml(v) {
@@ -76,7 +70,7 @@ function fmtAge(v) {
 /**
  * Bottle Expression hyperlink
  * inventory/index.html -> ../bottles/index.html
- * (Same-tab behavior)
+ * (Opens in SAME tab — like distilleryLink)
  */
 function barrelLink(singleBarrelId, label) {
   const id = (singleBarrelId ?? "").toString().trim();
@@ -84,6 +78,8 @@ function barrelLink(singleBarrelId, label) {
   if (!id) return escapeHtml(text);
 
   const href = `../bottles/index.html?single_barrel_id=${encodeURIComponent(id)}`;
+
+  // ✅ same-tab behavior (no target="_blank")
   return `<a class="skin2-link" href="${href}">${escapeHtml(text)}</a>`;
 }
 
@@ -92,25 +88,12 @@ function barrelLink(singleBarrelId, label) {
  * inventory/index.html -> ../distilleries/index.html
  */
 function distilleryLink(distilleryId, label) {
-  const id = (distilleryId ?? "").toString().trim();
+  const id = distilleryId ?? "";
   const text = label ?? "";
   if (!id) return escapeHtml(text);
 
   const href = `../distilleries/index.html?distillery_id=${encodeURIComponent(id)}`;
-  return `<a class="skin2-link" href="${href}">${escapeHtml(text)}</a>`;
-}
-
-/**
- * Barrel Picker Name hyperlink
- * inventory/index.html -> ../barrel_pickers/index.html
- */
-function barrelPickerLink(barrelPickerId, label) {
-  const id = (barrelPickerId ?? "").toString().trim();
-  const text = label ?? "";
-  if (!id) return escapeHtml(text);
-
-  const href = `../barrel_pickers/index.html?barrel_picker_id=${encodeURIComponent(id)}`;
-  return `<a class="skin2-link" href="${href}">${escapeHtml(text)}</a>`;
+  return `<a href="${href}" class="skin2-link">${escapeHtml(text)}</a>`;
 }
 
 function headerLabel(col) {
@@ -119,15 +102,16 @@ function headerLabel(col) {
     msrp: "MSRP",
     proof: "Proof",
     age: "Age",
-    barrel_picker_name: "Barrel Picker Name",
     bottle_expression: "Bottle Expression",
     distillery_name: "Distillery Name",
+    state: "State",
   };
   return map[col] || col;
 }
 
 /**
- * Column classes so CSS can target specific columns.
+ * Column classes so CSS can target & center specific columns.
+ * (We keep state separate from barrel-picker centering to avoid collisions.)
  */
 function invColClass(col) {
   const map = {
@@ -135,35 +119,24 @@ function invColClass(col) {
     msrp: "col-msrp",
     proof: "col-proof",
     age: "col-age",
-    barrel_picker_name: "col-barrel-picker",
-    bottle_expression: "col-expression",
-    distillery_name: "col-distillery",
+    state: "col-inv-state",
   };
   return map[col] || "";
 }
 
 function selectColumns(keys) {
-  // EXACT order requested
-  // Keep ids for links (hidden), and include new ids/names (even if not displayed)
+  // EXACT order requested + keep ids for links (hidden)
   const desired = [
     "score",
     "msrp",
     "proof",
     "age",
-    "barrel_picker_name",
     "bottle_expression",
     "distillery_name",
-
-    // hidden/link-only + utility fields
-    "barrel_picker_id",
+    "state",
     "single_barrel_id",
     "distillery_id",
-
-    // newly-added fields (not displayed right now, but present for future use)
-    "blender_id",
-    "blender_name",
   ];
-
   return desired.filter((k) => keys.includes(k));
 }
 
@@ -186,10 +159,6 @@ function renderCell(col, row) {
     return distilleryLink(row.distillery_id, row.distillery_name);
   }
 
-  if (col === "barrel_picker_name") {
-    return barrelPickerLink(row.barrel_picker_id, row.barrel_picker_name);
-  }
-
   if (col === "msrp") return fmtMoney(v);
   if (col === "score") return fmt1(v);
   if (col === "proof") return fmt1(v);
@@ -210,15 +179,8 @@ function renderTable(rows) {
   const keys = Object.keys(rows[0] || {});
   const cols = selectColumns(keys);
 
-  // Only display the requested columns (do NOT display ids or blender fields)
-  const displayCols = cols.filter(
-    (c) =>
-      c !== "single_barrel_id" &&
-      c !== "distillery_id" &&
-      c !== "barrel_picker_id" &&
-      c !== "blender_id" &&
-      c !== "blender_name"
-  );
+  // Hide technical ids from display (but keep them in the row object)
+  const displayCols = cols.filter((c) => c !== "single_barrel_id" && c !== "distillery_id");
 
   const thead = displayCols
     .map((c) => {
@@ -229,16 +191,13 @@ function renderTable(rows) {
     })
     .join("");
 
-  // Searchable fields (State removed)
+  // Keep search string small and stable
   const searchableFields = [
     "bottle_expression",
     "distillery_name",
-    "barrel_picker_name",
-    "blender_name",
+    "state",
     "single_barrel_id",
     "distillery_id",
-    "barrel_picker_id",
-    "blender_id",
   ];
 
   const tbody = rows
@@ -275,7 +234,7 @@ async function loadInventory() {
   setStatus("Loading inventory…");
 
   try {
-    const { data, error } = await supabase.from(VIEW_NAME).select("*").limit(ROW_LIMIT);
+    const { data, error } = await supabase.from(VIEW_NAME).select("*").limit(300);
     if (error) throw error;
 
     renderTable(data);
