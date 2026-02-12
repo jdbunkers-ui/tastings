@@ -121,10 +121,11 @@ function renderPickerTable(rows) {
         <table class="skin2-table">
           <thead>
             <tr>
-              <th>Picker</th>
               <th class="col-state" style="width:90px;">State</th>
-              <th class="col-picks" style="width:90px;">Picks</th>
+              <th style="width:140px;">City</th>
+              <th>Picker</th>
               <th class="col-tastings" style="width:110px;">Tastings</th>
+              <th class="col-picks" style="width:90px;">Picks</th>
             </tr>
           </thead>
           <tbody>
@@ -134,16 +135,16 @@ function renderPickerTable(rows) {
                     .map((r) => {
                       const name = r.barrel_picker_name || "Unknown store";
                       const state = (r.state || "—").trim() || "—";
-                      const city = r.city || "";
+                      const city = r.city || "—";
                       const id = r.barrel_picker_id || "";
                       const href = id ? buildPickerHref(id) : "#";
 
                       const barrels = toInt(r.barrel_pick_count);
                       const tastings = toInt(r.total_tastings);
 
-                      // ✅ Add star when this picker has a tasting created in last 7 days
+                      // ⭐ Star when picker has a recent tasting
                       const star = r.new_update
-                        ? `<img 
+                        ? `<img
                              src="./assets/img/logo/gold_spinning_star.gif"
                              alt="New tasting"
                              style="height:18px; vertical-align:middle; margin-left:6px;"
@@ -152,26 +153,20 @@ function renderPickerTable(rows) {
 
                       return `
                         <tr>
+                          <td class="mono col-state">${escapeHtml(state)}</td>
+                          <td class="mono">${escapeHtml(city)}</td>
                           <td>
                             <div style="font-weight:800;">
                               <a class="skin2-link" href="${escapeHtml(href)}">
                                 ${escapeHtml(name)}
                               </a>
                             </div>
-                            ${
-                              city
-                                ? `<div class="mono" style="font-size:12px; opacity:0.75; margin-top:2px;">
-                                     ${escapeHtml(city)}
-                                   </div>`
-                                : ""
-                            }
-                          </td>
-                          <td class="mono col-state">${escapeHtml(state)}</td>
-                          <td class="mono col-picks">
-                            ${escapeHtml(String(barrels))}
                           </td>
                           <td class="mono col-tastings">
                             ${escapeHtml(String(tastings))}${star}
+                          </td>
+                          <td class="mono col-picks">
+                            ${escapeHtml(String(barrels))}
                           </td>
                         </tr>
                       `;
@@ -179,7 +174,7 @@ function renderPickerTable(rows) {
                     .join("")
                 : `
                   <tr>
-                    <td colspan="4" style="padding:12px 10px;">
+                    <td colspan="5" style="padding:12px 10px;">
                       No barrel pickers found.
                     </td>
                   </tr>
