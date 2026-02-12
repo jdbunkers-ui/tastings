@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Honey Barrel Hunter – Inventory</title>
+
+    <!-- Base site styles (optional) -->
+    <!-- <link rel="stylesheet" href="../assets/css/site.css" /> -->
+
+    <!-- Skin2 styles -->
+    <link rel="stylesheet" href="../assets/css/skin2.css" />
+  </head>
+
+  <body data-page="inventory">
+
+    <main class="skin2-wrap">
+
+      <!-- Skin2 Header Injection Target -->
+      <div id="site-header"></div>
+
+      <section class="skin2-card">
+
+        <input
+          id="filter"
+          type="text"
+          placeholder="Search inventory…"
+          aria-label="Search bottle inventory"
+        />
+
+        <span class="skin2-status" id="status">Loading…</span>
+
+        <!-- Inventory Render Target -->
+        <div class="skin2-table-wrap">
+          <div id="inventory-content"></div>
+        </div>
+
+        <div id="error" class="skin2-error" style="display:none;"></div>
+
+      </section>
+
+      <!-- Skin2 Footer Injection Target -->
+      <div id="site-footer"></div>
+
+    </main>
+
+    <!-- Scripts -->
+    <script src="../assets/js/site-chrome.js"></script>
+    <script type="module" src="../assets/js/inventory-page.js?v=skin2_002"></script>
+    <script type="module" src="../assets/js/inventory-filter.js?v=skin2_002"></script>
+
+  </body>
+</html>
