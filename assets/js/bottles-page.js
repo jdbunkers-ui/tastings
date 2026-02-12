@@ -80,6 +80,7 @@ const subtitleEl = document.getElementById("page-subtitle");
 const hintEl = document.getElementById("tastings-hint");
 const debugEl = document.getElementById("debug-json");
 const pickerLineEl = document.getElementById("picker-line");
+const msrpLineEl = document.getElementById("msrp-line");
 const specsEl = document.getElementById("bottle-specs");
 
 // -----------------------------
@@ -101,23 +102,42 @@ function fmtAgeYears(ageYears) {
 
 function renderSpecsTable(specs) {
   // Expect exactly 10 items → 2 rows x 5 columns
+  const top = specs.slice(0, 5);
+  const bot = specs.slice(5, 10);
+
   specsEl.innerHTML = `
     <table>
       <thead>
         <tr>
-          ${specs.slice(0, 5).map(s => `<th>${escapeHtml(s.label)}</th>`).join("")}
+          ${top.map(s => `<th>${escapeHtml(s.label)}</th>`).join("")}
         </tr>
       </thead>
       <tbody>
         <tr>
-          ${specs.slice(0, 5).map(s => `<td><b>${escapeHtml(fmt(s.value))}</b></td>`).join("")}
+          ${top.map(s => `<td><b>${escapeHtml(fmt(s.value))}</b></td>`).join("")}
         </tr>
         <tr>
-          ${specs.slice(5, 10).map(s => `<td><b>${escapeHtml(fmt(s.value))}</b></td>`).join("")}
+          ${bot.map(s => `<th>${escapeHtml(s.label)}</th>`).join("")}
+        </tr>
+        <tr>
+          ${bot.map(s => `<td><b>${escapeHtml(fmt(s.value))}</b></td>`).join("")}
         </tr>
       </tbody>
     </table>
   `;
+}
+
+function fmtMoney(x, fallback = "—") {
+  if (x === null || x === undefined || x === "") return fallback;
+  const n = Number(x);
+  if (Number.isNaN(n)) return fallback;
+  return `$${n.toFixed(2)}`;
+}
+
+function fmtAgeYears(ageYears) {
+  const n = Number(ageYears);
+  if (!Number.isFinite(n) || n < 1) return "NAS";
+  return Number.isInteger(n) ? `${n}` : n.toFixed(1);
 }
 
 function renderHero(barrel) {
@@ -132,22 +152,88 @@ function renderHero(barrel) {
   const pickerName = fmt(barrel?.barrel_picker_name, "");
   const pickerId = fmt(barrel?.barrel_picker_id, "");
 
-  // 1) Prominent headline: brand - expression (pick) then MSRP
+  // Headline: Brand - Expression (Pick)  (NO MSRP here anymore)
   const headline =
     `${brand}` +
     (expr ? ` - ${expr}` : "") +
-    (pick ? ` (${pick})` : "") +
-    (msrp !== "—" ? ` • ${msrp}` : "");
+    (pick ? ` (${pick})` : "");
 
   titleEl.textContent = headline;
 
-  // 2) Distillery hyperlink line
-  if (distId) {
-    const href = `../distilleries/index.html?distillery_id=${encodeURIComponent(distId)}`;
-    subtitleEl.innerHTML = `<a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(dist)}</a>`;
-  } else {
-    subtitleEl.textContent = dist;
+  // Make the distillery/picker lines 2× bigger than the old sub text
+  const bigLineStyle = `font-size:26px; line-height:1.15; font-weight:700; margin-top:6px;`;
+
+  // Distillery line (labeled)
+  if (subtitleEl) {
+    if (distId) {
+      const href = `../distilleries/index.html?distillery_id=${encodeURIComponent(distId)}`;
+      subtitleEl.innerHTML = `
+        <div style="${bigLineStyle}">
+          <span style="opacity:.75;">Distillery:</span>
+          <a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(dist)}</a>
+        </div>
+      `;
+    } else {
+      subtitleEl.innerHTML = `
+        <div style="${bigLineStyle}">
+          <span style="opacity:.75;">Distillery:</span> ${escapeHtml(dist)}
+        </div>
+      `;
+    }
   }
+
+  // Barrel picker line (labeled)
+  if (pickerLineEl) {
+    if (pickerId) {
+      const href = `../barrel_pickers/index.html?barrel_picker_id=${encodeURIComponent(pickerId)}`;
+      pickerLineEl.innerHTML = `
+        <div style="${bigLineStyle}">
+          <span style="opacity:.75;">Picker:</span>
+          <a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(pickerName || "—")}</a>
+        </div>
+      `;
+    } else if (pickerName) {
+      pickerLineEl.innerHTML = `
+        <div style="${bigLineStyle}">
+          <span style="opacity:.75;">Picker:</span> ${escapeHtml(pickerName)}
+        </div>
+      `;
+    } else {
+      pickerLineEl.innerHTML = "";
+    }
+  }
+
+  // MSRP line directly under picker (prominent; “same font feel” as before)
+  if (msrpLineEl) {
+    msrpLineEl.innerHTML = msrp !== "—"
+      ? `<div style="font-size:20px; font-weight:700; margin-top:8px;">MSRP: ${escapeHtml(msrp)}</div>`
+      : "";
+  }
+
+  // Specs table (2 rows x 5 cols)
+  const specs = [
+    { label: "Proof", value: fmt1(barrel?.proof) },
+    { label: "Strength", value: fmt(barrel?.bottling_strength_type) },
+    { label: "Subtype", value: fmt(barrel?.spirit_subtype) },
+    { label: "Age", value: fmtAgeYears(barrel?.age_in_years) },
+    { label: "Size", value: barrel?.size_ml ? `${barrel.size_ml} ml` : "—" },
+
+    { label: "Mash Bill", value: fmt(barrel?.mash_bill) },
+    { label: "Single Barrel", value: fmtBool(barrel?.single_barrel_ind) },
+    { label: "Chill Filtered", value: fmtBool(barrel?.chill_filtered_ind) },
+    { label: "Finished", value: fmtBool(barrel?.finished_ind) },
+    { label: "Finish Type", value: fmt(barrel?.finished_type) },
+  ];
+
+  renderSpecsTable(specs);
+
+  // Remove the blank white “ellipse” area: hide the hero card for now.
+  // (We’ll reuse this later for your 2nd visible section.)
+  if (heroEl) {
+    heroEl.style.display = "none";
+    heroEl.innerHTML = "";
+  }
+}
 
   // 3) Barrel picker hyperlink line
   if (pickerLineEl) {
