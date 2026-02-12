@@ -1,5 +1,5 @@
 /* =========================================================
-   Honey Barrel Hunter — Skin2 Inventory Page
+   Velvet Room — Skin2 Inventory Page
    File: assets/js/inventory-page.js
    ========================================================= */
 
@@ -11,6 +11,7 @@ const VIEW_NAME = "v_bottle_inventory";
 const elContent = document.getElementById("inventory-content");
 const elStatus = document.getElementById("status");
 const elError = document.getElementById("error");
+const elFlightTickerMount = document.getElementById("flightTickerMount");
 
 function showError(message, details) {
   if (!elError) return;
@@ -180,7 +181,9 @@ function renderTable(rows) {
   const cols = selectColumns(keys);
 
   // Hide technical ids from display (but keep them in the row object)
-  const displayCols = cols.filter((c) => c !== "single_barrel_id" && c !== "distillery_id");
+  const displayCols = cols.filter(
+    (c) => c !== "single_barrel_id" && c !== "distillery_id"
+  );
 
   const thead = displayCols
     .map((c) => {
@@ -229,6 +232,93 @@ function renderTable(rows) {
   window.dispatchEvent(new Event("skin2:inventoryRendered"));
 }
 
+/* =========================================================
+   Flight Fight Ticker (Inventory only)
+   ========================================================= */
+
+async function initFlightTickerInventoryOnly() {
+  if (!elFlightTickerMount) return;
+
+  const { data, error } = await supabase
+    .from("v_flight_ticker")
+    .select("flight_id, flight_date, flight_name, bottle_expression, score");
+
+  if (error || !data || data.length === 0) return;
+
+  const { flight_id, flight_date, flight_name } = data[0];
+
+  // Show once per completed flight
+  const tickerKey = `${flight_id}|${flight_date}`;
+  const seenKey = localStorage.getItem("vv_seen_flight_ticker_key");
+  if (seenKey === tickerKey) return;
+
+  elFlightTickerMount.style.display = "";
+  elFlightTickerMount.innerHTML = buildFlightTickerHtml({
+    flight_id,
+    flight_date,
+    flight_name,
+    rows: data,
+  });
+
+  // Entire banner clickable
+  const banner = elFlightTickerMount.querySelector(".flight-ticker");
+  banner.addEventListener("click", () => {
+    // Page will exist next phase — wire now
+    window.location.href = `assets/flight_fights/index.html?flight_id=${flight_id}`;
+  });
+
+  // Dismiss
+  const closeBtn = elFlightTickerMount.querySelector(".flight-ticker__close");
+  closeBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    localStorage.setItem("vv_seen_flight_ticker_key", tickerKey);
+    elFlightTickerMount.style.display = "none";
+    elFlightTickerMount.innerHTML = "";
+  });
+}
+
+function buildFlightTickerHtml({ flight_date, flight_name, rows }) {
+  const safe = (v) =>
+    String(v ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+
+  const flightLabel = `${flight_name} (${flight_date})`;
+
+  const body = rows
+    .slice(0, 4)
+    .map((r, i) => {
+      return `
+        <div class="flight-ticker__row">
+          <div class="flight-ticker__rank">${i + 1}</div>
+          <div class="flight-ticker__bottle">${safe(r.bottle_expression)}</div>
+          <div class="flight-ticker__score">${Number(r.score).toFixed(1)}</div>
+        </div>
+      `;
+    })
+    .join("");
+
+  return `
+    <div class="flight-ticker" role="button" tabindex="0">
+      <button class="flight-ticker__close" type="button" aria-label="Dismiss">×</button>
+
+      <div class="flight-ticker__top">
+        <div class="flight-ticker__title">FLIGHT FIGHT COMPLETE</div>
+        <div class="flight-ticker__flight pulse-gold">${safe(flightLabel)}</div>
+      </div>
+
+      <div class="flight-ticker__table">
+        ${body}
+      </div>
+
+      <div class="flight-ticker__cta">Click to view</div>
+    </div>
+  `;
+}
+
 async function loadInventory() {
   clearError();
   setStatus("Loading inventory…");
@@ -246,5 +336,5 @@ async function loadInventory() {
   }
 }
 
-// Boot
+initFlightTickerInventoryOnly();
 loadInventory();
