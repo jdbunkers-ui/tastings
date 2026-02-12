@@ -5,9 +5,9 @@
 
 import { supabase } from "./supabaseClient.js";
 
-const VIEW_PROFILE = "v_barrel_picker_detail"; // hero/profile
-const VIEW_INVENTORY = "v_bottle_inventory";   // bottom table (match distillery behavior)
-const BOTTLES_LIMIT = 500;
+const VIEW_BP = "v_barrel_picker_detail";     // hero/profile
+const VIEW_INV = "v_bottle_inventory";        // bottom table (like distillery page)
+
 
 /**
  * Use the SAME star asset as Inventory/Distillery pages
@@ -215,17 +215,31 @@ function invColClass(col) {
   return map[col] || "";
 }
 
-if (col === "bottle_expression") {
-  const star = row.new_update
-    ? `<img
-         src="../assets/img/logo/gold_spinning_star.gif"
-         alt="New"
-         style="height:18px; vertical-align:middle; margin-right:6px;"
-       />`
-    : "";
-
-  return `${star}${barrelLink(row.single_barrel_id, row.bottle_expression)}`;
+function pickExpression(row) {
+  // tolerate different view field naming
+  return (
+    row.bottle_expression ??
+    row.expression_name ??
+    row.bottle_type ??
+    row.label ??
+    row.brand_name ??
+    "—"
+  );
 }
+
+function renderCell(col, row) {
+  if (col === "bottle_expression") {
+    const expr = pickExpression(row);
+    const star = row.new_update
+      ? `<img
+           src="../assets/img/logo/gold_spinning_star.gif"
+           alt="New"
+           style="height:18px; vertical-align:middle; margin-right:6px;"
+         />`
+      : "";
+
+    return `${star}${barrelLink(row.single_barrel_id, expr)}`;
+  }
 
   if (col === "distillery_name") {
     return distilleryLink(row.distillery_id, row.distillery_name);
@@ -329,58 +343,45 @@ async function load() {
     return;
   }
 
-  // 1) Profile (hero)
-  const { data: profileRows, error: profileErr } = await supabase
-    .from(VIEW_PROFILE)
+  // 1) Hero/profile data (barrel picker metadata)
+  const { data: bpData, error: bpErr } = await supabase
+    .from(VIEW_BP)
     .select("*")
     .eq("barrel_picker_id", id)
     .limit(1);
 
-  if (profileErr) {
-    renderError(profileErr.message || String(profileErr));
-    if (elDebug) elDebug.textContent = JSON.stringify({ error: profileErr }, null, 2);
+  if (bpErr) {
+    renderError(bpErr.message || String(bpErr));
+    if (elDebug) elDebug.textContent = JSON.stringify({ error: bpErr }, null, 2);
     return;
   }
 
-  const heroRows = profileRows || [];
-  if (!heroRows.length) {
-    renderError(`No rows returned for barrel_picker_id=${id}`);
+  const bpRows = bpData || [];
+  if (!bpRows.length) {
+    renderError(`No barrel picker found for barrel_picker_id=${id}`);
     if (elDebug) elDebug.textContent = JSON.stringify({ barrel_picker_id: id, hero_rows: 0 }, null, 2);
     return;
   }
 
-  renderHero(heroRows);
+  renderHero(bpRows);
 
-  // 2) Inventory rows (bottom table) — FROM v_bottle_inventory
-  const { data: invRowsRaw, error: invErr } = await supabase
-    .from(VIEW_INVENTORY)
+  // 2) Bottom table data (inventory rows)
+  const { data: invData, error: invErr } = await supabase
+    .from(VIEW_INV)
     .select("*")
-    .eq("barrel_picker_id", id)
-    .limit(BOTTLES_LIMIT);
+    .eq("barrel_picker_id", id);
 
   if (invErr) {
-    if (elTable) {
-      elTable.innerHTML = `<div class="muted-card error"><b>Error:</b> ${escapeHtml(invErr.message || String(invErr))}</div>`;
-    }
-    if (elDebug) elDebug.textContent = JSON.stringify({ barrel_picker_id: id, inventory_error: invErr }, null, 2);
+    // Hero is fine; just show table error
+    if (elTable) elTable.innerHTML = `<div class="muted-card error"><b>Error:</b> ${escapeHtml(invErr.message || String(invErr))}</div>`;
+    if (elDebug) elDebug.textContent = JSON.stringify({ barrel_picker_id: id, hero: bpRows[0], inventory_error: invErr }, null, 2);
     return;
   }
 
-  const invRows = invRowsRaw || [];
+  const invRows = invData || [];
+  renderTable(invRows);
 
-  // Sort: highest score first (same feel as distillery-page)
-  const sorted = [...invRows].sort((a, b) => {
-    const aa = Number(a.score ?? a.avg_score ?? a.composite_score);
-    const bb = Number(b.score ?? b.avg_score ?? b.composite_score);
-    if (!Number.isFinite(bb) && !Number.isFinite(aa)) return 0;
-    if (!Number.isFinite(bb)) return -1;
-    if (!Number.isFinite(aa)) return 1;
-    return bb - aa;
-  });
-
-  renderTable(sorted);
-
-  if (elDebug) elDebug.textContent = JSON.stringify({ hero: heroRows[0], inventory_rows: sorted.length }, null, 2);
+  if (elDebug) elDebug.textContent = JSON.stringify({ hero: bpRows[0], inventory_rows: invRows.length }, null, 2);
 }
 
 load();
