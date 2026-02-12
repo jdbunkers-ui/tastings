@@ -5,7 +5,9 @@
 
 import { supabase } from "./supabaseClient.js";
 
-const VIEW_NAME = "v_barrel_picker_detail";
+const VIEW_BP = "v_barrel_picker_detail";     // hero/profile
+const VIEW_INV = "v_bottle_inventory";        // bottom table (like distillery page)
+
 
 /**
  * Use the SAME star asset as Inventory/Distillery pages
@@ -341,27 +343,45 @@ async function load() {
     return;
   }
 
-  const { data, error } = await supabase
-    .from(VIEW_NAME)
+  // 1) Hero/profile data (barrel picker metadata)
+  const { data: bpData, error: bpErr } = await supabase
+    .from(VIEW_BP)
+    .select("*")
+    .eq("barrel_picker_id", id)
+    .limit(1);
+
+  if (bpErr) {
+    renderError(bpErr.message || String(bpErr));
+    if (elDebug) elDebug.textContent = JSON.stringify({ error: bpErr }, null, 2);
+    return;
+  }
+
+  const bpRows = bpData || [];
+  if (!bpRows.length) {
+    renderError(`No barrel picker found for barrel_picker_id=${id}`);
+    if (elDebug) elDebug.textContent = JSON.stringify({ barrel_picker_id: id, hero_rows: 0 }, null, 2);
+    return;
+  }
+
+  renderHero(bpRows);
+
+  // 2) Bottom table data (inventory rows)
+  const { data: invData, error: invErr } = await supabase
+    .from(VIEW_INV)
     .select("*")
     .eq("barrel_picker_id", id);
 
-  if (error) {
-    renderError(error.message || String(error));
-    if (elDebug) elDebug.textContent = JSON.stringify({ error }, null, 2);
+  if (invErr) {
+    // Hero is fine; just show table error
+    if (elTable) elTable.innerHTML = `<div class="muted-card error"><b>Error:</b> ${escapeHtml(invErr.message || String(invErr))}</div>`;
+    if (elDebug) elDebug.textContent = JSON.stringify({ barrel_picker_id: id, hero: bpRows[0], inventory_error: invErr }, null, 2);
     return;
   }
 
-  const rows = data || [];
-  if (!rows.length) {
-    renderError(`No rows returned for barrel_picker_id=${id}`);
-    if (elDebug) elDebug.textContent = JSON.stringify({ barrel_picker_id: id, rows: 0 }, null, 2);
-    return;
-  }
+  const invRows = invData || [];
+  renderTable(invRows);
 
-  renderHero(rows);
-  renderTable(rows);
-  if (elDebug) elDebug.textContent = JSON.stringify(rows, null, 2);
+  if (elDebug) elDebug.textContent = JSON.stringify({ hero: bpRows[0], inventory_rows: invRows.length }, null, 2);
 }
 
 load();
