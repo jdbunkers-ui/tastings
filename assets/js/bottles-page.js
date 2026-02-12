@@ -127,13 +127,6 @@ function renderSpecsTable(specs) {
   `;
 }
 
-function fmtMoney(x, fallback = "—") {
-  if (x === null || x === undefined || x === "") return fallback;
-  const n = Number(x);
-  if (Number.isNaN(n)) return fallback;
-  return `$${n.toFixed(2)}`;
-}
-
 function fmtAgeYears(ageYears) {
   const n = Number(ageYears);
   if (!Number.isFinite(n) || n < 1) return "NAS";
