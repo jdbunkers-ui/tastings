@@ -1,7 +1,7 @@
 import { supabase } from "./supabaseClient.js";
 
 // Views
-const VIEW_PICKERS = "public.v_barrel_picker_list";
+const VIEW_PICKERS = "v_barrel_picker_list";
 const VIEW_JOURNAL = "v_journal";
 
 // ---------- DOM ----------
