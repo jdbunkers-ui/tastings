@@ -215,17 +215,18 @@ function invColClass(col) {
   return map[col] || "";
 }
 
-if (col === "bottle_expression") {
-  const star = row.new_update
-    ? `<img
-         src="../assets/img/logo/gold_spinning_star.gif"
-         alt="New"
-         style="height:18px; vertical-align:middle; margin-right:6px;"
-       />`
-    : "";
+function renderCell(col, row) {
+  if (col === "bottle_expression") {
+    const star = row.new_update
+      ? `<img
+           src="../assets/img/logo/gold_spinning_star.gif"
+           alt="New"
+           style="height:18px; vertical-align:middle; margin-right:6px;"
+         />`
+      : "";
 
-  return `${star}${barrelLink(row.single_barrel_id, row.bottle_expression)}`;
-}
+    return `${star}${barrelLink(row.single_barrel_id, row.bottle_expression)}`;
+  }
 
   if (col === "distillery_name") {
     return distilleryLink(row.distillery_id, row.distillery_name);
