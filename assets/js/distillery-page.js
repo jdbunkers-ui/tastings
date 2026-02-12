@@ -226,8 +226,9 @@ function selectColumns(keys) {
     "msrp",
     "proof",
     "age",
-    "barrel_picker_name",
     "bottle_expression",
+    "barrel_picker_name",
+
 
     // hidden/link-only + utility fields
     "barrel_picker_id",
