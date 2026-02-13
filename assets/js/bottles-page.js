@@ -173,14 +173,14 @@ function renderHero(barrel) {
     if (distId) {
       const href = `../distilleries/index.html?distillery_id=${encodeURIComponent(distId)}`;
       subtitleEl.innerHTML = `
-        <div style="${bigLineStyle}">
+        <div style="${lineStyle}">
           <span style="opacity:.75;">Distillery:</span>
           <a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(dist)}</a>
         </div>
       `;
     } else {
       subtitleEl.innerHTML = `
-        <div style="${bigLineStyle}">
+        <div style="${lineStyle}">
           <span style="opacity:.75;">Distillery:</span> ${escapeHtml(dist)}
         </div>
       `;
@@ -192,14 +192,14 @@ function renderHero(barrel) {
     if (pickerId) {
       const href = `../barrel_pickers/index.html?barrel_picker_id=${encodeURIComponent(pickerId)}`;
       pickerLineEl.innerHTML = `
-        <div style="${bigLineStyle}">
+        <div style="${lineStyle}">
           <span style="opacity:.75;">Picker:</span>
           <a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(pickerName || "—")}</a>
         </div>
       `;
     } else if (pickerName) {
       pickerLineEl.innerHTML = `
-        <div style="${bigLineStyle}">
+        <div style="${lineStyle}">
           <span style="opacity:.75;">Picker:</span> ${escapeHtml(pickerName)}
         </div>
       `;
