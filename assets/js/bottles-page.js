@@ -236,14 +236,29 @@ function renderHero(barrel) {
     }
   }
 
-  // MSRP line
+  // MSRP line + temporary IDs (DEV ONLY)
   if (msrpLineEl) {
+    const bottleId = fmt(barrel?.bottle_id);
+    const singleBarrelId = fmt(barrel?.single_barrel_id);
+  
     msrpLineEl.innerHTML = `
       <div style="${rowStyle}">
         <span style="${labelStyle}">MSRP:</span> ${escapeHtml(msrp)}
       </div>
+  
+      <div style="
+        margin-top:4px;
+        font-size:12px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+        color: var(--muted2);
+        line-height:1.35;
+      ">
+        <div><b>Bottle ID:</b> ${escapeHtml(bottleId)}</div>
+        <div><b>Single Barrel ID:</b> ${escapeHtml(singleBarrelId)}</div>
+      </div>
     `;
   }
+
 
   // Composite score (dominant)
   if (compositeEl) {
