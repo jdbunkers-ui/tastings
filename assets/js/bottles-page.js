@@ -88,7 +88,6 @@ function notesToHtml(raw) {
   const s = String(raw ?? "");
   if (!s) return "";
 
-  // Split on [[...]] tokens, keeping the tokens.
   const parts = s.split(/(\[\[[\s\S]*?\]\])/g);
 
   return parts
@@ -195,7 +194,8 @@ function renderHero(barrel) {
   const headline = `${brand}` + (expr ? ` - ${expr}` : "") + (pick ? ` (${pick})` : "");
   if (titleEl) titleEl.textContent = headline;
 
-  const rowStyle = "font-size:20px; line-height:1.2; font-weight:700; margin-top:6px;";
+  // ✅ Flight Outcome enhancements #1: only these lines go 20 -> 15
+  const rowStyle = "font-size:15px; line-height:1.2; font-weight:700; margin-top:6px;";
   const labelStyle = "opacity:.75;";
 
   // Distillery line
@@ -245,9 +245,9 @@ function renderHero(barrel) {
     `;
   }
 
-  // Composite score
+  // Composite score (dominant)
   if (compositeEl) {
-    const composite = fmt2(barrel?.score); // show 2 decimals (ex: 8.65)
+    const composite = fmt2(barrel?.score);
     compositeEl.innerHTML = `
       <div style="font-size:12px; opacity:.75; text-transform:uppercase; letter-spacing:.3px;">
         Composite Score
@@ -352,9 +352,11 @@ function renderTastings(tastings) {
         white-space: nowrap;
       }
 
+      /* ✅ Flight Outcome enhancements #3: remove underline + dark brown emphasis */
       .note-em{
         font-weight: 900;
-        text-decoration: underline;
+        text-decoration: none;
+        color: var(--s2-brown-mid, #6a4a32);
       }
     </style>
   `;
@@ -372,85 +374,134 @@ function renderFoes({ foe_beat, foe_lost }) {
   const wins = foe_beat || [];
   const losses = foe_lost || [];
 
-  if (winsEl) {
-    winsEl.innerHTML = `
-      <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px;">
-        <div style="font-weight:800;">🟩 Wins</div>
-        <div class="muted" style="font-size:12px;">${wins.length} item${wins.length === 1 ? "" : "s"}</div>
+  const renderList = (items, kind) => {
+    const title = kind === "wins" ? "Wins" : "Losses";
+    const icon = kind === "wins" ? "🟩" : "🟥";
+    const empty = kind === "wins" ? "No wins found." : "No losses found.";
+
+    return `
+      <div class="foe-head">
+        <div class="foe-title">${icon} ${title}</div>
+        <div class="foe-count">${items.length} item${items.length === 1 ? "" : "s"}</div>
       </div>
-      <div class="list" id="wins-list">
+
+      <div class="foe-list">
         ${
-          wins.length
-            ? wins
-                .map((w) => {
-                  const id = fmt(w.single_barrel_id, "");
+          items.length
+            ? items
+                .map((it) => {
+                  const id = fmt(it.single_barrel_id, "");
                   const href = id ? selfUrlForId(id) : "#";
+
+                  const leftTitle = bottleLabel(it) || "(unknown bottle)";
+                  const date = fmt(it.flight_date, "");
+                  const proof = it.proof ? `Proof ${it.proof}` : "";
+                  const meta = [date, proof].filter(Boolean).join(" • ");
+
                   return `
-                    <div class="row">
-                      <div>
-                        <div class="title">
-                          <a href="${escapeHtml(href)}" data-barrel-link="1" data-barrel-id="${escapeHtml(id)}">
-                            ${escapeHtml(bottleLabel(w) || "(unknown bottle)")}
-                          </a>
-                        </div>
-                        <div class="sub">
-                          ${escapeHtml(fmt(w.flight_date, ""))}${w.flight_date ? " • " : ""}${escapeHtml(
-                            fmt(w.proof ? `Proof ${w.proof}` : "")
-                          )}
-                        </div>
+                    <a class="foe-row" href="${escapeHtml(href)}" data-barrel-link="1" data-barrel-id="${escapeHtml(id)}">
+                      <div class="foe-left">
+                        <div class="foe-row-title">${escapeHtml(leftTitle)}</div>
+                        <div class="foe-row-sub">${escapeHtml(meta)}</div>
                       </div>
-                      <div class="right">
-                        <div class="score">${escapeHtml(fmt1(w.score))}</div>
-                        <div class="meta2">${escapeHtml(fmt(w.size_ml ? `${w.size_ml} ml` : ""))}</div>
+                      <div class="foe-right">
+                        <div class="foe-score">${escapeHtml(fmt1(it.score))}</div>
+                        <div class="foe-meta2">${escapeHtml(it.size_ml ? `${it.size_ml} ml` : "")}</div>
                       </div>
-                    </div>
+                    </a>
                   `;
                 })
                 .join("")
-            : `<div class="muted">No wins found.</div>`
+            : `<div class="muted">${escapeHtml(empty)}</div>`
         }
       </div>
+    `;
+  };
+
+  if (winsEl) {
+    winsEl.innerHTML = `
+      ${renderList(wins, "wins")}
+      <style>
+        /* ✅ Flight Outcomes: match Skin2 table vibe */
+        .foe-head{
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+          gap:10px;
+          margin-bottom:10px;
+        }
+        .foe-title{
+          font-weight: 900;
+          font-size: 13px;
+        }
+        .foe-count{
+          font-size: 12px;
+          color: var(--muted2);
+          white-space: nowrap;
+        }
+
+        .foe-list{
+          display:grid;
+          gap: 0;
+          border: 1px solid var(--border);
+          border-radius: 14px;
+          overflow: hidden;
+          background: rgba(255,255,255,0.62);
+        }
+
+        .foe-row{
+          display:grid;
+          grid-template-columns: 1fr auto;
+          gap: 10px;
+          align-items: start;
+          padding: 10px 10px;
+          text-decoration: none;
+          color: inherit;
+          border-bottom: 1px solid rgba(216, 207, 195, 0.85);
+        }
+        .foe-row:last-child{ border-bottom:none; }
+
+        .foe-row:nth-child(even){
+          background: rgba(246, 241, 234, 0.75);
+        }
+        .foe-row:nth-child(odd){
+          background: rgba(255, 255, 255, 0.62);
+        }
+        .foe-row:hover{
+          background: rgba(225, 182, 106, 0.18);
+        }
+
+        .foe-row-title{
+          font-weight: 800;
+          font-size: 13px;
+        }
+        .foe-row-sub{
+          margin-top: 2px;
+          font-size: 12px;
+          color: var(--muted);
+        }
+
+        .foe-right{
+          text-align: right;
+          white-space: nowrap;
+        }
+        .foe-score{
+          font-weight: 900;
+          font-size: 18px;
+          line-height: 1.1;
+        }
+        .foe-meta2{
+          margin-top: 2px;
+          font-size: 12px;
+          color: var(--muted2);
+        }
+      </style>
     `;
   }
 
   if (lossesEl) {
     lossesEl.innerHTML = `
-      <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px;">
-        <div style="font-weight:800;">🟥 Losses</div>
-        <div class="muted" style="font-size:12px;">${losses.length} item${losses.length === 1 ? "" : "s"}</div>
-      </div>
-      <div class="list" id="losses-list">
-        ${
-          losses.length
-            ? losses
-                .map((l) => {
-                  const id = fmt(l.single_barrel_id, "");
-                  const href = id ? selfUrlForId(id) : "#";
-                  return `
-                    <div class="row">
-                      <div>
-                        <div class="title">
-                          <a href="${escapeHtml(href)}" data-barrel-link="1" data-barrel-id="${escapeHtml(id)}">
-                            ${escapeHtml(bottleLabel(l) || "(unknown bottle)")}
-                          </a>
-                        </div>
-                        <div class="sub">
-                          ${escapeHtml(fmt(l.flight_date, ""))}${l.flight_date ? " • " : ""}${escapeHtml(
-                            fmt(l.proof ? `Proof ${l.proof}` : "")
-                          )}
-                        </div>
-                      </div>
-                      <div class="right">
-                        <div class="score">${escapeHtml(fmt1(l.score))}</div>
-                        <div class="meta2">${escapeHtml(fmt(l.size_ml ? `${l.size_ml} ml` : ""))}</div>
-                      </div>
-                    </div>
-                  `;
-                })
-                .join("")
-            : `<div class="muted">No losses found.</div>`
-        }
-      </div>
+      ${renderList(losses, "losses")}
     `;
   }
 }
