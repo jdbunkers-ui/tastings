@@ -9,6 +9,7 @@ function escapeHtml(value) {
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
+    .replaceAll("'", "&quot;")
     .replaceAll("'", "&#039;");
 }
 
@@ -60,15 +61,12 @@ function sortByDateDesc(arr, key) {
 function getBarrelIdFromUrl() {
   const url = new URL(window.location.href);
 
-  // Support Skin2 links (?single_barrel_id=<uuid>)
   const qpSingle = (url.searchParams.get("single_barrel_id") || "").trim();
   if (qpSingle) return qpSingle;
 
-  // Existing support (?id=<uuid>)
   const qp = (url.searchParams.get("id") || "").trim();
   if (qp) return qp;
 
-  // Existing support for /barrel/<uuid> paths
   const parts = url.pathname.split("/").filter(Boolean);
   const idx = parts.lastIndexOf("barrel");
   if (idx >= 0 && parts[idx + 1]) return parts[idx + 1];
@@ -90,13 +88,11 @@ const winsEl = document.getElementById("wins");
 const lossesEl = document.getElementById("losses");
 const titleEl = document.getElementById("page-title");
 const subtitleEl = document.getElementById("page-subtitle");
-const hintEl = document.getElementById("tastings-hint");
-const debugEl = document.getElementById("debug-json");
-
 const pickerLineEl = document.getElementById("picker-line");
 const msrpLineEl = document.getElementById("msrp-line");
 const specsEl = document.getElementById("bottle-specs");
-
+const hintEl = document.getElementById("tastings-hint");
+const debugEl = document.getElementById("debug-json");
 const compositeEl = document.getElementById("composite-score");
 
 // -----------------------------
@@ -120,7 +116,6 @@ function renderSpecsGrid(specs) {
     </div>
 
     <style>
-      /* Local styles scoped to this component */
       .spec-grid{
         display:grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -138,7 +133,6 @@ function renderSpecsGrid(specs) {
         font-size: 12px;
         color: rgba(43,29,20,0.72);
         letter-spacing: .2px;
-        text-transform: none;
         margin-bottom: 4px;
         white-space: nowrap;
         overflow: hidden;
@@ -167,84 +161,84 @@ function renderHero(barrel) {
   const dist = fmt(barrel?.distillery_name, "Unknown distillery");
   const distId = fmt(barrel?.distillery_id, "");
 
-  const pickerName = fmt(barrel?.barrel_picker_name, "");
+  const pickerNameRaw = barrel?.barrel_picker_name;
   const pickerId = fmt(barrel?.barrel_picker_id, "");
 
-  // Composite score (far right) - large like the old distillery/picker size
+  const pickerDisplay = pickerNameRaw ? String(pickerNameRaw) : "N/A";
+  const msrp = fmtMoney(barrel?.msrp);
+
+  // Headline stays unchanged (per your request)
+  const headline =
+    `${brand}` +
+    (expr ? ` - ${expr}` : "") +
+    (pick ? ` (${pick})` : "");
+  if (titleEl) titleEl.textContent = headline;
+
+  // Label line styling (distillery, barrel picker, msrp) = same size + same color
+  const rowStyle = "font-size:20px; line-height:1.2; font-weight:700; margin-top:6px;";
+  const labelStyle = "opacity:.75;";
+
+  // Distillery line
+  if (subtitleEl) {
+    if (distId) {
+      const href = `../distilleries/index.html?distillery_id=${encodeURIComponent(distId)}`;
+      subtitleEl.innerHTML = `
+        <div style="${rowStyle}">
+          <span style="${labelStyle}">Distillery:</span>
+          <a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(dist)}</a>
+        </div>
+      `;
+    } else {
+      subtitleEl.innerHTML = `
+        <div style="${rowStyle}">
+          <span style="${labelStyle}">Distillery:</span> ${escapeHtml(dist)}
+        </div>
+      `;
+    }
+  }
+
+  // Barrel picker line (between distillery and msrp)
+  if (pickerLineEl) {
+    if (pickerId && pickerDisplay !== "N/A") {
+      const href = `../barrel_pickers/index.html?barrel_picker_id=${encodeURIComponent(pickerId)}`;
+      pickerLineEl.innerHTML = `
+        <div style="${rowStyle}">
+          <span style="${labelStyle}">Barrel Picker:</span>
+          <a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(pickerDisplay)}</a>
+        </div>
+      `;
+    } else {
+      pickerLineEl.innerHTML = `
+        <div style="${rowStyle}">
+          <span style="${labelStyle}">Barrel Picker:</span> ${escapeHtml(pickerDisplay)}
+        </div>
+      `;
+    }
+  }
+
+  // MSRP line (same size + same color as distillery and barrel picker)
+  if (msrpLineEl) {
+    msrpLineEl.innerHTML = `
+      <div style="${rowStyle}">
+        <span style="${labelStyle}">MSRP:</span> ${escapeHtml(msrp)}
+      </div>
+    `;
+  }
+
+  // Composite score on the right, predominant
   if (compositeEl) {
     const composite = fmt1(barrel?.score);
     compositeEl.innerHTML = `
       <div style="font-size:12px; opacity:.75; text-transform:uppercase; letter-spacing:.3px;">
         Composite Score
       </div>
-      <div style="font-size:26px; font-weight:800; line-height:1;">
+      <div style="font-size:40px; font-weight:900; line-height:1; margin-top:2px;">
         ${escapeHtml(composite)}
       </div>
     `;
   }
-  
-  const msrp = fmtMoney(barrel?.msrp);
 
-  // Headline: Brand - Expression (Pick)
-  const headline =
-    `${brand}` +
-    (expr ? ` - ${expr}` : "") +
-    (pick ? ` (${pick})` : "");
-
-  if (titleEl) titleEl.textContent = headline;
-
-  const lineStyle =
-    "font-size:20px; line-height:1.15; font-weight:700; margin-top:6px;";
-
-  // Distillery line (labeled)
-  if (subtitleEl) {
-    if (distId) {
-      const href = `../distilleries/index.html?distillery_id=${encodeURIComponent(distId)}`;
-      subtitleEl.innerHTML = `
-        <div style="${lineStyle}">
-          <span style="opacity:.75;">Distillery:</span>
-          <a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(dist)}</a>
-        </div>
-      `;
-    } else {
-      subtitleEl.innerHTML = `
-        <div style="${lineStyle}">
-          <span style="opacity:.75;">Distillery:</span> ${escapeHtml(dist)}
-        </div>
-      `;
-    }
-  }
-
-  // Picker line (labeled)
-  if (pickerLineEl) {
-    if (pickerId) {
-      const href = `../barrel_pickers/index.html?barrel_picker_id=${encodeURIComponent(pickerId)}`;
-      pickerLineEl.innerHTML = `
-        <div style="${lineStyle}">
-          <span style="opacity:.75;">Picker:</span>
-          <a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(pickerName || "—")}</a>
-        </div>
-      `;
-    } else if (pickerName) {
-      pickerLineEl.innerHTML = `
-        <div style="${lineStyle}">
-          <span style="opacity:.75;">Picker:</span> ${escapeHtml(pickerName)}
-        </div>
-      `;
-    } else {
-      pickerLineEl.innerHTML = "";
-    }
-  }
-
-  // MSRP line under picker
-  if (msrpLineEl) {
-    msrpLineEl.innerHTML =
-      msrp !== "—"
-        ? `<div style="font-size:20px; font-weight:700; margin-top:8px;">MSRP: ${escapeHtml(msrp)}</div>`
-        : "";
-  }
-
-  // Specs table (2 x 5)
+  // Specs grid
   const specs = [
     { label: "Proof", value: fmt1(barrel?.proof) },
     { label: "Strength", value: fmt(barrel?.bottling_strength_type) },
@@ -261,7 +255,7 @@ function renderHero(barrel) {
 
   renderSpecsGrid(specs);
 
-  // Remove blank white panel: hide hero card for now
+  // keep old hero card hidden
   if (heroEl) {
     heroEl.style.display = "none";
     heroEl.innerHTML = "";
@@ -418,7 +412,7 @@ function renderDebug(payload) {
 }
 
 // -----------------------------
-// Events / Load
+// Load
 // -----------------------------
 async function load() {
   const barrelId = getBarrelIdFromUrl();
