@@ -102,32 +102,60 @@ const compositeEl = document.getElementById("composite-score");
 // -----------------------------
 // Rendering
 // -----------------------------
-function renderSpecsTable(specs) {
-  // Expect exactly 10 items → 2 rows x 5 columns
-  const top = specs.slice(0, 5);
-  const bot = specs.slice(5, 10);
-
+function renderSpecsGrid(specs) {
   if (!specsEl) return;
 
   specsEl.innerHTML = `
-    <table>
-      <thead>
-        <tr>
-          ${top.map((s) => `<th>${escapeHtml(s.label)}</th>`).join("")}
-        </tr>
-        <tr>
-          ${bot.map((s) => `<th>${escapeHtml(s.label)}</th>`).join("")}
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          ${top.map((s) => `<td><b>${escapeHtml(fmt(s.value))}</b></td>`).join("")}
-        </tr>
-        <tr>
-          ${bot.map((s) => `<td><b>${escapeHtml(fmt(s.value))}</b></td>`).join("")}
-        </tr>
-      </tbody>
-    </table>
+    <div class="spec-grid">
+      ${specs
+        .map(
+          (s) => `
+            <div class="spec-item">
+              <div class="spec-label">${escapeHtml(s.label)}</div>
+              <div class="spec-value">${escapeHtml(fmt(s.value))}</div>
+            </div>
+          `
+        )
+        .join("")}
+    </div>
+
+    <style>
+      /* Local styles scoped to this component */
+      .spec-grid{
+        display:grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap:10px;
+        margin-top: 10px;
+      }
+      .spec-item{
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,0.62);
+        border-radius: 12px;
+        padding: 10px 12px;
+        min-width: 0;
+      }
+      .spec-label{
+        font-size: 12px;
+        color: rgba(43,29,20,0.72);
+        letter-spacing: .2px;
+        text-transform: none;
+        margin-bottom: 4px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .spec-value{
+        font-size: 14px;
+        font-weight: 800;
+        color: rgba(43,29,20,0.92);
+        word-break: break-word;
+      }
+      @media (max-width: 860px){
+        .spec-grid{
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
   `;
 }
 
@@ -231,7 +259,7 @@ function renderHero(barrel) {
     { label: "Finish Type", value: fmt(barrel?.finished_type) },
   ];
 
-  renderSpecsTable(specs);
+  renderSpecsGrid(specs);
 
   // Remove blank white panel: hide hero card for now
   if (heroEl) {
