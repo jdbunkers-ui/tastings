@@ -9,7 +9,6 @@ function escapeHtml(value) {
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
-    .replaceAll("'", "&quot;")
     .replaceAll("'", "&#039;");
 }
 
@@ -77,6 +76,31 @@ function getBarrelIdFromUrl() {
 function selfUrlForId(singleBarrelId) {
   const id = encodeURIComponent(singleBarrelId ?? "");
   return `${window.location.pathname}?single_barrel_id=${id}`;
+}
+
+/**
+ * Turns:  "nice [[sweet cherry]] note" into HTML with emphasized terms.
+ * - Removes the double brackets.
+ * - Emphasizes the inner text with <span class="note-em">...</span>
+ * - Escapes everything else safely.
+ */
+function notesToHtml(raw) {
+  const s = String(raw ?? "");
+  if (!s) return "";
+
+  // Split on [[...]] tokens, keeping the tokens.
+  const parts = s.split(/(\[\[[\s\S]*?\]\])/g);
+
+  return parts
+    .map((part) => {
+      const m = part.match(/^\[\[([\s\S]*?)\]\]$/);
+      if (m) {
+        const inner = m[1] ?? "";
+        return `<span class="note-em">${escapeHtml(inner)}</span>`;
+      }
+      return escapeHtml(part);
+    })
+    .join("");
 }
 
 // -----------------------------
@@ -167,14 +191,10 @@ function renderHero(barrel) {
   const pickerDisplay = pickerNameRaw ? String(pickerNameRaw) : "N/A";
   const msrp = fmtMoney(barrel?.msrp);
 
-  // Headline stays unchanged (per your request)
-  const headline =
-    `${brand}` +
-    (expr ? ` - ${expr}` : "") +
-    (pick ? ` (${pick})` : "");
+  // Headline stays unchanged
+  const headline = `${brand}` + (expr ? ` - ${expr}` : "") + (pick ? ` (${pick})` : "");
   if (titleEl) titleEl.textContent = headline;
 
-  // Label line styling (distillery, barrel picker, msrp) = same size + same color
   const rowStyle = "font-size:20px; line-height:1.2; font-weight:700; margin-top:6px;";
   const labelStyle = "opacity:.75;";
 
@@ -197,7 +217,7 @@ function renderHero(barrel) {
     }
   }
 
-  // Barrel picker line (between distillery and msrp)
+  // Barrel picker line
   if (pickerLineEl) {
     if (pickerId && pickerDisplay !== "N/A") {
       const href = `../barrel_pickers/index.html?barrel_picker_id=${encodeURIComponent(pickerId)}`;
@@ -216,7 +236,7 @@ function renderHero(barrel) {
     }
   }
 
-  // MSRP line (same size + same color as distillery and barrel picker)
+  // MSRP line
   if (msrpLineEl) {
     msrpLineEl.innerHTML = `
       <div style="${rowStyle}">
@@ -225,9 +245,9 @@ function renderHero(barrel) {
     `;
   }
 
-  // Composite score on the right, predominant
+  // Composite score
   if (compositeEl) {
-    const composite = fmt1(barrel?.score);
+    const composite = fmt2(barrel?.score); // show 2 decimals (ex: 8.65)
     compositeEl.innerHTML = `
       <div style="font-size:12px; opacity:.75; text-transform:uppercase; letter-spacing:.3px;">
         Composite Score
@@ -264,6 +284,7 @@ function renderHero(barrel) {
 
 function renderTastings(tastings) {
   const sorted = sortByDateDesc(tastings, "flight_date");
+
   if (hintEl) {
     hintEl.textContent = `${sorted.length} tasting${sorted.length === 1 ? "" : "s"} • sorted by flight date (desc)`;
   }
@@ -272,19 +293,18 @@ function renderTastings(tastings) {
     if (tastingsEl) tastingsEl.innerHTML = `<div class="card muted">No tastings found.</div>`;
     return;
   }
-
   if (!tastingsEl) return;
 
   tastingsEl.innerHTML = `
-    <table>
+    <table class="sensory-table">
       <thead>
         <tr>
-          <th>Date</th>
-          <th class="num">Nose</th>
+          <th class="no-wrap">Date</th>
+          <th class="score-head">Score</th>
           <th>Nose Notes</th>
-          <th class="num">Palate</th>
+          <th class="score-head">Score</th>
           <th>Palate Notes</th>
-          <th class="num">Finish</th>
+          <th class="score-head">Score</th>
           <th>Finish Notes</th>
           <th class="num">Final</th>
         </tr>
@@ -294,13 +314,13 @@ function renderTastings(tastings) {
           .map(
             (t) => `
               <tr>
-                <td class="mono">${escapeHtml(fmt(t.flight_date))}</td>
-                <td class="num"><b>${escapeHtml(fmt(t.nose_score))}</b></td>
-                <td class="notes">${escapeHtml(fmt(t.nose_notes, ""))}</td>
-                <td class="num"><b>${escapeHtml(fmt(t.palate_score))}</b></td>
-                <td class="notes">${escapeHtml(fmt(t.palate_notes, ""))}</td>
-                <td class="num"><b>${escapeHtml(fmt(t.finish_score))}</b></td>
-                <td class="notes">${escapeHtml(fmt(t.finish_notes, ""))}</td>
+                <td class="mono no-wrap">${escapeHtml(fmt(t.flight_date))}</td>
+                <td class="score-cell"><b>${escapeHtml(fmt(t.nose_score))}</b></td>
+                <td class="notes">${notesToHtml(fmt(t.nose_notes, ""))}</td>
+                <td class="score-cell"><b>${escapeHtml(fmt(t.palate_score))}</b></td>
+                <td class="notes">${notesToHtml(fmt(t.palate_notes, ""))}</td>
+                <td class="score-cell"><b>${escapeHtml(fmt(t.finish_score))}</b></td>
+                <td class="notes">${notesToHtml(fmt(t.finish_notes, ""))}</td>
                 <td class="num"><b>${escapeHtml(fmt1(t.score))}</b></td>
               </tr>
             `
@@ -308,6 +328,35 @@ function renderTastings(tastings) {
           .join("")}
       </tbody>
     </table>
+
+    <style>
+      /* Sensory Enhancements (scoped) */
+      table.sensory-table tbody tr:nth-child(even){
+        background: rgba(246, 241, 234, 0.75); /* beige */
+      }
+      table.sensory-table tbody tr:nth-child(odd){
+        background: rgba(255, 255, 255, 0.62); /* white-ish */
+      }
+      table.sensory-table tbody tr:hover{
+        background: rgba(225, 182, 106, 0.18);
+      }
+
+      .no-wrap{ white-space: nowrap; }
+
+      th.score-head{
+        text-align: center;
+        white-space: nowrap;
+      }
+      td.score-cell{
+        text-align: center;
+        white-space: nowrap;
+      }
+
+      .note-em{
+        font-weight: 900;
+        text-decoration: underline;
+      }
+    </style>
   `;
 }
 
@@ -345,7 +394,9 @@ function renderFoes({ foe_beat, foe_lost }) {
                           </a>
                         </div>
                         <div class="sub">
-                          ${escapeHtml(fmt(w.flight_date, ""))}${w.flight_date ? " • " : ""}${escapeHtml(fmt(w.proof ? `Proof ${w.proof}` : ""))}
+                          ${escapeHtml(fmt(w.flight_date, ""))}${w.flight_date ? " • " : ""}${escapeHtml(
+                            fmt(w.proof ? `Proof ${w.proof}` : "")
+                          )}
                         </div>
                       </div>
                       <div class="right">
@@ -384,7 +435,9 @@ function renderFoes({ foe_beat, foe_lost }) {
                           </a>
                         </div>
                         <div class="sub">
-                          ${escapeHtml(fmt(l.flight_date, ""))}${l.flight_date ? " • " : ""}${escapeHtml(fmt(l.proof ? `Proof ${l.proof}` : ""))}
+                          ${escapeHtml(fmt(l.flight_date, ""))}${l.flight_date ? " • " : ""}${escapeHtml(
+                            fmt(l.proof ? `Proof ${l.proof}` : "")
+                          )}
                         </div>
                       </div>
                       <div class="right">
