@@ -97,11 +97,13 @@ const pickerLineEl = document.getElementById("picker-line");
 const msrpLineEl = document.getElementById("msrp-line");
 const specsEl = document.getElementById("bottle-specs");
 
+const compositeEl = document.getElementById("composite-score");
+
 // -----------------------------
 // Rendering
 // -----------------------------
 function renderSpecsTable(specs) {
-  // Expect exactly 10 items → 2 rows x 5 columns (labels for both rows)
+  // Expect exactly 10 items → 2 rows x 5 columns
   const top = specs.slice(0, 5);
   const bot = specs.slice(5, 10);
 
@@ -113,13 +115,13 @@ function renderSpecsTable(specs) {
         <tr>
           ${top.map((s) => `<th>${escapeHtml(s.label)}</th>`).join("")}
         </tr>
+        <tr>
+          ${bot.map((s) => `<th>${escapeHtml(s.label)}</th>`).join("")}
+        </tr>
       </thead>
       <tbody>
         <tr>
           ${top.map((s) => `<td><b>${escapeHtml(fmt(s.value))}</b></td>`).join("")}
-        </tr>
-        <tr>
-          ${bot.map((s) => `<th>${escapeHtml(s.label)}</th>`).join("")}
         </tr>
         <tr>
           ${bot.map((s) => `<td><b>${escapeHtml(fmt(s.value))}</b></td>`).join("")}
@@ -140,6 +142,19 @@ function renderHero(barrel) {
   const pickerName = fmt(barrel?.barrel_picker_name, "");
   const pickerId = fmt(barrel?.barrel_picker_id, "");
 
+  // Composite score (far right) - large like the old distillery/picker size
+  if (compositeEl) {
+    const composite = fmt1(barrel?.score);
+    compositeEl.innerHTML = `
+      <div style="font-size:12px; opacity:.75; text-transform:uppercase; letter-spacing:.3px;">
+        Composite Score
+      </div>
+      <div style="font-size:26px; font-weight:800; line-height:1;">
+        ${escapeHtml(composite)}
+      </div>
+    `;
+  }
+  
   const msrp = fmtMoney(barrel?.msrp);
 
   // Headline: Brand - Expression (Pick)
@@ -150,8 +165,8 @@ function renderHero(barrel) {
 
   if (titleEl) titleEl.textContent = headline;
 
-  const bigLineStyle =
-    "font-size:26px; line-height:1.15; font-weight:700; margin-top:6px;";
+  const lineStyle =
+    "font-size:20px; line-height:1.15; font-weight:700; margin-top:6px;";
 
   // Distillery line (labeled)
   if (subtitleEl) {
