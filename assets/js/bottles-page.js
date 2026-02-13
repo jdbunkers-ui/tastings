@@ -205,7 +205,7 @@ function renderHero(barrel) {
       subtitleEl.innerHTML = `
         <div style="${rowStyle}">
           <span style="${labelStyle}">Distillery:</span>
-          <a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(dist)}</a>
+          <a href="${escapeHtml(href)}">${escapeHtml(dist)}</a>
         </div>
       `;
     } else {
@@ -224,7 +224,7 @@ function renderHero(barrel) {
       pickerLineEl.innerHTML = `
         <div style="${rowStyle}">
           <span style="${labelStyle}">Barrel Picker:</span>
-          <a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(pickerDisplay)}</a>
+          <a href="${escapeHtml(href)}">${escapeHtml(pickerDisplay)}</a>
         </div>
       `;
     } else {
