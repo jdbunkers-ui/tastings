@@ -8,25 +8,18 @@
 
     <style>
       :root {
-        /* -----------------------------
-           Skin2 palette (whiskey/brown)
-           ----------------------------- */
-        --s2-bg: #f6f1ea;                 /* parchment / light oak */
+        --s2-bg: #f6f1ea;
         --s2-panel: #ffffff;
         --s2-border: #d8cfc3;
 
-        --s2-brown-dark: #3b2a20;         /* dark barrel */
-        --s2-brown-mid: #6a4a32;          /* toasted oak */
-        --s2-amber: #b57a2a;              /* whiskey */
+        --s2-brown-dark: #3b2a20;
+        --s2-brown-mid: #6a4a32;
+        --s2-amber: #b57a2a;
         --s2-amber-soft: #e1b66a;
 
         --s2-text: #2b1d14;
         --s2-text-muted: #7a6758;
 
-        /* -----------------------------
-           Map existing barrel vars -> Skin2
-           (keeps your original layout intact)
-           ----------------------------- */
         --bg: var(--s2-bg);
         --panel: rgba(255, 255, 255, 0.86);
         --panel2: rgba(255, 255, 255, 0.70);
@@ -44,6 +37,7 @@
       }
 
       html, body { height: 100%; }
+
       body {
         margin: 0;
         background:
@@ -60,23 +54,21 @@
         padding: 18px 14px 46px;
       }
 
-      <div class="topbar">
-        <div class="brand" style="flex:1; min-width:0;">
-        <h1 id="page-title">Loading…</h1>
-          <div class="sub" id="page-subtitle"></div>
-          <div class="sub" id="picker-line"></div>
-          <div class="sub" id="msrp-line"></div>
-          <div id="bottle-specs" style="margin-top:10px;"></div>
-        </div>
-      
-        <!-- NEW: Composite score (far right) -->
-        <div id="composite-score" style="text-align:right; white-space:nowrap;"></div>
-      </div>
+      /* ✅ Top header layout */
+      .topbar {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 14px;
+      }
 
       .brand {
         display: flex;
         flex-direction: column;
-        gap: 2px;
+        gap: 4px;
+        flex: 1;
+        min-width: 0;
       }
 
       .brand h1 {
@@ -90,83 +82,12 @@
         font-size: 13px;
       }
 
-      .pill-row {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        margin-top: 8px;
-      }
-
-      .pill {
-        border: 1px solid var(--border);
-        background: rgba(255, 255, 255, 0.55);
-        border-radius: 999px;
-        padding: 6px 10px;
-        font-size: 12px;
-        color: var(--text);
-      }
-
       .card {
         border: 1px solid var(--border);
         background: var(--panel);
         border-radius: 16px;
         padding: 14px;
       }
-
-      .hero {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 12px;
-        margin-bottom: 14px;
-      }
-
-      .hero-top {
-        display: grid;
-        grid-template-columns: 1fr auto;
-        gap: 12px;
-        align-items: start;
-      }
-
-      .stats {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        justify-content: flex-end;
-      }
-
-      .stat {
-        border: 1px solid var(--border);
-        background: rgba(255, 255, 255, 0.60);
-        border-radius: 12px;
-        padding: 8px 10px;
-        min-width: 86px;
-      }
-      .stat .k { font-size: 11px; color: var(--muted2); }
-      .stat .v { font-size: 15px; font-weight: 700; margin-top: 2px; }
-
-      .meta {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-        align-items: center;
-        color: var(--muted);
-        font-size: 12px;
-      }
-
-      .mono {
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      }
-
-      .btn {
-        cursor: pointer;
-        border: 1px solid var(--border);
-        background: rgba(255, 255, 255, 0.55);
-        color: var(--text);
-        border-radius: 12px;
-        padding: 8px 10px;
-        font-size: 13px;
-      }
-      .btn:hover { background: rgba(255, 255, 255, 0.70); }
 
       .section-title {
         display: flex;
@@ -175,6 +96,7 @@
         gap: 10px;
         margin: 18px 2px 10px;
       }
+
       .section-title h2 {
         margin: 0;
         font-size: 14px;
@@ -182,122 +104,26 @@
         color: rgba(43, 29, 20, 0.90);
         text-transform: uppercase;
       }
+
       .section-title .hint {
         color: var(--muted2);
         font-size: 12px;
       }
-
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        overflow: hidden;
-        border-radius: 14px;
-        border: 1px solid var(--border);
-        background: rgba(255, 255, 255, 0.62);
-      }
-      thead th {
-        text-align: left;
-        font-size: 12px;
-        color: rgba(43, 29, 20, 0.72);
-        padding: 10px 10px;
-        border-bottom: 1px solid var(--border);
-        background: rgba(255, 255, 255, 0.50);
-        white-space: nowrap;
-      }
-      tbody td {
-        vertical-align: top;
-        padding: 10px 10px;
-        border-bottom: 1px solid rgba(216, 207, 195, 0.85);
-        font-size: 13px;
-        color: rgba(43, 29, 20, 0.92);
-      }
-      tbody tr:last-child td { border-bottom: none; }
-      .num { text-align: right; white-space: nowrap; }
-      .notes { color: rgba(43, 29, 20, 0.90); line-height: 1.35; }
-      .muted { color: var(--muted); }
 
       .grid-2 {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 12px;
       }
+
       @media (max-width: 860px) {
         .grid-2 { grid-template-columns: 1fr; }
-        .hero-top { grid-template-columns: 1fr; }
-        .stats { justify-content: flex-start; }
-      }
-
-      .list {
-        display: grid;
-        gap: 8px;
-      }
-      .row {
-        border: 1px solid var(--border);
-        background: rgba(255, 255, 255, 0.62);
-        border-radius: 14px;
-        padding: 10px 10px;
-        display: grid;
-        grid-template-columns: 1fr auto;
-        gap: 10px;
-        align-items: start;
-      }
-      .row:hover { background: rgba(255, 255, 255, 0.74); }
-      .row .title {
-        font-weight: 700;
-        font-size: 13px;
-      }
-      .row .sub {
-        font-size: 12px;
-        color: var(--muted);
-        margin-top: 2px;
-      }
-      .row .right {
-        text-align: right;
-        white-space: nowrap;
-      }
-      .row .score {
-        font-weight: 800;
-        font-size: 14px;
-      }
-      .row .meta2 {
-        color: var(--muted2);
-        font-size: 12px;
-        margin-top: 2px;
+        .topbar { flex-direction: column; }
+        #composite-score { text-align: left !important; }
       }
 
       a { color: var(--link); }
       a:hover { color: var(--link-hover); }
-
-      .row a {
-        color: var(--link);
-        text-decoration: underline;
-      }
-      .row a:hover {
-        color: var(--link-hover);
-      }
-
-      details {
-        border: 1px solid var(--border);
-        background: rgba(255, 255, 255, 0.58);
-        border-radius: 14px;
-        padding: 10px 10px;
-      }
-      details summary {
-        cursor: pointer;
-        font-weight: 700;
-        font-size: 13px;
-        color: rgba(43, 29, 20, 0.90);
-      }
-      pre {
-        margin: 10px 0 0;
-        padding: 10px;
-        border-radius: 12px;
-        background: rgba(255, 255, 255, 0.55);
-        border: 1px solid rgba(216, 207, 195, 0.95);
-        overflow: auto;
-        color: rgba(43, 29, 20, 0.90);
-        font-size: 12px;
-      }
     </style>
   </head>
 
@@ -306,18 +132,18 @@
       <!-- Skin2 Header Injection Target -->
       <div id="site-header"></div>
 
-      <div class="brand" style="width:100%;">
-        <!-- 1) Big headline -->
-        <h1 id="page-title">Loading…</h1>
-      
-        <!-- 2) Distillery link line -->
-        <div class="sub" id="page-subtitle"></div>
-      
-        <!-- 4) MSRP line (moved here) -->
-        <div class="sub" id="msrp-line"></div>
-      
-        <!-- 5) Specs table -->
-        <div id="bottle-specs" style="margin-top:10px;"></div>
+      <!-- ✅ Correct header -->
+      <div class="topbar">
+        <div class="brand">
+          <h1 id="page-title">Loading…</h1>
+          <div class="sub" id="page-subtitle"></div>
+          <div class="sub" id="picker-line"></div>
+          <div class="sub" id="msrp-line"></div>
+          <div id="bottle-specs" style="margin-top:10px;"></div>
+        </div>
+
+        <!-- Composite Score -->
+        <div id="composite-score" style="text-align:right; white-space:nowrap;"></div>
       </div>
 
       <div class="card hero" id="hero"></div>
@@ -350,10 +176,7 @@
       <div id="site-footer"></div>
     </div>
 
-    <!-- Skin2 layout injector -->
     <script src="../assets/js/site-chrome.js"></script>
-
-    <!-- Page controller -->
     <script type="module" src="../assets/js/bottles-page.js"></script>
   </body>
 </html>
