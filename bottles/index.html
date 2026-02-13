@@ -60,13 +60,18 @@
         padding: 18px 14px 46px;
       }
 
-      .topbar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        margin-bottom: 14px;
-      }
+      <div class="topbar">
+        <div class="brand" style="width:100%;">
+          <h1 id="page-title">Loading…</h1>
+          <div class="sub" id="page-subtitle"></div>
+          <div class="sub" id="picker-line"></div>
+          <div class="sub" id="msrp-line"></div>
+          <div id="bottle-specs" style="margin-top:10px;"></div>
+        </div>
+      
+        <!-- NEW: Composite score (far right) -->
+        <div id="composite-score" style="text-align:right; white-space:nowrap;"></div>
+      </div>
 
       .brand {
         display: flex;
