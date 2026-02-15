@@ -186,15 +186,14 @@ function renderHero(barrel) {
 
   const pickerNameRaw = barrel?.barrel_picker_name;
   const pickerId = fmt(barrel?.barrel_picker_id, "");
-
   const pickerDisplay = pickerNameRaw ? String(pickerNameRaw) : "N/A";
+
   const msrp = fmtMoney(barrel?.msrp);
 
-  // Headline stays unchanged
+  // Headline
   const headline = `${brand}` + (expr ? ` - ${expr}` : "") + (pick ? ` (${pick})` : "");
   if (titleEl) titleEl.textContent = headline;
 
-  // ✅ Flight Outcome enhancements #1: only these lines go 20 -> 15
   const rowStyle = "font-size:15px; line-height:1.2; font-weight:700; margin-top:6px;";
   const labelStyle = "opacity:.75;";
 
@@ -236,18 +235,29 @@ function renderHero(barrel) {
     }
   }
 
-  // MSRP line + temporary IDs (DEV ONLY)
+  // MSRP + description + IDs
   if (msrpLineEl) {
     const bottleId = fmt(barrel?.bottle_id);
     const singleBarrelId = fmt(barrel?.single_barrel_id);
-  
+    const desc = String(barrel?.single_barrel_description ?? "").trim();
+
     msrpLineEl.innerHTML = `
       <div style="${rowStyle}">
         <span style="${labelStyle}">MSRP:</span> ${escapeHtml(msrp)}
       </div>
-  
+
+      ${
+        desc
+          ? `
+            <div style="margin-top:6px; font-size:14px; line-height:1.35; color: rgba(43,29,20,0.88);">
+              ${escapeHtml(desc)}
+            </div>
+          `
+          : ""
+      }
+
       <div style="
-        margin-top:4px;
+        margin-top:6px;
         font-size:12px;
         font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
         color: var(--muted2);
@@ -258,7 +268,6 @@ function renderHero(barrel) {
       </div>
     `;
   }
-
 
   // Composite score (dominant)
   if (compositeEl) {
@@ -345,12 +354,11 @@ function renderTastings(tastings) {
     </table>
 
     <style>
-      /* Sensory Enhancements (scoped) */
       table.sensory-table tbody tr:nth-child(even){
-        background: rgba(246, 241, 234, 0.75); /* beige */
+        background: rgba(246, 241, 234, 0.75);
       }
       table.sensory-table tbody tr:nth-child(odd){
-        background: rgba(255, 255, 255, 0.62); /* white-ish */
+        background: rgba(255, 255, 255, 0.62);
       }
       table.sensory-table tbody tr:hover{
         background: rgba(225, 182, 106, 0.18);
@@ -367,7 +375,6 @@ function renderTastings(tastings) {
         white-space: nowrap;
       }
 
-      /* ✅ Flight Outcome enhancements #3: remove underline + dark brown emphasis */
       .note-em{
         font-weight: 900;
         text-decoration: none;
@@ -414,16 +421,29 @@ function renderFoes({ foe_beat, foe_lost }) {
                   const meta = [date, proof].filter(Boolean).join(" • ");
 
                   return `
-                    <a class="foe-row" href="${escapeHtml(href)}" data-barrel-link="1" data-barrel-id="${escapeHtml(id)}">
+                    <div class="foe-row">
                       <div class="foe-left">
                         <div class="foe-row-title">${escapeHtml(leftTitle)}</div>
                         <div class="foe-row-sub">${escapeHtml(meta)}</div>
+
+                        ${
+                          id
+                            ? `<div class="foe-id">
+                                 <a class="foe-id-link" href="${escapeHtml(
+                                   href
+                                 )}" data-barrel-link="1" data-barrel-id="${escapeHtml(id)}">
+                                   ${escapeHtml(id)}
+                                 </a>
+                               </div>`
+                            : ""
+                        }
                       </div>
+
                       <div class="foe-right">
                         <div class="foe-score">${escapeHtml(fmt1(it.score))}</div>
                         <div class="foe-meta2">${escapeHtml(it.size_ml ? `${it.size_ml} ml` : "")}</div>
                       </div>
-                    </a>
+                    </div>
                   `;
                 })
                 .join("")
@@ -437,7 +457,6 @@ function renderFoes({ foe_beat, foe_lost }) {
     winsEl.innerHTML = `
       ${renderList(wins, "wins")}
       <style>
-        /* ✅ Flight Outcomes: match Skin2 table vibe */
         .foe-head{
           display:flex;
           justify-content:space-between;
@@ -470,8 +489,6 @@ function renderFoes({ foe_beat, foe_lost }) {
           gap: 10px;
           align-items: start;
           padding: 10px 10px;
-          text-decoration: none;
-          color: inherit;
           border-bottom: 1px solid rgba(216, 207, 195, 0.85);
         }
         .foe-row:last-child{ border-bottom:none; }
@@ -487,7 +504,7 @@ function renderFoes({ foe_beat, foe_lost }) {
         }
 
         .foe-row-title{
-          font-weight: 800;
+          font-weight: 600;
           font-size: 13px;
         }
         .foe-row-sub{
@@ -501,14 +518,27 @@ function renderFoes({ foe_beat, foe_lost }) {
           white-space: nowrap;
         }
         .foe-score{
-          font-weight: 900;
-          font-size: 18px;
-          line-height: 1.1;
+          font-weight: 600;
+          font-size: 14px;
+          line-height: 1.15;
         }
         .foe-meta2{
           margin-top: 2px;
           font-size: 12px;
           color: var(--muted2);
+        }
+
+        .foe-id{
+          margin-top: 4px;
+          font-size: 12px;
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+        }
+        .foe-id-link{
+          color: var(--s2-brown-mid, #6a4a32);
+          text-decoration: underline;
+        }
+        .foe-id-link:hover{
+          text-decoration: none;
         }
       </style>
     `;
