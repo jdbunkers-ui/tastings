@@ -113,6 +113,7 @@ const titleEl = document.getElementById("page-title");
 const subtitleEl = document.getElementById("page-subtitle");
 const pickerLineEl = document.getElementById("picker-line");
 const msrpLineEl = document.getElementById("msrp-line");
+const desc = String(barrel?.single_barrel_description ?? "").trim();
 const specsEl = document.getElementById("bottle-specs");
 const hintEl = document.getElementById("tastings-hint");
 const debugEl = document.getElementById("debug-json");
@@ -237,21 +238,32 @@ function renderHero(barrel) {
   }
 
   // MSRP line + temporary IDs (DEV ONLY)
-  if (msrpLineEl) {
-    const bottleId = fmt(barrel?.bottle_id);
-    const singleBarrelId = fmt(barrel?.single_barrel_id);
-  
-    msrpLineEl.innerHTML = `
-      <div style="${rowStyle}">
-        <span style="${labelStyle}">MSRP:</span> ${escapeHtml(msrp)}
-      </div>
-  
-      <div style="
-        margin-top:4px;
-        font-size:12px;
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
-        color: var(--muted2);
-        line-height:1.35;
+if (msrpLineEl) {
+  const bottleId = fmt(barrel?.bottle_id);
+  const singleBarrelId = fmt(barrel?.single_barrel_id);
+  const desc = String(barrel?.single_barrel_description ?? "").trim();
+
+  msrpLineEl.innerHTML = `
+    <div style="${rowStyle}">
+      <span style="${labelStyle}">MSRP:</span> ${escapeHtml(msrp)}
+    </div>
+
+    ${
+      desc
+        ? `
+          <div style="margin-top:6px; font-size:14px; line-height:1.35; color: rgba(43,29,20,0.88);">
+            ${escapeHtml(desc)}
+          </div>
+        `
+        : ""
+    }
+
+    <div style="
+      margin-top:6px;
+      font-size:12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+      color: var(--muted2);
+      line-height:1.35;
       ">
         <div><b>Bottle ID:</b> ${escapeHtml(bottleId)}</div>
         <div><b>Single Barrel ID:</b> ${escapeHtml(singleBarrelId)}</div>
@@ -413,7 +425,7 @@ function renderFoes({ foe_beat, foe_lost }) {
                   const proof = it.proof ? `Proof ${it.proof}` : "";
                   const meta = [date, proof].filter(Boolean).join(" • ");
 
-      return `
+                  return `
         <div class="foe-row">
           <div class="foe-left">
             <div class="foe-row-title">${escapeHtml(leftTitle)}</div>
