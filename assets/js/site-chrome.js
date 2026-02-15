@@ -36,15 +36,16 @@
     return `<a href="${rootPrefix}${target}" class="skin2-nav ${active}">${label}</a>`;
   }
 
-  const navHtml = `
-    <nav class="skin2-nav-row">
-      ${navLink("Home", "index.html", "home")}
-      ${navLink("Inventory", "inventory/index.html", "inventory")}
-      ${navLink("About", "about/index.html", "about")}
-    </nav>
-  `;
+   const navHtml = `
+     <nav class="skin2-nav-row">
+       ${navLink("Home", "index.html", "home")}
+       ${navLink("Inventory", "inventory/index.html", "inventory")}
+       ${navLink("Sensory", "sensory/index.html", "sensory")}
+       ${navLink("About", "about/index.html", "about")}
+     </nav>
+   `;    
 
-  // ---------- Header (logos only) ----------
+   // ---------- Header (logos only) ----------
   const headerHtml = `
     <header class="skin2-header" role="banner">
       <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%;">
