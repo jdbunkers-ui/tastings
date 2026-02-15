@@ -113,7 +113,6 @@ const titleEl = document.getElementById("page-title");
 const subtitleEl = document.getElementById("page-subtitle");
 const pickerLineEl = document.getElementById("picker-line");
 const msrpLineEl = document.getElementById("msrp-line");
-const desc = String(barrel?.single_barrel_description ?? "").trim();
 const specsEl = document.getElementById("bottle-specs");
 const hintEl = document.getElementById("tastings-hint");
 const debugEl = document.getElementById("debug-json");
