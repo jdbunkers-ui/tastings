@@ -186,16 +186,18 @@ function renderHero(barrel) {
 
   const pickerNameRaw = barrel?.barrel_picker_name;
   const pickerId = fmt(barrel?.barrel_picker_id, "");
-
   const pickerDisplay = pickerNameRaw ? String(pickerNameRaw) : "N/A";
+
   const msrp = fmtMoney(barrel?.msrp);
 
+  // Headline
   const headline = `${brand}` + (expr ? ` - ${expr}` : "") + (pick ? ` (${pick})` : "");
   if (titleEl) titleEl.textContent = headline;
 
   const rowStyle = "font-size:15px; line-height:1.2; font-weight:700; margin-top:6px;";
   const labelStyle = "opacity:.75;";
 
+  // Distillery line
   if (subtitleEl) {
     if (distId) {
       const href = `../distilleries/index.html?distillery_id=${encodeURIComponent(distId)}`;
@@ -214,6 +216,7 @@ function renderHero(barrel) {
     }
   }
 
+  // Barrel picker line
   if (pickerLineEl) {
     if (pickerId && pickerDisplay !== "N/A") {
       const href = `../barrel_pickers/index.html?barrel_picker_id=${encodeURIComponent(pickerId)}`;
@@ -232,6 +235,7 @@ function renderHero(barrel) {
     }
   }
 
+  // MSRP + description + IDs
   if (msrpLineEl) {
     const bottleId = fmt(barrel?.bottle_id);
     const singleBarrelId = fmt(barrel?.single_barrel_id);
@@ -244,9 +248,11 @@ function renderHero(barrel) {
 
       ${
         desc
-          ? `<div style="margin-top:6px; font-size:14px; line-height:1.35; color: rgba(43,29,20,0.88);">
-               ${escapeHtml(desc)}
-             </div>`
+          ? `
+            <div style="margin-top:6px; font-size:14px; line-height:1.35; color: rgba(43,29,20,0.88);">
+              ${escapeHtml(desc)}
+            </div>
+          `
           : ""
       }
 
@@ -263,6 +269,7 @@ function renderHero(barrel) {
     `;
   }
 
+  // Composite score (dominant)
   if (compositeEl) {
     const composite = fmt2(barrel?.score);
     compositeEl.innerHTML = `
@@ -275,12 +282,14 @@ function renderHero(barrel) {
     `;
   }
 
+  // Specs grid
   const specs = [
     { label: "Proof", value: fmt1(barrel?.proof) },
     { label: "Strength", value: fmt(barrel?.bottling_strength_type) },
     { label: "Subtype", value: fmt(barrel?.spirit_subtype) },
     { label: "Age", value: fmtAgeYears(barrel?.age_in_years) },
     { label: "Size", value: barrel?.size_ml ? `${barrel.size_ml} ml` : "—" },
+
     { label: "Mash Bill", value: fmt(barrel?.mash_bill) },
     { label: "Single Barrel", value: fmtBool(barrel?.single_barrel_ind) },
     { label: "Chill Filtered", value: fmtBool(barrel?.chill_filtered_ind) },
@@ -290,6 +299,7 @@ function renderHero(barrel) {
 
   renderSpecsGrid(specs);
 
+  // keep old hero card hidden
   if (heroEl) {
     heroEl.style.display = "none";
     heroEl.innerHTML = "";
@@ -344,12 +354,11 @@ function renderTastings(tastings) {
     </table>
 
     <style>
-      /* Sensory Enhancements (scoped) */
       table.sensory-table tbody tr:nth-child(even){
-        background: rgba(246, 241, 234, 0.75); /* beige */
+        background: rgba(246, 241, 234, 0.75);
       }
       table.sensory-table tbody tr:nth-child(odd){
-        background: rgba(255, 255, 255, 0.62); /* white-ish */
+        background: rgba(255, 255, 255, 0.62);
       }
       table.sensory-table tbody tr:hover{
         background: rgba(225, 182, 106, 0.18);
@@ -366,7 +375,6 @@ function renderTastings(tastings) {
         white-space: nowrap;
       }
 
-      /* ✅ Flight Outcome enhancements #3: remove underline + dark brown emphasis */
       .note-em{
         font-weight: 900;
         text-decoration: none;
@@ -413,28 +421,31 @@ function renderFoes({ foe_beat, foe_lost }) {
                   const meta = [date, proof].filter(Boolean).join(" • ");
 
                   return `
-        <div class="foe-row">
-          <div class="foe-left">
-            <div class="foe-row-title">${escapeHtml(leftTitle)}</div>
-            <div class="foe-row-sub">${escapeHtml(meta)}</div>
-      
-            ${
-              id
-                ? `<div class="foe-id">
-                     <a class="foe-id-link" href="${escapeHtml(href)}" data-barrel-link="1" data-barrel-id="${escapeHtml(id)}">
-                       ${escapeHtml(id)}
-                     </a>
-                   </div>`
-                : ""
-            }
-          </div>
-      
-          <div class="foe-right">
-            <div class="foe-score">${escapeHtml(fmt1(it.score))}</div>
-            <div class="foe-meta2">${escapeHtml(it.size_ml ? `${it.size_ml} ml` : "")}</div>
-          </div>
-        </div>
-      `;                })
+                    <div class="foe-row">
+                      <div class="foe-left">
+                        <div class="foe-row-title">${escapeHtml(leftTitle)}</div>
+                        <div class="foe-row-sub">${escapeHtml(meta)}</div>
+
+                        ${
+                          id
+                            ? `<div class="foe-id">
+                                 <a class="foe-id-link" href="${escapeHtml(
+                                   href
+                                 )}" data-barrel-link="1" data-barrel-id="${escapeHtml(id)}">
+                                   ${escapeHtml(id)}
+                                 </a>
+                               </div>`
+                            : ""
+                        }
+                      </div>
+
+                      <div class="foe-right">
+                        <div class="foe-score">${escapeHtml(fmt1(it.score))}</div>
+                        <div class="foe-meta2">${escapeHtml(it.size_ml ? `${it.size_ml} ml` : "")}</div>
+                      </div>
+                    </div>
+                  `;
+                })
                 .join("")
             : `<div class="muted">${escapeHtml(empty)}</div>`
         }
@@ -446,7 +457,6 @@ function renderFoes({ foe_beat, foe_lost }) {
     winsEl.innerHTML = `
       ${renderList(wins, "wins")}
       <style>
-        /* ✅ Flight Outcomes: match Skin2 table vibe */
         .foe-head{
           display:flex;
           justify-content:space-between;
@@ -479,8 +489,6 @@ function renderFoes({ foe_beat, foe_lost }) {
           gap: 10px;
           align-items: start;
           padding: 10px 10px;
-          text-decoration: none;
-          color: inherit;
           border-bottom: 1px solid rgba(216, 207, 195, 0.85);
         }
         .foe-row:last-child{ border-bottom:none; }
@@ -519,19 +527,19 @@ function renderFoes({ foe_beat, foe_lost }) {
           font-size: 12px;
           color: var(--muted2);
         }
-      /* 👇 ADD THIS HERE */
-      .foe-id{
-        margin-top: 4px;
-        font-size: 12px;
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      }
-      .foe-id-link{
-        color: var(--s2-brown-mid, #6a4a32);
-        text-decoration: underline;
-      }
-      .foe-id-link:hover{
-        text-decoration: none;
-      }
+
+        .foe-id{
+          margin-top: 4px;
+          font-size: 12px;
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+        }
+        .foe-id-link{
+          color: var(--s2-brown-mid, #6a4a32);
+          text-decoration: underline;
+        }
+        .foe-id-link:hover{
+          text-decoration: none;
+        }
       </style>
     `;
   }
