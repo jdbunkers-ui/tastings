@@ -163,7 +163,7 @@ function renderPickerTable(rows) {
                             </div>
                           </td>
                           <td class="mono col-tastings">
-                            ${escapeHtml(String(tastings))}${star}
+                            ${star}${escapeHtml(String(tastings))}
                           </td>
                           <td class="mono col-picks">
                             ${escapeHtml(String(barrels))}
