@@ -189,7 +189,7 @@ function renderHero(barrel) {
 
   const pickerDisplay = pickerNameRaw ? String(pickerNameRaw) : "N/A";
   const msrp = fmtMoney(barrel?.msrp);
-}
+
 
   // Headline stays unchanged
   const headline = `${brand}` + (expr ? ` - ${expr}` : "") + (pick ? ` (${pick})` : "");
@@ -216,6 +216,7 @@ function renderHero(barrel) {
         </div>
       `;
     }
+  }
   }
 
   // Barrel picker line
