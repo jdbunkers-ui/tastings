@@ -17,12 +17,12 @@
     ? document.body.dataset.page
     : "").toLowerCase();
 
-  // ---------- Determine correct relative paths ----------
-  const isRoot = !window.location.pathname.includes("/inventory/")
-              && !window.location.pathname.includes("/distilleries/")
-              && !window.location.pathname.includes("/bottles/")
-              && !window.location.pathname.includes("/barrel_pickers/")
-              && !window.location.pathname.includes("/about/");
+const isRoot = !window.location.pathname.includes("/inventory/")
+            && !window.location.pathname.includes("/sensory/")
+            && !window.location.pathname.includes("/distilleries/")
+            && !window.location.pathname.includes("/bottles/")
+            && !window.location.pathname.includes("/barrel_pickers/")
+            && !window.location.pathname.includes("/about/");
 
   const rootPrefix = isRoot ? "./" : "../";
 
@@ -43,7 +43,7 @@
        ${navLink("Sensory", "sensory/index.html", "sensory")}
        ${navLink("About", "about/index.html", "about")}
      </nav>
-   `;    
+   `;
 
    // ---------- Header (logos only) ----------
   const headerHtml = `
