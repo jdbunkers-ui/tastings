@@ -190,16 +190,12 @@ function renderHero(barrel) {
   const pickerDisplay = pickerNameRaw ? String(pickerNameRaw) : "N/A";
   const msrp = fmtMoney(barrel?.msrp);
 
-
-  // Headline stays unchanged
   const headline = `${brand}` + (expr ? ` - ${expr}` : "") + (pick ? ` (${pick})` : "");
   if (titleEl) titleEl.textContent = headline;
 
-  // ✅ Flight Outcome enhancements #1: only these lines go 20 -> 15
   const rowStyle = "font-size:15px; line-height:1.2; font-weight:700; margin-top:6px;";
   const labelStyle = "opacity:.75;";
 
-  // Distillery line
   if (subtitleEl) {
     if (distId) {
       const href = `../distilleries/index.html?distillery_id=${encodeURIComponent(distId)}`;
@@ -217,9 +213,7 @@ function renderHero(barrel) {
       `;
     }
   }
-  }
 
-  // Barrel picker line
   if (pickerLineEl) {
     if (pickerId && pickerDisplay !== "N/A") {
       const href = `../barrel_pickers/index.html?barrel_picker_id=${encodeURIComponent(pickerId)}`;
@@ -238,32 +232,30 @@ function renderHero(barrel) {
     }
   }
 
-  // MSRP line + temporary IDs (DEV ONLY)
-if (msrpLineEl) {
-  const bottleId = fmt(barrel?.bottle_id);
-  const singleBarrelId = fmt(barrel?.single_barrel_id);
+  if (msrpLineEl) {
+    const bottleId = fmt(barrel?.bottle_id);
+    const singleBarrelId = fmt(barrel?.single_barrel_id);
+    const desc = String(barrel?.single_barrel_description ?? "").trim();
 
-  msrpLineEl.innerHTML = `
-    <div style="${rowStyle}">
-      <span style="${labelStyle}">MSRP:</span> ${escapeHtml(msrp)}
-    </div>
+    msrpLineEl.innerHTML = `
+      <div style="${rowStyle}">
+        <span style="${labelStyle}">MSRP:</span> ${escapeHtml(msrp)}
+      </div>
 
-    ${
-      desc
-        ? `
-          <div style="margin-top:6px; font-size:14px; line-height:1.35; color: rgba(43,29,20,0.88);">
-            ${escapeHtml(desc)}
-          </div>
-        `
-        : ""
-    }
+      ${
+        desc
+          ? `<div style="margin-top:6px; font-size:14px; line-height:1.35; color: rgba(43,29,20,0.88);">
+               ${escapeHtml(desc)}
+             </div>`
+          : ""
+      }
 
-    <div style="
-      margin-top:6px;
-      font-size:12px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
-      color: var(--muted2);
-      line-height:1.35;
+      <div style="
+        margin-top:6px;
+        font-size:12px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+        color: var(--muted2);
+        line-height:1.35;
       ">
         <div><b>Bottle ID:</b> ${escapeHtml(bottleId)}</div>
         <div><b>Single Barrel ID:</b> ${escapeHtml(singleBarrelId)}</div>
@@ -271,8 +263,6 @@ if (msrpLineEl) {
     `;
   }
 
-
-  // Composite score (dominant)
   if (compositeEl) {
     const composite = fmt2(barrel?.score);
     compositeEl.innerHTML = `
@@ -285,14 +275,12 @@ if (msrpLineEl) {
     `;
   }
 
-  // Specs grid
   const specs = [
     { label: "Proof", value: fmt1(barrel?.proof) },
     { label: "Strength", value: fmt(barrel?.bottling_strength_type) },
     { label: "Subtype", value: fmt(barrel?.spirit_subtype) },
     { label: "Age", value: fmtAgeYears(barrel?.age_in_years) },
     { label: "Size", value: barrel?.size_ml ? `${barrel.size_ml} ml` : "—" },
-
     { label: "Mash Bill", value: fmt(barrel?.mash_bill) },
     { label: "Single Barrel", value: fmtBool(barrel?.single_barrel_ind) },
     { label: "Chill Filtered", value: fmtBool(barrel?.chill_filtered_ind) },
@@ -302,7 +290,6 @@ if (msrpLineEl) {
 
   renderSpecsGrid(specs);
 
-  // keep old hero card hidden
   if (heroEl) {
     heroEl.style.display = "none";
     heroEl.innerHTML = "";
