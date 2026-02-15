@@ -13,22 +13,25 @@
     el.innerHTML = html;
   }
 
-  const pageKey = (document.body && document.body.dataset && document.body.dataset.page
-    ? document.body.dataset.page
-    : "").toLowerCase();
+  const pageKey =
+    document.body && document.body.dataset && document.body.dataset.page
+      ? document.body.dataset.page.toLowerCase()
+      : "";
 
-const isRoot = !window.location.pathname.includes("/inventory/")
-            && !window.location.pathname.includes("/sensory/")
-            && !window.location.pathname.includes("/distilleries/")
-            && !window.location.pathname.includes("/bottles/")
-            && !window.location.pathname.includes("/barrel_pickers/")
-            && !window.location.pathname.includes("/about/");
+  // ---------- Determine correct relative paths ----------
+  const isRoot =
+    !window.location.pathname.includes("/inventory/") &&
+    !window.location.pathname.includes("/sensory/") &&
+    !window.location.pathname.includes("/distilleries/") &&
+    !window.location.pathname.includes("/bottles/") &&
+    !window.location.pathname.includes("/barrel_pickers/") &&
+    !window.location.pathname.includes("/about/");
 
   const rootPrefix = isRoot ? "./" : "../";
 
   // ---------- Logo paths ----------
   const logoRightSrc = `${rootPrefix}assets/img/logo/honey_barrel_hunter.png`;
-  const logoLeftSrc  = `${rootPrefix}assets/img/logo/honey_barrel_hunter_text.png`;
+  const logoLeftSrc = `${rootPrefix}assets/img/logo/honey_barrel_hunter_text.png`;
 
   // ---------- Navigation ----------
   function navLink(label, target, key) {
@@ -36,19 +39,25 @@ const isRoot = !window.location.pathname.includes("/inventory/")
     return `<a href="${rootPrefix}${target}" class="skin2-nav ${active}">${label}</a>`;
   }
 
-   const navHtml = `
-     <nav class="skin2-nav-row">
-       ${navLink("Home", "index.html", "home")}
-       ${navLink("Inventory", "inventory/index.html", "inventory")}
-       ${navLink("Sensory", "sensory/index.html", "sensory")}
-       ${navLink("About", "about/index.html", "about")}
-     </nav>
-   `;
+  const navHtml = `
+    <nav class="skin2-nav-row">
+      ${navLink("Home", "index.html", "home")}
+      ${navLink("Inventory", "inventory/index.html", "inventory")}
+      ${navLink("Sensory", "sensory/index.html", "sensory")}
+      ${navLink("About", "about/index.html", "about")}
+    </nav>
+  `;
 
-   // ---------- Header (logos only) ----------
+  // ---------- Header ----------
   const headerHtml = `
     <header class="skin2-header" role="banner">
-      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%;">
+      <div style="
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:12px;
+        width:100%;
+      ">
         <img
           src="${logoLeftSrc}"
           alt="Honey Barrel Hunter"
