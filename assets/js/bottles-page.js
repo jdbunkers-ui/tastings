@@ -413,19 +413,29 @@ function renderFoes({ foe_beat, foe_lost }) {
                   const proof = it.proof ? `Proof ${it.proof}` : "";
                   const meta = [date, proof].filter(Boolean).join(" • ");
 
-                  return `
-                    <a class="foe-row" href="${escapeHtml(href)}" data-barrel-link="1" data-barrel-id="${escapeHtml(id)}">
-                      <div class="foe-left">
-                        <div class="foe-row-title">${escapeHtml(leftTitle)}</div>
-                        <div class="foe-row-sub">${escapeHtml(meta)}</div>
-                      </div>
-                      <div class="foe-right">
-                        <div class="foe-score">${escapeHtml(fmt1(it.score))}</div>
-                        <div class="foe-meta2">${escapeHtml(it.size_ml ? `${it.size_ml} ml` : "")}</div>
-                      </div>
-                    </a>
-                  `;
-                })
+      return `
+        <div class="foe-row">
+          <div class="foe-left">
+            <div class="foe-row-title">${escapeHtml(leftTitle)}</div>
+            <div class="foe-row-sub">${escapeHtml(meta)}</div>
+      
+            ${
+              id
+                ? `<div class="foe-id">
+                     <a class="foe-id-link" href="${escapeHtml(href)}" data-barrel-link="1" data-barrel-id="${escapeHtml(id)}">
+                       ${escapeHtml(id)}
+                     </a>
+                   </div>`
+                : ""
+            }
+          </div>
+      
+          <div class="foe-right">
+            <div class="foe-score">${escapeHtml(fmt1(it.score))}</div>
+            <div class="foe-meta2">${escapeHtml(it.size_ml ? `${it.size_ml} ml` : "")}</div>
+          </div>
+        </div>
+      `;                })
                 .join("")
             : `<div class="muted">${escapeHtml(empty)}</div>`
         }
@@ -487,7 +497,7 @@ function renderFoes({ foe_beat, foe_lost }) {
         }
 
         .foe-row-title{
-          font-weight: 800;
+          font-weight: 600;
           font-size: 13px;
         }
         .foe-row-sub{
@@ -501,15 +511,28 @@ function renderFoes({ foe_beat, foe_lost }) {
           white-space: nowrap;
         }
         .foe-score{
-          font-weight: 900;
-          font-size: 18px;
-          line-height: 1.1;
+          font-weight: 600;
+          font-size: 14px;
+          line-height: 1.15;
         }
         .foe-meta2{
           margin-top: 2px;
           font-size: 12px;
           color: var(--muted2);
         }
+      /* 👇 ADD THIS HERE */
+      .foe-id{
+        margin-top: 4px;
+        font-size: 12px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      }
+      .foe-id-link{
+        color: var(--s2-brown-mid, #6a4a32);
+        text-decoration: underline;
+      }
+      .foe-id-link:hover{
+        text-decoration: none;
+      }
       </style>
     `;
   }
