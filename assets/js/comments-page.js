@@ -7,7 +7,6 @@
 
 import { supabase } from "./supabaseClient.js";
 
-// Change this if you want comments tied to a different page key
 const PAGE_KEY = "comments";
 
 // DOM refs
@@ -17,10 +16,6 @@ const commentInput = document.getElementById("comment");
 const statusEl = document.getElementById("status");
 const commentsEl = document.getElementById("comments");
 const submitBtn = document.getElementById("submitBtn");
-
-/* -------------------------------------------------------
-   Utilities
-------------------------------------------------------- */
 
 function setStatus(message = "", type = "") {
   statusEl.className = "msg " + type;
@@ -43,10 +38,6 @@ function formatDate(iso) {
     return iso;
   }
 }
-
-/* -------------------------------------------------------
-   Load approved comments
-------------------------------------------------------- */
 
 async function loadComments() {
   commentsEl.innerHTML = `<div class="meta">Loading…</div>`;
@@ -86,10 +77,6 @@ async function loadComments() {
     .join("");
 }
 
-/* -------------------------------------------------------
-   Submit comment
-------------------------------------------------------- */
-
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   setStatus("");
@@ -123,12 +110,7 @@ form.addEventListener("submit", async (e) => {
   form.reset();
   setStatus("Thanks! Your comment was submitted for approval.", "ok");
 
-  // Reload approved comments (new one won't show until approved)
   loadComments();
 });
-
-/* -------------------------------------------------------
-   Init
-------------------------------------------------------- */
 
 loadComments();
