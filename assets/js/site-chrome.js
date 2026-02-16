@@ -34,12 +34,10 @@
   const logoRightSrc = `${rootPrefix}assets/img/logo/honey_barrel_hunter.png`;
   const logoLeftSrc = `${rootPrefix}assets/img/logo/honey_barrel_hunter_text.png`;
 
-  // ---------- New UI assets ----------
-  // You need to add these two images to your project:
-  // - assets/img/ui/barrel-rings.png (subtle transparent texture)
-  // - assets/img/ui/barrel-divider.png (tiny barrel icon)
-  const barrelRingsSrc = `${rootPrefix}assets/img/ui/barrel-rings.png`;
-  const barrelDividerSrc = `${rootPrefix}assets/img/ui/barrel-divider.png`;
+  // ---------- New assets (you said you'll store these in assets/img/logo) ----------
+  // Update filenames here if yours differ.
+  const barrelTextureSrc = `${rootPrefix}assets/img/logo/barrel-rings.jpg`;
+  const barrelDividerSrc = `${rootPrefix}assets/img/logo/barrel_divider.png`;
 
   // ---------- Navigation ----------
   function navLink(label, target, key) {
@@ -73,22 +71,25 @@
   const headerHtml = `
     <style>
       /* --- Honey Barrel Hunter header enhancements (scoped) --- */
+
+      /* Make header a stacking context for overlay */
       .hb-header {
         position: relative;
         overflow: hidden;
       }
 
-      /* Subtle barrel ring texture overlay */
+      /* Subtle barrel texture overlay */
       .hb-header::after {
         content: "";
         position: absolute;
         inset: 0;
-        background-image: url("${barrelRingsSrc}");
+        background-image: url("${barrelTextureSrc}");
         background-repeat: repeat;
-        background-size: 520px auto;
-        opacity: 0.10;           /* keep it subtle */
+        background-size: 900px auto;
+        opacity: 0.08;              /* subtle */
         pointer-events: none;
-        mix-blend-mode: multiply; /* gentle on light backgrounds */
+        mix-blend-mode: multiply;   /* keeps it classy on light backgrounds */
+        filter: saturate(0.9) contrast(0.95);
       }
 
       /* Keep header content above overlay */
@@ -110,16 +111,10 @@
         font-size: 12px;
         letter-spacing: 0.22em;
         text-transform: uppercase;
-        color: rgba(255,255,255,0.78);
+        color: rgba(255,255,255,0.80);
         margin-left: 6px;
         user-select: none;
         white-space: nowrap;
-      }
-
-      /* If your header background is light on any page, this keeps it readable */
-      @media (prefers-contrast: more) {
-        .hb-tagline { color: rgba(255,255,255,0.92); }
-        .hb-header::after { opacity: 0.14; }
       }
 
       /* Nav barrel divider */
@@ -145,10 +140,9 @@
         display: block;
       }
 
-      /* Slightly reduce divider visibility on small screens */
       @media (max-width: 560px) {
-        .hb-nav-divider { opacity: 0.55; }
         .hb-tagline { letter-spacing: 0.16em; }
+        .hb-nav-divider { opacity: 0.55; }
       }
     </style>
 
