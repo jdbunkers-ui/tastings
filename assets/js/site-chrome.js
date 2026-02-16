@@ -34,9 +34,8 @@
   const logoRightSrc = `${rootPrefix}assets/img/logo/honey_barrel_hunter.png`;
   const logoLeftSrc = `${rootPrefix}assets/img/logo/honey_barrel_hunter_text.png`;
 
-  // ---------- New assets (you said you'll store these in assets/img/logo) ----------
-  // Update filenames here if yours differ.
-  const barrelTextureSrc = `${rootPrefix}assets/img/logo/barrel-rings.jpg`;
+  // ---------- Header + nav assets ----------
+  const headerBgSrc = `${rootPrefix}assets/img/logo/barrel_stacks.png`;
   const barrelDividerSrc = `${rootPrefix}assets/img/logo/barrel_divider.png`;
 
   // ---------- Navigation ----------
@@ -72,30 +71,47 @@
     <style>
       /* --- Honey Barrel Hunter header enhancements (scoped) --- */
 
-      /* Make header a stacking context for overlay */
+      /* Force-replace Skin2 header background with your image */
       .hb-header {
         position: relative;
         overflow: hidden;
+
+        /* This overrides any existing Skin2 brown background */
+        background: transparent !important;
       }
 
-      /* Subtle barrel texture overlay */
+      /* Background image layer */
+      .hb-header::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: url("${headerBgSrc}");
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        transform: scale(1.02); /* avoids edge seams on some browsers */
+        z-index: 0;
+      }
+
+      /* Dark overlay for readability (logos/tagline) */
       .hb-header::after {
         content: "";
         position: absolute;
         inset: 0;
-        background-image: url("${barrelTextureSrc}");
-        background-repeat: repeat;
-        background-size: 900px auto;
-        opacity: 0.08;              /* subtle */
-        pointer-events: none;
-        mix-blend-mode: multiply;   /* keeps it classy on light backgrounds */
-        filter: saturate(0.9) contrast(0.95);
+        background:
+          linear-gradient(
+            to right,
+            rgba(20, 12, 8, 0.55),
+            rgba(20, 12, 8, 0.25),
+            rgba(20, 12, 8, 0.55)
+          );
+        z-index: 1;
       }
 
-      /* Keep header content above overlay */
+      /* Keep header content above background + overlay */
       .hb-header-inner {
         position: relative;
-        z-index: 1;
+        z-index: 2;
       }
 
       /* Left logo + tagline stack */
@@ -111,10 +127,11 @@
         font-size: 12px;
         letter-spacing: 0.22em;
         text-transform: uppercase;
-        color: rgba(255,255,255,0.80);
+        color: rgba(255,255,255,0.86);
         margin-left: 6px;
         user-select: none;
         white-space: nowrap;
+        text-shadow: 0 1px 10px rgba(0,0,0,0.35);
       }
 
       /* Nav barrel divider */
@@ -130,7 +147,7 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        opacity: 0.75;
+        opacity: 0.78;
         transform: translateY(1px);
       }
 
@@ -143,6 +160,30 @@
       @media (max-width: 560px) {
         .hb-tagline { letter-spacing: 0.16em; }
         .hb-nav-divider { opacity: 0.55; }
+      }
+
+      /* Footer extra links */
+      .hb-footer-links {
+        display: inline-flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        align-items: center;
+      }
+
+      .hb-footer-links a {
+        color: inherit;
+        text-decoration: none;
+        opacity: 0.9;
+      }
+
+      .hb-footer-links a:hover {
+        text-decoration: underline;
+        opacity: 1;
+      }
+
+      .hb-dot {
+        opacity: 0.6;
       }
     </style>
 
@@ -185,7 +226,21 @@
   const footerHtml = `
     <footer class="skin2-footer" role="contentinfo">
       <span>© ${year} Honey Barrel Hunter</span>
-      <span>${footerLabel}</span>
+
+      <span style="opacity:0.9;">Blind Bourbon Tasting</span>
+
+      <span class="hb-footer-links">
+        <span class="hb-dot">•</span>
+        <a href="${rootPrefix}about/index.html">About</a>
+        <span class="hb-dot">•</span>
+        <a href="${rootPrefix}comments/index.html">Comments</a>
+        <span class="hb-dot">•</span>
+        <a href="mailto:HoneyBarrelHunter@gmail.com">Email</a>
+        <span class="hb-dot">•</span>
+        <a href="https://venmo.com/honeybarrelhunter" target="_blank" rel="noopener">Buy me a pour</a>
+        <span class="hb-dot">•</span>
+        <span>${footerLabel}</span>
+      </span>
     </footer>
   `;
 
