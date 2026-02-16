@@ -14,7 +14,7 @@
   }
 
   const pageKey =
-    document.body && document.body.dataset && document.body.dataset.page
+    document.body?.dataset?.page
       ? document.body.dataset.page.toLowerCase()
       : "";
 
@@ -30,11 +30,9 @@
 
   const rootPrefix = isRoot ? "./" : "../";
 
-  // ---------- Logo paths ----------
-  const logoRightSrc = `${rootPrefix}assets/img/logo/honey_barrel_hunter.png`;
+  // ---------- Assets ----------
   const logoLeftSrc = `${rootPrefix}assets/img/logo/honey_barrel_hunter_text.png`;
-
-  // ---------- Header + nav assets ----------
+  const logoRightSrc = `${rootPrefix}assets/img/logo/honey_barrel_hunter.png`;
   const headerBgSrc = `${rootPrefix}assets/img/logo/barrel_stacks.png`;
   const barrelDividerSrc = `${rootPrefix}assets/img/logo/barrel_divider.png`;
 
@@ -69,36 +67,32 @@
   // ---------- Header ----------
   const headerHtml = `
     <style>
-      /* --- Honey Barrel Hunter header enhancements (scoped) --- */
-
       .hb-header {
         position: relative;
         overflow: hidden;
         background: transparent !important;
       }
 
-      /* Background image */
       .hb-header::before {
         content: "";
         position: absolute;
         inset: 0;
         background-image: url("${headerBgSrc}");
         background-size: cover;
-        background-repeat: no-repeat;
         background-position: center;
+        background-repeat: no-repeat;
         z-index: 0;
       }
 
-      /* Dark overlay for contrast */
       .hb-header::after {
         content: "";
         position: absolute;
         inset: 0;
         background: linear-gradient(
           to right,
-          rgba(20, 12, 8, 0.60),
-          rgba(20, 12, 8, 0.30),
-          rgba(20, 12, 8, 0.60)
+          rgba(20, 12, 8, 0.65),
+          rgba(20, 12, 8, 0.35),
+          rgba(20, 12, 8, 0.65)
         );
         z-index: 1;
       }
@@ -111,7 +105,6 @@
       .hb-brand {
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
         gap: 6px;
       }
 
@@ -122,10 +115,9 @@
         color: rgba(255,255,255,0.88);
         margin-left: 6px;
         white-space: nowrap;
-        text-shadow: 0 1px 10px rgba(0,0,0,0.35);
+        text-shadow: 0 1px 10px rgba(0,0,0,0.4);
       }
 
-      /* Nav dividers */
       .hb-nav-row {
         display: flex;
         align-items: center;
@@ -135,7 +127,7 @@
       }
 
       .hb-nav-divider {
-        opacity: 0.75;
+        opacity: 0.7;
         transform: translateY(1px);
       }
 
@@ -147,46 +139,7 @@
 
       @media (max-width: 560px) {
         .hb-tagline { letter-spacing: 0.16em; }
-        .hb-nav-divider { opacity: 0.55; }
-      }
-
-      /* Footer extras */
-      .hb-footer-meta {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        align-items: center;
-        font-size: 12px;
-        opacity: 0.85;
-        margin-top: 6px;
-        text-align: center;
-      }
-
-      .hb-footer-links {
-        display: inline-flex;
-        gap: 10px;
-        flex-wrap: wrap;
-        justify-content: center;
-        align-items: center;
-      }
-
-      .hb-footer-links a {
-        color: inherit;
-        text-decoration: none;
-        opacity: 0.95;
-      }
-
-      .hb-footer-links a:hover {
-        text-decoration: underline;
-      }
-
-      .hb-dot {
-        opacity: 0.6;
-      }
-
-      .hb-disclaimer {
-        font-size: 11px;
-        opacity: 0.75;
+        .hb-nav-divider { opacity: 0.5; }
       }
     </style>
 
@@ -199,56 +152,38 @@
         width:100%;
       ">
         <div class="hb-brand">
-          <img
-            src="${logoLeftSrc}"
-            alt="Honey Barrel Hunter"
-            loading="lazy"
-            style="height:125px; width:auto; display:block;"
-          />
+          <img src="${logoLeftSrc}" alt="Honey Barrel Hunter" loading="lazy"
+               style="height:125px; width:auto; display:block;" />
           <div class="hb-tagline">Blind Bourbon Tasting</div>
         </div>
 
-        <img
-          src="${logoRightSrc}"
-          alt="Honey Barrel Hunter logo"
-          loading="lazy"
-          style="height:85px; width:auto; display:block;"
-        />
+        <img src="${logoRightSrc}" alt="Honey Barrel Hunter logo" loading="lazy"
+             style="height:85px; width:auto; display:block;" />
       </div>
     </header>
     ${navHtml}
   `;
 
   // ---------- Footer ----------
-  const year = new Date().getFullYear();
-
-  const footerLabel = pageKey
-    ? pageKey.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
-    : "Honey Barrel Hunter";
-
   const footerHtml = `
     <footer class="skin2-footer" role="contentinfo">
-      <span>© ${year} Honey Barrel Hunter</span>
-
-      <div class="hb-footer-meta">
-        <div>Blind Bourbon Tasting</div>
-
-        <div class="hb-footer-links">
-          <a href="${rootPrefix}about/index.html">About</a>
-          <span class="hb-dot">•</span>
-          <a href="${rootPrefix}comments/index.html">Comments</a>
-          <span class="hb-dot">•</span>
-          <a href="mailto:HoneyBarrelHunter@gmail.com">honeybarrelhunter@gmail.com</a>
-          <span class="hb-dot">•</span>
-          <a href="https://venmo.com/honeybarrelhunter" target="_blank" rel="noopener">
-            Buy me a pour
-          </a>
-          <span class="hb-dot">•</span>
-          <span>${footerLabel}</span>
+      <div style="
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        gap:6px;
+        font-size:12px;
+        opacity:0.85;
+        text-align:center;
+      ">
+        <div>
+          Designed & developed by <strong>Summitry Technology</strong>
         </div>
-
-        <div class="hb-disclaimer">
-          Independent project. No paid placements.
+        <div>
+          <a href="mailto:SummitryTechnology@gmail.com"
+             style="color:inherit; text-decoration:none;">
+            SummitryTechnology@gmail.com
+          </a>
         </div>
       </div>
     </footer>
