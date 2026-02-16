@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Honey Barrel Hunter — Comments</title>
+
+  <link rel="stylesheet" href="../assets/css/site.css" />
+
+  <style>
+    .wrap { max-width: 820px; margin: 0 auto; padding: 24px 16px; }
+    form { display: grid; gap: 12px; }
+    input, textarea, button { font: inherit; padding: 10px 12px; border-radius: 10px; }
+    input, textarea { border: 1px solid rgba(255,255,255,.2); background: rgba(0,0,0,.25); color: #fff; }
+    textarea { min-height: 120px; resize: vertical; }
+    button { border: 0; cursor: pointer; }
+    .msg { margin-top: 10px; opacity: .9; }
+    .list { margin-top: 26px; display: grid; gap: 14px; }
+    .card { padding: 14px 14px; border-radius: 14px; background: rgba(0,0,0,.25); border: 1px solid rgba(255,255,255,.12); }
+    .meta { font-size: 12px; opacity: .75; margin-bottom: 6px; }
+    .error { color: #ffb3b3; }
+    .ok { color: #b7ffcc; }
+  </style>
+</head>
+
+<body data-page="comments">
+  <div id="site-header"></div>
+
+  <main class="wrap">
+    <h1>Leave a comment</h1>
+    <p>Have a bottle recommendation, site bug, or feature idea? Drop it here.</p>
+
+    <form id="commentForm">
+      <input id="name" name="name" placeholder="Name (optional)" maxlength="60" />
+      <textarea id="comment" name="comment" placeholder="Your comment…" maxlength="1000" required></textarea>
+      <button id="submitBtn" type="submit">Submit</button>
+      <div id="status" class="msg"></div>
+    </form>
+
+    <h2 style="margin-top:28px;">Recent comments</h2>
+    <div id="comments" class="list"></div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <!-- Supabase JS client (UMD build) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Your site chrome injector (if you already have it) -->
+  <script src="../assets/js/site-chrome.js"></script>
+
+  <script>
+    // 1) Configure Supabase (use your public anon key)
+    const SUPABASE_URL = "https://YOUR_PROJECT.supabase.co";
+    const SUPABASE_ANON_KEY = "YOUR_ANON_PUBLIC_KEY";
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Optional: tag comments to a page/key
+    const pageKey = "comments"; // or "index" if you want them associated to homepage
+
+    const form = document.getElementById("commentForm");
+    const statusEl = document.getElementById("status");
+    const commentsEl = document.getElementById("comments");
+    const submitBtn = document.getElementById("submitBtn");
+
+    function setStatus(msg, cls) {
+      statusEl.className = "msg " + (cls || "");
+      statusEl.textContent = msg || "";
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function formatDate(iso) {
+      try {
+        return new Date(iso).toLocaleString();
+      } catch {
+        return iso;
+      }
+    }
+
+    async function loadComments() {
+      commentsEl.innerHTML = "<div class='meta'>Loading…</div>";
+
+      const { data, error } = await supabase
+        .from("comments")
+        .select("name, comment, created_at")
+        .eq("page", pageKey)
+        .order("created_at", { ascending: false })
+        .limit(25);
+
+      if (error) {
+        commentsEl.innerHTML = `<div class="error">Failed to load comments: ${escapeHtml(error.message)}</div>`;
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        commentsEl.innerHTML = `<div class="meta">No comments yet.</div>`;
+        return;
+      }
+
+      commentsEl.innerHTML = data.map(row => `
+        <div class="card">
+          <div class="meta">
+            ${escapeHtml(row.name || "Anonymous")} • ${escapeHtml(formatDate(row.created_at))}
+          </div>
+          <div>${escapeHtml(row.comment).replaceAll("\n", "<br>")}</div>
+        </div>
+      `).join("");
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      setStatus("");
+
+      const name = document.getElementById("name").value.trim();
+      const comment = document.getElementById("comment").value.trim();
+
+      if (!comment) {
+        setStatus("Please type a comment.", "error");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      setStatus("Submitting…");
+
+      const { error } = await supabase
+        .from("comments")
+        .insert([{ page: pageKey, name: name || null, comment }]);
+
+      submitBtn.disabled = false;
+
+      if (error) {
+        setStatus("Submit failed: " + error.message, "error");
+        return;
+      }
+
+      form.reset();
+      // Because we require approval, it won't show up until you approve it.
+      setStatus("Thanks! Your comment was submitted for approval.", "ok");
+      // Still reload approved comments
+      loadComments();
+    });
+
+    loadComments();
+  </script>
+</body>
+</html>
