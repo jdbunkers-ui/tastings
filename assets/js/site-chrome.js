@@ -25,6 +25,7 @@
     !window.location.pathname.includes("/distilleries/") &&
     !window.location.pathname.includes("/bottles/") &&
     !window.location.pathname.includes("/barrel_pickers/") &&
+    !window.location.pathname.includes("/comments/") &&
     !window.location.pathname.includes("/about/");
 
   const rootPrefix = isRoot ? "./" : "../";
@@ -44,6 +45,7 @@
       ${navLink("Home", "index.html", "home")}
       ${navLink("Inventory", "inventory/index.html", "inventory")}
       ${navLink("Sensory", "sensory/index.html", "sensory")}
+      ${navLink("Comments", "comments/index.html", "comments")}
       ${navLink("About", "about/index.html", "about")}
     </nav>
   `;
