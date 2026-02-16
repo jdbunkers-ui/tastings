@@ -86,7 +86,6 @@
         background-size: cover;
         background-repeat: no-repeat;
         background-position: center;
-        transform: scale(1.02);
         z-index: 0;
       }
 
