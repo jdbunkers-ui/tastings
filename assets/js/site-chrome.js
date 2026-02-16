@@ -71,16 +71,13 @@
     <style>
       /* --- Honey Barrel Hunter header enhancements (scoped) --- */
 
-      /* Force-replace Skin2 header background with your image */
       .hb-header {
         position: relative;
         overflow: hidden;
-
-        /* This overrides any existing Skin2 brown background */
         background: transparent !important;
       }
 
-      /* Background image layer */
+      /* Background image */
       .hb-header::before {
         content: "";
         position: absolute;
@@ -89,52 +86,47 @@
         background-size: cover;
         background-repeat: no-repeat;
         background-position: center;
-        transform: scale(1.02); /* avoids edge seams on some browsers */
+        transform: scale(1.02);
         z-index: 0;
       }
 
-      /* Dark overlay for readability (logos/tagline) */
+      /* Dark overlay for contrast */
       .hb-header::after {
         content: "";
         position: absolute;
         inset: 0;
-        background:
-          linear-gradient(
-            to right,
-            rgba(20, 12, 8, 0.55),
-            rgba(20, 12, 8, 0.25),
-            rgba(20, 12, 8, 0.55)
-          );
+        background: linear-gradient(
+          to right,
+          rgba(20, 12, 8, 0.60),
+          rgba(20, 12, 8, 0.30),
+          rgba(20, 12, 8, 0.60)
+        );
         z-index: 1;
       }
 
-      /* Keep header content above background + overlay */
       .hb-header-inner {
         position: relative;
         z-index: 2;
       }
 
-      /* Left logo + tagline stack */
       .hb-brand {
         display: flex;
         flex-direction: column;
         align-items: flex-start;
         gap: 6px;
-        min-width: 0;
       }
 
       .hb-tagline {
         font-size: 12px;
         letter-spacing: 0.22em;
         text-transform: uppercase;
-        color: rgba(255,255,255,0.86);
+        color: rgba(255,255,255,0.88);
         margin-left: 6px;
-        user-select: none;
         white-space: nowrap;
         text-shadow: 0 1px 10px rgba(0,0,0,0.35);
       }
 
-      /* Nav barrel divider */
+      /* Nav dividers */
       .hb-nav-row {
         display: flex;
         align-items: center;
@@ -144,10 +136,7 @@
       }
 
       .hb-nav-divider {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0.78;
+        opacity: 0.75;
         transform: translateY(1px);
       }
 
@@ -162,28 +151,43 @@
         .hb-nav-divider { opacity: 0.55; }
       }
 
-      /* Footer extra links */
+      /* Footer extras */
+      .hb-footer-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        align-items: center;
+        font-size: 12px;
+        opacity: 0.85;
+        margin-top: 6px;
+        text-align: center;
+      }
+
       .hb-footer-links {
         display: inline-flex;
         gap: 10px;
         flex-wrap: wrap;
-        justify-content: flex-end;
+        justify-content: center;
         align-items: center;
       }
 
       .hb-footer-links a {
         color: inherit;
         text-decoration: none;
-        opacity: 0.9;
+        opacity: 0.95;
       }
 
       .hb-footer-links a:hover {
         text-decoration: underline;
-        opacity: 1;
       }
 
       .hb-dot {
         opacity: 0.6;
+      }
+
+      .hb-disclaimer {
+        font-size: 11px;
+        opacity: 0.75;
       }
     </style>
 
@@ -227,20 +231,27 @@
     <footer class="skin2-footer" role="contentinfo">
       <span>© ${year} Honey Barrel Hunter</span>
 
-      <span style="opacity:0.9;">Blind Bourbon Tasting</span>
+      <div class="hb-footer-meta">
+        <div>Blind Bourbon Tasting</div>
 
-      <span class="hb-footer-links">
-        <span class="hb-dot">•</span>
-        <a href="${rootPrefix}about/index.html">About</a>
-        <span class="hb-dot">•</span>
-        <a href="${rootPrefix}comments/index.html">Comments</a>
-        <span class="hb-dot">•</span>
-        <a href="mailto:HoneyBarrelHunter@gmail.com">Email</a>
-        <span class="hb-dot">•</span>
-        <a href="https://venmo.com/honeybarrelhunter" target="_blank" rel="noopener">Buy me a pour</a>
-        <span class="hb-dot">•</span>
-        <span>${footerLabel}</span>
-      </span>
+        <div class="hb-footer-links">
+          <a href="${rootPrefix}about/index.html">About</a>
+          <span class="hb-dot">•</span>
+          <a href="${rootPrefix}comments/index.html">Comments</a>
+          <span class="hb-dot">•</span>
+          <a href="mailto:HoneyBarrelHunter@gmail.com">honeybarrelhunter@gmail.com</a>
+          <span class="hb-dot">•</span>
+          <a href="https://venmo.com/honeybarrelhunter" target="_blank" rel="noopener">
+            Buy me a pour
+          </a>
+          <span class="hb-dot">•</span>
+          <span>${footerLabel}</span>
+        </div>
+
+        <div class="hb-disclaimer">
+          Independent project. No paid placements.
+        </div>
+      </div>
     </footer>
   `;
 
