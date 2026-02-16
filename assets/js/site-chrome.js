@@ -34,9 +34,8 @@
   const logoRightSrc = `${rootPrefix}assets/img/logo/honey_barrel_hunter.png`;
   const logoLeftSrc = `${rootPrefix}assets/img/logo/honey_barrel_hunter_text.png`;
 
-  // ---------- New assets (you said you'll store these in assets/img/logo) ----------
-  // Update filenames here if yours differ.
-  const barrelTextureSrc = `${rootPrefix}assets/img/logo/barrel-rings.jpg`;
+  // ---------- Header + nav assets ----------
+  const headerBgSrc = `${rootPrefix}assets/img/logo/barrel_stacks.png`;
   const barrelDividerSrc = `${rootPrefix}assets/img/logo/barrel_divider.png`;
 
   // ---------- Navigation ----------
@@ -72,52 +71,62 @@
     <style>
       /* --- Honey Barrel Hunter header enhancements (scoped) --- */
 
-      /* Make header a stacking context for overlay */
       .hb-header {
         position: relative;
         overflow: hidden;
+        background: transparent !important;
       }
 
-      /* Subtle barrel texture overlay */
+      /* Background image */
+      .hb-header::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: url("${headerBgSrc}");
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        transform: scale(1.02);
+        z-index: 0;
+      }
+
+      /* Dark overlay for contrast */
       .hb-header::after {
         content: "";
         position: absolute;
         inset: 0;
-        background-image: url("${barrelTextureSrc}");
-        background-repeat: repeat;
-        background-size: 900px auto;
-        opacity: 0.08;              /* subtle */
-        pointer-events: none;
-        mix-blend-mode: multiply;   /* keeps it classy on light backgrounds */
-        filter: saturate(0.9) contrast(0.95);
-      }
-
-      /* Keep header content above overlay */
-      .hb-header-inner {
-        position: relative;
+        background: linear-gradient(
+          to right,
+          rgba(20, 12, 8, 0.60),
+          rgba(20, 12, 8, 0.30),
+          rgba(20, 12, 8, 0.60)
+        );
         z-index: 1;
       }
 
-      /* Left logo + tagline stack */
+      .hb-header-inner {
+        position: relative;
+        z-index: 2;
+      }
+
       .hb-brand {
         display: flex;
         flex-direction: column;
         align-items: flex-start;
         gap: 6px;
-        min-width: 0;
       }
 
       .hb-tagline {
         font-size: 12px;
         letter-spacing: 0.22em;
         text-transform: uppercase;
-        color: rgba(255,255,255,0.80);
+        color: rgba(255,255,255,0.88);
         margin-left: 6px;
-        user-select: none;
         white-space: nowrap;
+        text-shadow: 0 1px 10px rgba(0,0,0,0.35);
       }
 
-      /* Nav barrel divider */
+      /* Nav dividers */
       .hb-nav-row {
         display: flex;
         align-items: center;
@@ -127,9 +136,6 @@
       }
 
       .hb-nav-divider {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
         opacity: 0.75;
         transform: translateY(1px);
       }
@@ -143,6 +149,45 @@
       @media (max-width: 560px) {
         .hb-tagline { letter-spacing: 0.16em; }
         .hb-nav-divider { opacity: 0.55; }
+      }
+
+      /* Footer extras */
+      .hb-footer-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        align-items: center;
+        font-size: 12px;
+        opacity: 0.85;
+        margin-top: 6px;
+        text-align: center;
+      }
+
+      .hb-footer-links {
+        display: inline-flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .hb-footer-links a {
+        color: inherit;
+        text-decoration: none;
+        opacity: 0.95;
+      }
+
+      .hb-footer-links a:hover {
+        text-decoration: underline;
+      }
+
+      .hb-dot {
+        opacity: 0.6;
+      }
+
+      .hb-disclaimer {
+        font-size: 11px;
+        opacity: 0.75;
       }
     </style>
 
@@ -185,7 +230,28 @@
   const footerHtml = `
     <footer class="skin2-footer" role="contentinfo">
       <span>© ${year} Honey Barrel Hunter</span>
-      <span>${footerLabel}</span>
+
+      <div class="hb-footer-meta">
+        <div>Blind Bourbon Tasting</div>
+
+        <div class="hb-footer-links">
+          <a href="${rootPrefix}about/index.html">About</a>
+          <span class="hb-dot">•</span>
+          <a href="${rootPrefix}comments/index.html">Comments</a>
+          <span class="hb-dot">•</span>
+          <a href="mailto:HoneyBarrelHunter@gmail.com">honeybarrelhunter@gmail.com</a>
+          <span class="hb-dot">•</span>
+          <a href="https://venmo.com/honeybarrelhunter" target="_blank" rel="noopener">
+            Buy me a pour
+          </a>
+          <span class="hb-dot">•</span>
+          <span>${footerLabel}</span>
+        </div>
+
+        <div class="hb-disclaimer">
+          Independent project. No paid placements.
+        </div>
+      </div>
     </footer>
   `;
 
