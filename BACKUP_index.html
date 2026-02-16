@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Honey Barrel Hunter Portal</title>
+    <link rel="stylesheet" href="./assets/css/skin2.css" />
+
+    <style>
+      html, body { height: 100%; }
+      body {
+        margin: 0;
+        font-family: var(--s2-font-sans);
+        color: var(--s2-text);
+        background:
+          radial-gradient(1200px 800px at 20% -10%, rgba(181, 122, 42, 0.14), transparent 55%),
+          radial-gradient(900px 700px at 90% 0%, rgba(225, 182, 106, 0.12), transparent 50%),
+          var(--s2-bg);
+      }
+
+      .wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 18px 14px 46px;
+      }
+
+      .section-title {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 10px;
+        margin: 18px 2px 10px;
+      }
+
+      .section-title h2 {
+        margin: 0;
+        font-size: 16px;
+        letter-spacing: 0.3px;
+        color: rgba(43, 29, 20, 0.90);
+        /* Removed text-transform so it stays Camel Case */
+      }
+
+      .mono { font-family: var(--s2-font-mono); }
+
+      .muted-card {
+        border: 1px solid var(--s2-border);
+        background: rgba(255, 255, 255, 0.55);
+        border-radius: 16px;
+        padding: 14px;
+        color: var(--s2-text-muted);
+      }
+
+      .error {
+        border: 1px solid rgba(231, 76, 60, 0.35);
+        background: rgba(231, 76, 60, 0.10);
+        color: rgba(43, 29, 20, 0.92);
+      }
+    </style>
+  </head>
+
+  <body data-page="home">
+    <div class="wrap">
+      <!-- Skin2 Header Injection Target -->
+      <div id="site-header"></div>
+
+      <!-- Journal -->
+      <div class="section-title">
+        <h2>Latest Updates</h2>
+      </div>
+      <div id="journalMount" class="muted-card">Loading updates…</div>
+
+      <!-- Barrel Pickers -->
+      <div class="section-title" style="margin-top:22px;">
+        <h2>Barrel Pickers</h2>
+      </div>
+      <div id="pickerMount" class="muted-card">Loading barrel pickers…</div>
+
+      <!-- Skin2 Footer Injection Target -->
+      <div id="site-footer"></div>
+    </div>
+
+    <!-- Skin2 layout injector -->
+    <script src="./assets/js/site-chrome.js"></script>
+
+    <!-- Landing logic -->
+    <script type="module" src="./assets/js/home-page.js"></script>
+  </body>
+</html>
