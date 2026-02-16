@@ -1,11 +1,11 @@
 /**
- * comments/comments-page.js
+ * assets/js/comments-page.js
  * Handles:
  * - loading approved comments
  * - submitting new comments (pending approval)
  */
 
-import { supabase } from "../assets/js/supabaseClient.js";
+import { supabase } from "./supabaseClient.js";
 
 // Change this if you want comments tied to a different page key
 const PAGE_KEY = "comments";
@@ -72,7 +72,7 @@ async function loadComments() {
   }
 
   commentsEl.innerHTML = data
-    .map(row => `
+    .map((row) => `
       <div class="card">
         <div class="meta">
           ${escapeHtml(row.name || "Anonymous")} •
