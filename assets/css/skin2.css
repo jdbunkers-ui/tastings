@@ -314,9 +314,11 @@ table.skin2-table tbody tr:hover {
   white-space: nowrap;
 }
 
-/* =========================================================
+/*
+   OLD
+   =========================================================
    Spinning Star Styling
-   ========================================================= */
+   ========================================================= 
 
 .new-tasting-star {
   height: 1.5em;
@@ -326,6 +328,35 @@ table.skin2-table tbody tr:hover {
   filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35));
   pointer-events: none;
 }
+*/
+/* =========================================================
+   HBH Rotating Star (Global)
+   Applies to all SVG stars using rotatingStarSVG()
+   ========================================================= */
+
+.star-icon,
+.hbh-star-icon {
+  display: inline-block;
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.18));
+  /*animation: hbhSpin 3.2s linear infinite;  /* <-- global speed */*/
+  animation: hbhSpin 3.2s linear infinite !important;
+  transform-origin: 50% 50%;
+  transform-style: preserve-3d;
+}
+
+@keyframes hbhSpin {
+  from { transform: rotateY(0deg); }
+  to   { transform: rotateY(360deg); }
+}
+
+/* Respect reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .star-icon,
+  .hbh-star-icon {
+    animation: none;
+  }
+}
+
 
 /* ---------- Links ---------- */
 .skin2-link {
