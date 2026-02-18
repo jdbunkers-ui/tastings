@@ -217,6 +217,12 @@ table.skin2-table tbody tr:hover {
 }
 
 /* ---------- Global Rotating Star ---------- */
+
+/* Safe global perspective so rotateY always looks 3D */
+:where(.star-toggle, .hbh-star-toggle, .skin2-card) {
+  perspective: 600px;
+}
+
 .star-icon,
 .hbh-star-icon {
   display: inline-block;
