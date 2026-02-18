@@ -13,6 +13,9 @@ const elContent = document.getElementById("inventory-content");
 const elStatus = document.getElementById("status");
 const elError = document.getElementById("error");
 
+// Toggle state (set by inventory/index.html)
+let inventoryOnlyNew = !!(window.HBH_InventoryFilter && window.HBH_InventoryFilter.onlyNew);
+
 function show(el, isShown) {
   if (!el) return;
   el.style.display = isShown ? "" : "none";
@@ -147,6 +150,9 @@ function selectColumns(keys) {
     "blender_id",
     "blender_name",
     "barrel_picker_name",
+
+    // new flag (not displayed)
+    "new_update",
   ];
 
   return desired.filter((k) => keys.includes(k));
@@ -199,7 +205,8 @@ function renderTable(rows) {
       c !== "barrel_picker_id" &&
       c !== "blender_id" &&
       c !== "blender_name" &&
-      c !== "barrel_picker_name"
+      c !== "barrel_picker_name" &&
+      c !== "new_update"
   );
 
   const thead = displayCols
@@ -253,10 +260,17 @@ function renderTable(rows) {
 
 async function loadInventory() {
   clearError();
-  setStatus("Loading inventory…");
+  setStatus(inventoryOnlyNew ? "Loading inventory (recent only)…" : "Loading inventory…");
 
   try {
-    const { data, error } = await supabase.from(VIEW_NAME).select("*").limit(ROW_LIMIT);
+    let q = supabase.from(VIEW_NAME).select("*");
+
+    // ✅ Toggle-driven filter (boolean)
+    if (inventoryOnlyNew) {
+      q = q.eq("new_update", true);
+    }
+
+    const { data, error } = await q.limit(ROW_LIMIT);
     if (error) throw error;
 
     renderTable(data);
@@ -268,5 +282,20 @@ async function loadInventory() {
   }
 }
 
+// Listen for the star toggle event dispatched by inventory/index.html
+function wireInventoryToggle() {
+  window.addEventListener("hbh:inventoryFilterChanged", (e) => {
+    const onlyNew = !!(e && e.detail && e.detail.onlyNew);
+    if (onlyNew === inventoryOnlyNew) return;
+    inventoryOnlyNew = onlyNew;
+    loadInventory();
+  });
+}
+
 // Boot
+wireInventoryToggle();
+
+// Re-read once in case order of scripts differs
+inventoryOnlyNew = !!(window.HBH_InventoryFilter && window.HBH_InventoryFilter.onlyNew);
+
 loadInventory();
