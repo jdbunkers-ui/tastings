@@ -231,7 +231,7 @@ function renderHero(barrel) {
     }
   }
 
-  // ✅ MSRP + description (IDs removed)
+  // MSRP + description (IDs removed)
   if (msrpLineEl) {
     const desc = String(barrel?.single_barrel_description ?? "").trim();
 
@@ -321,9 +321,7 @@ function renderTastings(tastings) {
           .map(
             (t) => `
               <tr>
-                td.no-wrap {
-                text-align: right;
-              }
+                <td class="mono no-wrap date-cell">
                   ${
                     t?.new_update
                       ? `<img
@@ -354,10 +352,15 @@ function renderTastings(tastings) {
       table.sensory-table tbody tr:nth-child(odd){ background: rgba(255, 255, 255, 0.62); }
       table.sensory-table tbody tr:hover{ background: rgba(225, 182, 106, 0.18); }
 
+      /* keep nowrap behavior generic */
       .no-wrap{ white-space: nowrap; }
+
+      /* ✅ Right-align ONLY the Date column (and keeps star + date together) */
+      td.date-cell{ text-align: right; }
 
       th.score-head{ text-align: center; white-space: nowrap; }
       td.score-cell{ text-align: center; white-space: nowrap; }
+
       th.num,
       td.num {
         text-align: center;
@@ -478,13 +481,15 @@ function renderFoes({ foe_beat, foe_lost }) {
                   const proof = it.proof ? `Proof ${it.proof}` : "";
                   const meta = [date, proof].filter(Boolean).join(" • ");
 
-                  // ✅ hyperlink is ONLY on brand_name
+                  // hyperlink only on brand_name
                   const brandHtml = id
                     ? `<a class="foe-link" href="${escapeHtml(href)}" data-barrel-link="1" data-barrel-id="${escapeHtml(id)}">${escapeHtml(brand)}</a>`
                     : `<span>${escapeHtml(brand)}</span>`;
 
                   const rest = [expr, pick].filter(Boolean).join(" • ");
-                  const titleHtml = rest ? `${brandHtml} <span style="opacity:.85;">— ${escapeHtml(rest)}</span>` : brandHtml;
+                  const titleHtml = rest
+                    ? `${brandHtml} <span style="opacity:.85;">— ${escapeHtml(rest)}</span>`
+                    : brandHtml;
 
                   return `
                     <div class="foe-row">
@@ -508,7 +513,6 @@ function renderFoes({ foe_beat, foe_lost }) {
   };
 
   const styles = renderFoesStyles();
-
   if (winsEl) winsEl.innerHTML = `${renderList(wins, "wins")}${styles}`;
   if (lossesEl) lossesEl.innerHTML = `${renderList(losses, "losses")}${styles}`;
 }
