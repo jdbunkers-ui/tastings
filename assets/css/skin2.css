@@ -216,6 +216,35 @@ table.skin2-table tbody tr:hover {
   text-align: center;
 }
 
+/* Tight numeric columns — inventory & journal */
+.skin2-table th.col-score,
+.skin2-table td.col-score {
+  width: 70px;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.skin2-table th.col-msrp,
+.skin2-table td.col-msrp {
+  width: 90px;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.skin2-table th.col-proof,
+.skin2-table td.col-proof {
+  width: 80px;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.skin2-table th.col-age,
+.skin2-table td.col-age {
+  width: 70px;
+  white-space: nowrap;
+  text-align: center;
+}
+
 /* ---------- Global Rotating Star ---------- */
 
 /* Safe global perspective so rotateY always looks 3D */
