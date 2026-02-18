@@ -5,7 +5,7 @@
    Notes:
    - Reuses inventory-filter.js (expects #filter + rows with data-search)
    - Renders one row per tasting from public.v_sensory
-   - Adds a star next to bottle when row.new_update = true
+   - Adds a star BEFORE bottle when row.new_update = true
    - Adds a toggle (from sensory/index.html) to filter rows where new_update = true
    ========================================================= */
 
@@ -109,7 +109,7 @@ function newUpdateStarImg(altText = "New tasting") {
     <img
       src="../assets/img/logo/gold_spinning_star.gif"
       alt="${escapeHtml(altText)}"
-      style="height:18px; vertical-align:middle; margin-left:6px;"
+      style="height:18px; vertical-align:middle; margin-right:6px;"
     />
   `;
 }
@@ -121,9 +121,9 @@ function renderCell(col, row) {
       fmt(row.bottle_expression, "(unknown bottle)")
     );
 
-    // ⭐ Add star next to bottle when this tasting row is marked new_update
+    // ⭐ Star BEFORE bottle when this tasting row is marked new_update
     const star = row.new_update ? newUpdateStarImg("New update") : "";
-    return `${link}${star}`;
+    return `${star}${link}`;
   }
 
   if (col === "nose_notes") return escapeHtml(fmt(cleanNotes(row.nose_notes)));
@@ -211,11 +211,7 @@ async function loadSensory() {
   setStatus(sensoryOnlyNew ? "Loading sensory notes (recent only)…" : "Loading sensory notes…");
 
   try {
-    // Pull one row per tasting (your view already does that)
-    // Prefer stable ordering by tasting_id if present.
-    let q = supabase
-      .from(VIEW_NAME)
-      .select("*");
+    let q = supabase.from(VIEW_NAME).select("*");
 
     // ✅ Toggle-driven filter (boolean)
     if (sensoryOnlyNew) {
