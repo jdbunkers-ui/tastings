@@ -70,7 +70,7 @@ function renderJournalTable(rows) {
 
                       return `
                         <tr>
-                          <td class="mono">
+                          <td class="mono col-date">
                             ${star}${escapeHtml(r.create_date)}
                           </td>
                           <td>${escapeHtml(r.change_notes)}</td>
@@ -143,7 +143,6 @@ function renderPickerTable(rows) {
                       const barrels = toInt(r.barrel_pick_count);
                       const tastings = toInt(r.total_tastings);
 
-                      // ⭐ Rotating star when picker has a recent tasting
                       const star = r.new_update
                         ? rotatingStarSVG({ size: 18, style: "margin-left:6px;" })
                         : "";
@@ -191,14 +190,12 @@ async function loadPickerSection() {
     ? `<div class="muted-card">Loading recently updated barrel pickers…</div>`
     : `<div class="muted-card">Loading barrel pickers…</div>`;
 
-  // Build query
   let q = supabase
     .from(VIEW_PICKERS)
     .select(
       "state,barrel_picker_name,city,barrel_picker_id,barrel_pick_count,total_tastings,new_update"
     );
 
-  // ✅ Boolean-safe filter
   if (pickerOnlyNew) {
     q = q.eq("new_update", true);
   }
@@ -236,7 +233,6 @@ function wirePickerFilterListener() {
 (async function boot() {
   wirePickerFilterListener();
 
-  // Re-read global state once in case scripts loaded in a different order
   pickerOnlyNew = !!(window.HBH_PickerFilter && window.HBH_PickerFilter.onlyNew);
 
   await loadJournalSection();
