@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="../assets/css/skin2.css" />
 
     <style>
-      /* ---------- Star Toggle (Inventory filter) ---------- */
+      /* ---------- Inventory Filter Row ---------- */
       .hbh-filter-row {
         display: flex;
         align-items: center;
@@ -34,7 +34,7 @@
         appearance: none;
         -webkit-appearance: none;
         border: 1px solid var(--s2-border);
-        background: rgba(255, 255, 255, 0.70);
+        background: rgba(255, 255, 255, 0.7);
         border-radius: 999px;
         padding: 6px 10px;
         display: inline-flex;
@@ -42,37 +42,26 @@
         gap: 10px;
         cursor: pointer;
         user-select: none;
-        transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+        transition:
+          transform 120ms ease,
+          background 120ms ease,
+          border-color 120ms ease;
+        perspective: 600px; /* enables 3D rotateY */
       }
 
-      .hbh-star-toggle:active { transform: scale(0.98); }
+      .hbh-star-toggle:active {
+        transform: scale(0.98);
+      }
 
       .hbh-star-toggle[aria-pressed="true"] {
         background: rgba(246, 241, 234, 0.92);
         border-color: rgba(181, 122, 42, 0.55);
       }
 
-      .hbh-star-icon {
-        width: 16px;
-        height: 16px;
-        display: inline-block;
-        filter: drop-shadow(0 1px 1px rgba(0,0,0,0.18));
-        animation: hbhSpin 1.6s linear infinite;
-        transform-origin: 50% 50%;
-      }
-
-      .hbh-star-toggle[aria-pressed="true"] .hbh-star-icon {
-        animation-duration: 2.2s;
-      }
-
-      @keyframes hbhSpin {
-        from { transform: rotate(0deg); }
-        to   { transform: rotate(360deg); }
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        .hbh-star-icon { animation: none; }
-      }
+      /* IMPORTANT:
+         No star animation, speed, or keyframes here.
+         All star motion is controlled globally in skin2.css
+      */
 
       .hbh-toggle-label {
         font-size: 12px;
@@ -82,7 +71,9 @@
       }
 
       @media (max-width: 760px) {
-        .hbh-toggle-label { display: none; }
+        .hbh-toggle-label {
+          display: none;
+        }
       }
     </style>
   </head>
@@ -120,7 +111,9 @@
                 </svg>
               </button>
 
-              <span class="hbh-toggle-label">Filter for only recently updated Tastings</span>
+              <span class="hbh-toggle-label">
+                Filter for only recently updated Tastings
+              </span>
             </div>
 
             <span class="skin2-status" id="status">Loading…</span>
@@ -142,14 +135,15 @@
     <!-- Scripts -->
     <script src="../assets/js/site-chrome.js"></script>
 
-    <!-- Inventory star toggle logic (dispatches event + stores preference) -->
+    <!-- Inventory star toggle logic -->
     <script>
       (function () {
         const KEY = "hbh_inventory_new_only";
         const btn = document.getElementById("inventoryNewOnlyToggle");
         if (!btn) return;
 
-        window.HBH_InventoryFilter = window.HBH_InventoryFilter || { onlyNew: false };
+        window.HBH_InventoryFilter =
+          window.HBH_InventoryFilter || { onlyNew: false };
 
         function emit(onlyNew) {
           window.HBH_InventoryFilter.onlyNew = !!onlyNew;
@@ -180,7 +174,7 @@
       })();
     </script>
 
-    <script type="module" src="../assets/js/inventory-page.js?v=skin2_003"></script>
-    <script type="module" src="../assets/js/inventory-filter.js?v=skin2_002"></script>
+    <script type="module" src="../assets/js/inventory-page.js"></script>
+    <script type="module" src="../assets/js/inventory-filter.js"></script>
   </body>
 </html>
