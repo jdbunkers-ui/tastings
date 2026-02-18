@@ -5,8 +5,6 @@
    Notes:
    - Reuses inventory-filter.js (expects #filter + rows with data-search)
    - Renders one row per tasting from public.v_sensory
-   - Adds a star next to bottle when row.new_update = true
-   - Adds a toggle (from sensory/index.html) to filter rows where new_update = true
    ========================================================= */
 
 import { supabase } from "./supabaseClient.js";
@@ -18,9 +16,6 @@ const ROW_LIMIT = 500; // adjust if needed
 const elContent = document.getElementById("sensory-content");
 const elStatus = document.getElementById("status");
 const elError = document.getElementById("error");
-
-// Toggle state (set by sensory/index.html)
-let sensoryOnlyNew = !!(window.HBH_SensoryFilter && window.HBH_SensoryFilter.onlyNew);
 
 function show(el, isShown) {
   if (!el) return;
@@ -103,27 +98,9 @@ function sensoryColClass(col) {
   return map[col] || "";
 }
 
-/** Spinning star image (reuses your existing asset) */
-function newUpdateStarImg(altText = "New tasting") {
-  return `
-    <img
-      src="../assets/img/logo/gold_spinning_star.gif"
-      alt="${escapeHtml(altText)}"
-      style="height:18px; vertical-align:middle; margin-left:6px;"
-    />
-  `;
-}
-
 function renderCell(col, row) {
   if (col === "bottle_expression") {
-    const link = barrelLink(
-      row.single_barrel_id,
-      fmt(row.bottle_expression, "(unknown bottle)")
-    );
-
-    // ⭐ Add star next to bottle when this tasting row is marked new_update
-    const star = row.new_update ? newUpdateStarImg("New update") : "";
-    return `${link}${star}`;
+    return barrelLink(row.single_barrel_id, fmt(row.bottle_expression, "(unknown bottle)"));
   }
 
   if (col === "nose_notes") return escapeHtml(fmt(cleanNotes(row.nose_notes)));
@@ -208,21 +185,14 @@ function renderTable(rows) {
 
 async function loadSensory() {
   clearError();
-  setStatus(sensoryOnlyNew ? "Loading sensory notes (recent only)…" : "Loading sensory notes…");
+  setStatus("Loading sensory notes…");
 
   try {
     // Pull one row per tasting (your view already does that)
     // Prefer stable ordering by tasting_id if present.
-    let q = supabase
+    const { data, error } = await supabase
       .from(VIEW_NAME)
-      .select("*");
-
-    // ✅ Toggle-driven filter (boolean)
-    if (sensoryOnlyNew) {
-      q = q.eq("new_update", true);
-    }
-
-    const { data, error } = await q
+      .select("*")
       .order("tasting_id", { ascending: false })
       .limit(ROW_LIMIT);
 
@@ -237,20 +207,5 @@ async function loadSensory() {
   }
 }
 
-// Listen for the star toggle event dispatched by sensory/index.html
-function wireSensoryToggle() {
-  window.addEventListener("hbh:sensoryFilterChanged", (e) => {
-    const onlyNew = !!(e && e.detail && e.detail.onlyNew);
-    if (onlyNew === sensoryOnlyNew) return;
-    sensoryOnlyNew = onlyNew;
-    loadSensory();
-  });
-}
-
 // Boot
-wireSensoryToggle();
-
-// Re-read once in case order of scripts differs
-sensoryOnlyNew = !!(window.HBH_SensoryFilter && window.HBH_SensoryFilter.onlyNew);
-
 loadSensory();

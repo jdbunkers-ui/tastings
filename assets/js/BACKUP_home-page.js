@@ -10,10 +10,6 @@ const $ = (id) => document.getElementById(id);
 const elJournalMount = $("journalMount");
 const elPickerMount = $("pickerMount");
 
-// ---------- State ----------
-// Toggle state is driven by index.html script via window.HBH_PickerFilter + event.
-let pickerOnlyNew = !!(window.HBH_PickerFilter && window.HBH_PickerFilter.onlyNew);
-
 // ---------- Helpers ----------
 function escapeHtml(value) {
   return String(value ?? "")
@@ -194,21 +190,11 @@ function renderPickerTable(rows) {
 async function loadPickerSection() {
   if (!elPickerMount) return;
 
-  elPickerMount.innerHTML = pickerOnlyNew
-    ? `<div class="muted-card">Loading recently updated barrel pickers…</div>`
-    : `<div class="muted-card">Loading barrel pickers…</div>`;
+  elPickerMount.innerHTML = `<div class="muted-card">Loading barrel pickers…</div>`;
 
-  // Build query
-  let q = supabase
+  const { data, error } = await supabase
     .from(VIEW_PICKERS)
-    .select("state,barrel_picker_name,city,barrel_picker_id,barrel_pick_count,total_tastings,new_update");
-
-  // ✅ Boolean-safe filter
-  if (pickerOnlyNew) {
-    q = q.eq("new_update", true);
-  }
-
-  const { data, error } = await q
+    .select("state,barrel_picker_name,city,barrel_picker_id,barrel_pick_count,total_tastings,new_update")
     .order("state", { ascending: true })
     .order("city", { ascending: true })
     .order("barrel_picker_name", { ascending: true });
@@ -222,28 +208,10 @@ async function loadPickerSection() {
 }
 
 // =========================================================
-// Filter Wiring
-// =========================================================
-
-function wirePickerFilterListener() {
-  window.addEventListener("hbh:pickerFilterChanged", (e) => {
-    const onlyNew = !!(e && e.detail && e.detail.onlyNew);
-    if (onlyNew === pickerOnlyNew) return;
-    pickerOnlyNew = onlyNew;
-    loadPickerSection();
-  });
-}
-
-// =========================================================
 // Boot
 // =========================================================
 
 (async function boot() {
-  wirePickerFilterListener();
-
-  // Re-read global state once in case scripts loaded in a different order
-  pickerOnlyNew = !!(window.HBH_PickerFilter && window.HBH_PickerFilter.onlyNew);
-
   await loadJournalSection();
   await loadPickerSection();
 })();

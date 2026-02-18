@@ -50,6 +50,7 @@
     `;
   }
 
+  // Reordered: Home, Inventory, Sensory, About, Comments
   const navHtml = `
     <nav class="skin2-nav-row hb-nav-row" aria-label="Primary navigation">
       ${navLink("Home", "index.html", "home")}
@@ -58,9 +59,9 @@
       ${navDivider()}
       ${navLink("Sensory", "sensory/index.html", "sensory")}
       ${navDivider()}
-      ${navLink("Comments", "comments/index.html", "comments")}
-      ${navDivider()}
       ${navLink("About", "about/index.html", "about")}
+      ${navDivider()}
+      ${navLink("Comments", "comments/index.html", "comments")}
     </nav>
   `;
 
