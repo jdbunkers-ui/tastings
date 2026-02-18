@@ -321,7 +321,18 @@ function renderTastings(tastings) {
           .map(
             (t) => `
               <tr>
-                <td class="mono no-wrap">${escapeHtml(fmt(t.flight_date))}</td>
+                <td class="mono no-wrap">
+                  ${
+                    t?.new_update
+                      ? `<img
+                           src="../assets/img/logo/gold_spinning_star.gif"
+                           alt="Recently updated tasting"
+                           style="height:16px; width:16px; vertical-align:middle; margin-right:6px;"
+                         />`
+                      : ""
+                  }
+                  ${escapeHtml(fmt(t.flight_date))}
+                </td>
                 <td class="score-cell"><b>${escapeHtml(fmt(t.nose_score))}</b></td>
                 <td class="notes">${notesToHtml(fmt(t.nose_notes, ""))}</td>
                 <td class="score-cell"><b>${escapeHtml(fmt(t.palate_score))}</b></td>
