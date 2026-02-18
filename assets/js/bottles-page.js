@@ -335,6 +335,11 @@ function renderTastings(tastings) {
 
       th.score-head{ text-align: center; white-space: nowrap; }
       td.score-cell{ text-align: center; white-space: nowrap; }
+      th.num,
+      td.num {
+        text-align: center;
+        white-space: nowrap;
+      }
     </style>
   `;
 }
