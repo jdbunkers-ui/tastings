@@ -338,7 +338,6 @@ table.skin2-table tbody tr:hover {
 .hbh-star-icon {
   display: inline-block;
   filter: drop-shadow(0 1px 1px rgba(0,0,0,0.18));
-  /*animation: hbhSpin 3.2s linear infinite;  /* <-- global speed */*/
   animation: hbhSpin 3.2s linear infinite !important;
   transform-origin: 50% 50%;
   transform-style: preserve-3d;
@@ -353,7 +352,7 @@ table.skin2-table tbody tr:hover {
 @media (prefers-reduced-motion: reduce) {
   .star-icon,
   .hbh-star-icon {
-    animation: none;
+    animation: none !important;
   }
 }
 
