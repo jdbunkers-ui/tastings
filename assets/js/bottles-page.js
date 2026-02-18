@@ -127,35 +127,45 @@ function renderSpecsGrid(specs) {
     </div>
 
     <style>
+      /* Tighter, less dominant specs */
       .spec-grid{
         display:grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap:10px;
-        margin-top: 10px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap:8px;
+        margin-top: 8px;
       }
+
       .spec-item{
-        border: 1px solid var(--border);
-        background: rgba(255,255,255,0.62);
+        border: 1px solid rgba(216, 207, 195, 0.85);
+        background: rgba(255,255,255,0.52);
         border-radius: 12px;
-        padding: 10px 12px;
+        padding: 8px 10px;
         min-width: 0;
       }
+
       .spec-label{
-        font-size: 12px;
-        color: rgba(43,29,20,0.72);
-        letter-spacing: .2px;
-        margin-bottom: 4px;
+        font-size: 11px;
+        line-height: 1.15;
+        color: rgba(43,29,20,0.68);
+        letter-spacing: .18px;
+        margin-bottom: 3px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
       }
+
       .spec-value{
-        font-size: 14px;
-        font-weight: 800;
-        color: rgba(43,29,20,0.92);
+        font-size: 13px;
+        line-height: 1.2;
+        font-weight: 700;
+        color: rgba(43,29,20,0.90);
         word-break: break-word;
       }
-      @media (max-width: 860px){
+
+      @media (max-width: 960px){
+        .spec-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      }
+      @media (max-width: 560px){
         .spec-grid{ grid-template-columns: 1fr; }
       }
     </style>
