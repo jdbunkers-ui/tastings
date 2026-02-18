@@ -9,12 +9,13 @@
     <link rel="stylesheet" href="../assets/css/skin2.css" />
 
     <style>
-      /* ---------- Star Toggle (Sensory filter) ---------- */
+      /* ---------- Sensory filter row ---------- */
       .hbh-filter-row {
         display: flex;
         align-items: center;
         gap: 10px;
         width: 100%;
+        flex-wrap: wrap;
       }
 
       .hbh-filter-row #filter {
@@ -28,158 +29,3 @@
         gap: 10px;
         flex: 0 0 auto;
       }
-
-      .hbh-star-toggle {
-        appearance: none;
-        -webkit-appearance: none;
-        border: 1px solid var(--s2-border);
-        background: rgba(255, 255, 255, 0.70);
-        border-radius: 999px;
-        padding: 6px 10px;
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        cursor: pointer;
-        user-select: none;
-        transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
-      }
-
-      .hbh-star-toggle:active { transform: scale(0.98); }
-
-      .hbh-star-toggle[aria-pressed="true"] {
-        background: rgba(246, 241, 234, 0.92);
-        border-color: rgba(181, 122, 42, 0.55);
-      }
-
-      .hbh-star-icon {
-        width: 16px;
-        height: 16px;
-        display: inline-block;
-        filter: drop-shadow(0 1px 1px rgba(0,0,0,0.18));
-        animation: hbhSpin 1.6s linear infinite;
-        transform-origin: 50% 50%;
-      }
-
-      .hbh-star-toggle[aria-pressed="true"] .hbh-star-icon {
-        animation-duration: 2.2s;
-      }
-
-      @keyframes hbhSpin {
-        from { transform: rotate(0deg); }
-        to   { transform: rotate(360deg); }
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        .hbh-star-icon { animation: none; }
-      }
-
-      .hbh-toggle-label {
-        font-size: 12px;
-        letter-spacing: 0.2px;
-        color: rgba(43, 29, 20, 0.82);
-        white-space: nowrap;
-      }
-
-      @media (max-width: 760px) {
-        .hbh-toggle-label { display: none; } /* keeps mobile tidy */
-      }
-    </style>
-  </head>
-
-  <body data-page="sensory">
-    <main class="skin2-wrap">
-      <!-- Skin2 Header Injection Target -->
-      <div id="site-header"></div>
-
-      <section class="skin2-card">
-        <div class="skin2-controls">
-          <div class="hbh-filter-row">
-            <input
-              id="filter"
-              type="text"
-              placeholder="Search sensory notes…"
-              aria-label="Search sensory notes"
-            />
-
-            <div class="hbh-toggle-wrap">
-              <button
-                id="sensoryNewOnlyToggle"
-                class="hbh-star-toggle"
-                type="button"
-                aria-pressed="false"
-                title="Filter bottles to only those with recently updated tastings"
-              >
-                <svg class="hbh-star-icon" viewBox="0 0 24 24" aria-hidden="true">
-                  <path
-                    d="M12 2.2l2.9 6.2 6.8.6-5.2 4.5 1.6 6.7L12 16.9 5.9 20.2l1.6-6.7L2.3 9l6.8-.6L12 2.2z"
-                    fill="rgba(215, 162, 74, 0.95)"
-                    stroke="rgba(181, 122, 42, 0.85)"
-                    stroke-width="0.9"
-                  />
-                </svg>
-              </button>
-
-              <span class="hbh-toggle-label">Filter for only recently updated Tastings</span>
-            </div>
-
-            <span class="skin2-status" id="status">Loading…</span>
-          </div>
-        </div>
-
-        <!-- Sensory Render Target -->
-        <div class="skin2-table-wrap">
-          <div id="sensory-content"></div>
-        </div>
-
-        <div id="error" class="skin2-error" style="display:none;"></div>
-      </section>
-
-      <!-- Skin2 Footer Injection Target -->
-      <div id="site-footer"></div>
-    </main>
-
-    <!-- Scripts -->
-    <script src="../assets/js/site-chrome.js"></script>
-
-    <!-- Sensory star toggle logic (dispatches event + stores preference) -->
-    <script>
-      (function () {
-        const KEY = "hbh_sensory_new_only";
-        const btn = document.getElementById("sensoryNewOnlyToggle");
-        if (!btn) return;
-
-        window.HBH_SensoryFilter = window.HBH_SensoryFilter || { onlyNew: false };
-
-        function emit(onlyNew) {
-          window.HBH_SensoryFilter.onlyNew = !!onlyNew;
-          window.dispatchEvent(new CustomEvent("hbh:sensoryFilterChanged", {
-            detail: { onlyNew: window.HBH_SensoryFilter.onlyNew }
-          }));
-        }
-
-        function setPressed(pressed) {
-          btn.setAttribute("aria-pressed", pressed ? "true" : "false");
-          btn.title = pressed
-            ? "Showing only bottles with recently updated tastings (click to show all)"
-            : "Filter bottles to only those with recently updated tastings";
-        }
-
-        const initial = localStorage.getItem(KEY) === "1";
-        setPressed(initial);
-        emit(initial);
-
-        btn.addEventListener("click", () => {
-          const next = btn.getAttribute("aria-pressed") !== "true";
-          setPressed(next);
-          localStorage.setItem(KEY, next ? "1" : "0");
-          emit(next);
-        });
-      })();
-    </script>
-
-    <script type="module" src="../assets/js/sensory-page.js?v=skin2_001"></script>
-
-    <!-- Reuse existing text filter logic (expects #filter + rows with data-search) -->
-    <script type="module" src="../assets/js/inventory-filter.js?v=skin2_002"></script>
-  </body>
-</html>
