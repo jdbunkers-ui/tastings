@@ -1,4 +1,5 @@
 import { supabase } from "./supabaseClient.js";
+import { rotatingStarSVG } from "./ui/star.js";
 
 // Views
 const VIEW_PICKERS = "v_barrel_picker_list";
@@ -64,11 +65,7 @@ function renderJournalTable(rows) {
                 ? rows
                     .map((r) => {
                       const star = r.new_update
-                        ? `<img 
-                             src="./assets/img/logo/gold_spinning_star.gif"
-                             alt="New update"
-                             style="height:18px; vertical-align:middle; margin-right:6px;"
-                           />`
+                        ? rotatingStarSVG({ size: 18, style: "margin-right:6px;" })
                         : "";
 
                       return `
@@ -146,13 +143,9 @@ function renderPickerTable(rows) {
                       const barrels = toInt(r.barrel_pick_count);
                       const tastings = toInt(r.total_tastings);
 
-                      // ⭐ Star when picker has a recent tasting
+                      // ⭐ Rotating star when picker has a recent tasting
                       const star = r.new_update
-                        ? `<img
-                             src="./assets/img/logo/gold_spinning_star.gif"
-                             alt="New tasting"
-                             style="height:18px; vertical-align:middle; margin-left:6px;"
-                           />`
+                        ? rotatingStarSVG({ size: 18, style: "margin-left:6px;" })
                         : "";
 
                       return `
@@ -201,7 +194,9 @@ async function loadPickerSection() {
   // Build query
   let q = supabase
     .from(VIEW_PICKERS)
-    .select("state,barrel_picker_name,city,barrel_picker_id,barrel_pick_count,total_tastings,new_update");
+    .select(
+      "state,barrel_picker_name,city,barrel_picker_id,barrel_pick_count,total_tastings,new_update"
+    );
 
   // ✅ Boolean-safe filter
   if (pickerOnlyNew) {
