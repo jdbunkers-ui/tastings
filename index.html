@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Honey Barrel Hunter Portal</title>
+    <link rel="stylesheet" href="./assets/css/skin2.css" />
+
+    <style>
+      html, body { height: 100%; }
+      body {
+        margin: 0;
+        font-family: var(--s2-font-sans);
+        color: var(--s2-text);
+        background:
+          radial-gradient(1200px 800px at 20% -10%, rgba(181, 122, 42, 0.14), transparent 55%),
+          radial-gradient(900px 700px at 90% 0%, rgba(225, 182, 106, 0.12), transparent 50%),
+          var(--s2-bg);
+      }
+
+      .wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 18px 14px 46px;
+      }
+
+      .section-title {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 10px;
+        margin: 18px 2px 10px;
+      }
+
+      .section-title h2 {
+        margin: 0;
+        font-size: 16px;
+        letter-spacing: 0.3px;
+        color: rgba(43, 29, 20, 0.90);
+      }
+
+      .mono { font-family: var(--s2-font-mono); }
+
+      .muted-card {
+        border: 1px solid var(--s2-border);
+        background: rgba(255, 255, 255, 0.55);
+        border-radius: 16px;
+        padding: 14px;
+        color: var(--s2-text-muted);
+      }
+
+      .error {
+        border: 1px solid rgba(231, 76, 60, 0.35);
+        background: rgba(231, 76, 60, 0.10);
+        color: rgba(43, 29, 20, 0.92);
+      }
+
+      /* ---------- Homepage narrative styles (Skin2-friendly) ---------- */
+      .hero-card {
+        border: 1px solid var(--s2-border);
+        background: rgba(255, 255, 255, 0.86);
+        border-radius: 16px;
+        padding: 22px 22px;
+        margin: 14px 0 18px;
+        color: var(--s2-text);
+      }
+
+      .hero-title {
+        margin: 0 0 8px;
+        font-size: 22px;
+        letter-spacing: 0.3px;
+        color: rgba(43, 29, 20, 0.94);
+      }
+
+      .hero-subtitle {
+        margin: 0 0 12px;
+        font-size: 14px;
+        line-height: 1.6;
+        color: rgba(43, 29, 20, 0.88);
+        max-width: 78ch;
+      }
+
+      .hero-bullets {
+        margin: 0;
+        padding-left: 18px;
+        display: grid;
+        gap: 6px;
+        color: rgba(43, 29, 20, 0.86);
+        font-size: 14px;
+        line-height: 1.55;
+      }
+
+      .hero-bullets strong {
+        color: rgba(43, 29, 20, 0.94);
+      }
+
+      .details {
+        margin-top: 14px;
+        border: 1px solid var(--s2-border);
+        background: rgba(255, 255, 255, 0.70);
+        border-radius: 16px;
+        padding: 14px 16px;
+        color: rgba(43, 29, 20, 0.88);
+      }
+
+      details summary {
+        cursor: pointer;
+        font-weight: 700;
+        color: rgba(43, 29, 20, 0.92);
+        list-style: none;
+      }
+
+      details summary::-webkit-details-marker { display: none; }
+
+      .details-inner {
+        margin-top: 10px;
+        display: grid;
+        gap: 14px;
+      }
+
+      .details-inner h3 {
+        margin: 0 0 6px;
+        font-size: 15px;
+        letter-spacing: 0.2px;
+        color: rgba(43, 29, 20, 0.92);
+      }
+
+      .details-inner p {
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.65;
+        color: rgba(43, 29, 20, 0.88);
+        max-width: 90ch;
+      }
+
+      .details-inner ul {
+        margin: 6px 0 0;
+        padding-left: 18px;
+        display: grid;
+        gap: 6px;
+        font-size: 14px;
+        line-height: 1.6;
+        color: rgba(43, 29, 20, 0.88);
+      }
+
+      .callout {
+        border-left: 4px solid rgba(181, 122, 42, 0.55);
+        padding: 10px 12px;
+        background: rgba(246, 241, 234, 0.55);
+        border-radius: 12px;
+      }
+
+      /* ---------- Star Toggle (Barrel Pickers filter) ---------- */
+      .title-with-toggle {
+        display: flex;
+        align-items: center;
