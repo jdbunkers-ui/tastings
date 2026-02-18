@@ -321,7 +321,9 @@ function renderTastings(tastings) {
           .map(
             (t) => `
               <tr>
-                <td class="mono no-wrap">
+                td.no-wrap {
+                text-align: right;
+              }
                   ${
                     t?.new_update
                       ? `<img
