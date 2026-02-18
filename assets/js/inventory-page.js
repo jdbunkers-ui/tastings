@@ -4,18 +4,22 @@
    ========================================================= */
 
 import { supabase } from "./supabaseClient.js";
+import { rotatingStarSVG } from "./ui/star.js";
 
 const VIEW_NAME = "v_bottle_inventory";
 const ROW_LIMIT = 300;
 
-// DOM
+// ---------- DOM ----------
 const elContent = document.getElementById("inventory-content");
 const elStatus = document.getElementById("status");
 const elError = document.getElementById("error");
 
 // Toggle state (set by inventory/index.html)
-let inventoryOnlyNew = !!(window.HBH_InventoryFilter && window.HBH_InventoryFilter.onlyNew);
+let inventoryOnlyNew = !!(
+  window.HBH_InventoryFilter && window.HBH_InventoryFilter.onlyNew
+);
 
+// ---------- Helpers ----------
 function show(el, isShown) {
   if (!el) return;
   el.style.display = isShown ? "" : "none";
@@ -78,8 +82,6 @@ function fmtAge(v) {
 
 /**
  * Bottle Expression hyperlink
- * inventory/index.html -> ../bottles/index.html
- * (Same-tab behavior)
  */
 function barrelLink(singleBarrelId, label) {
   const id = (singleBarrelId ?? "").toString().trim();
@@ -92,7 +94,6 @@ function barrelLink(singleBarrelId, label) {
 
 /**
  * Distillery Name hyperlink
- * inventory/index.html -> ../distilleries/index.html
  */
 function distilleryLink(distilleryId, label) {
   const id = (distilleryId ?? "").toString().trim();
@@ -131,9 +132,7 @@ function invColClass(col) {
 }
 
 function selectColumns(keys) {
-  // Display order (barrel_picker_name removed)
-  // Keep ids for links (hidden) + extra fields for future use
-  const desired = [
+  return [
     "score",
     "msrp",
     "proof",
@@ -141,21 +140,15 @@ function selectColumns(keys) {
     "bottle_expression",
     "distillery_name",
 
-    // hidden/link-only + utility fields
+    // hidden / utility
     "single_barrel_id",
     "distillery_id",
     "barrel_picker_id",
-
-    // present for future use (not displayed)
     "blender_id",
     "blender_name",
     "barrel_picker_name",
-
-    // new flag (not displayed)
     "new_update",
-  ];
-
-  return desired.filter((k) => keys.includes(k));
+  ].filter((k) => keys.includes(k));
 }
 
 function renderCell(col, row) {
@@ -163,14 +156,13 @@ function renderCell(col, row) {
 
   if (col === "bottle_expression") {
     const star = row.new_update
-      ? `<img
-           src="../assets/img/logo/gold_spinning_star.gif"
-           alt="New"
-           style="height:18px; vertical-align:middle; margin-right:6px;"
-         />`
+      ? rotatingStarSVG({ size: 16, style: "margin-right:6px;" })
       : "";
 
-    return `${star}${barrelLink(row.single_barrel_id, row.bottle_expression)}`;
+    return `${star}${barrelLink(
+      row.single_barrel_id,
+      row.bottle_expression
+    )}`;
   }
 
   if (col === "distillery_name") {
@@ -190,61 +182,40 @@ function renderTable(rows) {
 
   if (!rows || rows.length === 0) {
     elContent.innerHTML = `<div style="padding:12px;">No inventory rows returned.</div>`;
-    window.dispatchEvent(new Event("skin2:inventoryRendered"));
     return;
   }
 
-  const keys = Object.keys(rows[0] || {});
-  const cols = selectColumns(keys);
-
-  // Only display the requested columns (do NOT display ids or non-displayed fields)
+  const cols = selectColumns(Object.keys(rows[0] || {}));
   const displayCols = cols.filter(
     (c) =>
-      c !== "single_barrel_id" &&
-      c !== "distillery_id" &&
-      c !== "barrel_picker_id" &&
-      c !== "blender_id" &&
-      c !== "blender_name" &&
-      c !== "barrel_picker_name" &&
-      c !== "new_update"
+      ![
+        "single_barrel_id",
+        "distillery_id",
+        "barrel_picker_id",
+        "blender_id",
+        "blender_name",
+        "barrel_picker_name",
+        "new_update",
+      ].includes(c)
   );
 
   const thead = displayCols
     .map((c) => {
       const cls = invColClass(c);
-      return `<th class="${escapeHtml(cls)}" title="${escapeHtml(c)}">${escapeHtml(
-        headerLabel(c)
-      )}</th>`;
+      return `<th class="${cls}">${headerLabel(c)}</th>`;
     })
     .join("");
 
-  // Searchable fields (barrel_picker_name removed since it is not displayed)
-  const searchableFields = [
-    "bottle_expression",
-    "distillery_name",
-    "blender_name",
-    "single_barrel_id",
-    "distillery_id",
-    "barrel_picker_id",
-    "blender_id",
-  ];
-
   const tbody = rows
     .map((r) => {
-      const searchable = searchableFields
-        .filter((c) => c in r)
-        .map((c) => (r[c] == null ? "" : String(r[c])))
-        .join(" | ")
-        .toLowerCase();
-
       const tds = displayCols
         .map((c) => {
           const cls = invColClass(c);
-          return `<td class="${escapeHtml(cls)}">${renderCell(c, r)}</td>`;
+          return `<td class="${cls}">${renderCell(c, r)}</td>`;
         })
         .join("");
 
-      return `<tr class="inv-row" data-search="${escapeHtml(searchable)}">${tds}</tr>`;
+      return `<tr>${tds}</tr>`;
     })
     .join("");
 
@@ -254,8 +225,6 @@ function renderTable(rows) {
       <tbody>${tbody}</tbody>
     </table>
   `;
-
-  window.dispatchEvent(new Event("skin2:inventoryRendered"));
 }
 
 async function loadInventory() {
@@ -265,7 +234,6 @@ async function loadInventory() {
   try {
     let q = supabase.from(VIEW_NAME).select("*");
 
-    // ✅ Toggle-driven filter (boolean)
     if (inventoryOnlyNew) {
       q = q.eq("new_update", true);
     }
@@ -273,7 +241,7 @@ async function loadInventory() {
     const { data, error } = await q.limit(ROW_LIMIT);
     if (error) throw error;
 
-    renderTable(data);
+    renderTable(data || []);
     setStatus(`Loaded ${data?.length ?? 0} rows`);
   } catch (e) {
     setStatus("Error loading inventory");
@@ -282,7 +250,7 @@ async function loadInventory() {
   }
 }
 
-// Listen for the star toggle event dispatched by inventory/index.html
+// ---------- Toggle Wiring ----------
 function wireInventoryToggle() {
   window.addEventListener("hbh:inventoryFilterChanged", (e) => {
     const onlyNew = !!(e && e.detail && e.detail.onlyNew);
@@ -292,10 +260,9 @@ function wireInventoryToggle() {
   });
 }
 
-// Boot
+// ---------- Boot ----------
 wireInventoryToggle();
-
-// Re-read once in case order of scripts differs
-inventoryOnlyNew = !!(window.HBH_InventoryFilter && window.HBH_InventoryFilter.onlyNew);
-
+inventoryOnlyNew = !!(
+  window.HBH_InventoryFilter && window.HBH_InventoryFilter.onlyNew
+);
 loadInventory();
