@@ -1,4 +1,5 @@
 import { supabase } from "./supabaseClient.js";
+import { rotatingStarSVG } from "./ui/star.js";
 
 // -----------------------------
 // Helpers
@@ -325,7 +326,7 @@ function renderTastings(tastings) {
                   ${
                     t?.new_update
                       ? `<img
-                           src="../assets/img/logo/gold_spinning_star.gif"
+                           rotatingStarSVG({ style: "margin-left:6px;" })
                            alt="Recently updated tasting"
                            style="height:16px; width:16px; vertical-align:middle; margin-right:6px;"
                          />`
