@@ -5,48 +5,39 @@
 
 /* ---------- CSS Variables (Theme) ---------- */
 :root {
-  /* Core palette */
-  --s2-bg: #f6f1ea;                 /* parchment / light oak */
+  --s2-bg: #f6f1ea;
   --s2-panel: #ffffff;
   --s2-border: #d8cfc3;
 
-  /* Browns / whiskey hues */
-  --s2-brown-dark: #3b2a20;         /* dark barrel */
-  --s2-brown-mid: #6a4a32;          /* toasted oak */
-  --s2-amber: #b57a2a;              /* whiskey */
+  --s2-brown-dark: #3b2a20;
+  --s2-brown-mid: #6a4a32;
+  --s2-amber: #b57a2a;
   --s2-amber-soft: #e1b66a;
 
-  /* Text */
   --s2-text: #2b1d14;
   --s2-text-muted: #7a6758;
   --s2-text-invert: #ffffff;
 
-  /* Accents */
   --s2-link: #8a5a20;
   --s2-link-hover: #b57a2a;
 
-  /* Fonts */
   --s2-font-sans: ui-sans-serif, system-ui, -apple-system,
                   Segoe UI, Roboto, Helvetica, Arial;
   --s2-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco,
                   Consolas, "Liberation Mono", monospace;
 }
 
-/* ---------- Page Reset / Base ---------- */
+/* ---------- Base ---------- */
 html, body {
   margin: 0;
   padding: 0;
-  background: linear-gradient(
-    180deg,
-    #efe6d9 0%,
-    #f6f1ea 45%
-  );
+  background: linear-gradient(180deg, #efe6d9 0%, #f6f1ea 45%);
   color: var(--s2-text);
   font-family: var(--s2-font-sans);
   font-size: 13px;
 }
 
-/* ---------- Layout Containers ---------- */
+/* ---------- Layout ---------- */
 .skin2-wrap {
   max-width: 1280px;
   margin: 0 auto;
@@ -57,7 +48,7 @@ html, body {
   background: var(--s2-panel);
   border: 1px solid var(--s2-border);
   border-radius: 10px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
   overflow: hidden;
 }
 
@@ -69,11 +60,7 @@ html, body {
   gap: 12px;
   padding: 12px 16px;
   border-bottom: 1px solid var(--s2-border);
-  background: linear-gradient(
-    90deg,
-    #4a3326,
-    #2f2119
-  );
+  background: linear-gradient(90deg, #4a3326, #2f2119);
   color: var(--s2-text-invert);
 }
 
@@ -97,11 +84,7 @@ html, body {
   justify-content: center;
   gap: 16px;
   padding: 9px 0 11px;
-  background: linear-gradient(
-    90deg,
-    #3b2a20,
-    #2a1d16
-  );
+  background: linear-gradient(90deg, #3b2a20, #2a1d16);
   border-bottom: 1px solid var(--s2-border);
 }
 
@@ -118,13 +101,13 @@ html, body {
 }
 
 .skin2-nav:hover {
-  background-color: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
+  background-color: rgba(255,255,255,0.08);
+  color: #fff;
 }
 
 .skin2-nav-active {
-  background-color: rgba(255, 255, 255, 0.15);
-  color: #ffffff;
+  background-color: rgba(255,255,255,0.15);
+  color: #fff;
 }
 
 /* ---------- Controls ---------- */
@@ -141,8 +124,6 @@ html, body {
   );
 }
 
-/* Slightly more prominent search input (visual only) */
-.skin2-controls input#filter,
 .skin2-controls input[type="text"] {
   width: 300px;
   max-width: 100%;
@@ -151,20 +132,18 @@ html, body {
   font-weight: 600;
   border-radius: 8px;
   border: 1px solid var(--s2-border);
-  background: #ffffff;
+  background: #fff;
   color: var(--s2-text);
 }
 
 .skin2-controls input::placeholder {
   color: var(--s2-text-muted);
-  font-weight: 500;
 }
 
-.skin2-controls input#filter:focus,
-.skin2-controls input[type="text"]:focus {
+.skin2-controls input:focus {
   outline: none;
   border-color: var(--s2-amber);
-  box-shadow: 0 0 0 3px rgba(181, 122, 42, 0.18);
+  box-shadow: 0 0 0 3px rgba(181,122,42,0.18);
 }
 
 .skin2-status {
@@ -173,33 +152,22 @@ html, body {
   font-family: var(--s2-font-mono);
 }
 
-/* ---------- Table ---------- */
+/* ---------- Tables ---------- */
 .skin2-table-wrap {
   overflow-x: auto;
-}
-
-/* Distillery page: allow table to fit without horizontal scroll (wrap instead) */
-#inventory-table-wrap.skin2-table-wrap {
-  overflow-x: visible;
-}
-
-/* Barrel Picker page: allow table to fit without horizontal scroll (wrap instead) */
-#bp-table .skin2-table-wrap {
-  overflow-x: visible;
 }
 
 table.skin2-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 12px;
-  table-layout: fixed; /* makes widths + wrapping behave consistently */
+  table-layout: fixed;
 }
 
 table.skin2-table thead th {
   position: sticky;
   top: 0;
   z-index: 1;
-  text-align: left;
   padding: 8px 10px;
   font-size: 10px;
   letter-spacing: 0.1em;
@@ -208,6 +176,7 @@ table.skin2-table thead th {
   color: var(--s2-text-muted);
   background: #f3ede5;
   border-bottom: 1px solid var(--s2-border);
+  text-align: left;
 }
 
 table.skin2-table tbody td {
@@ -221,124 +190,38 @@ table.skin2-table tbody tr:nth-child(even) {
 }
 
 table.skin2-table tbody tr:hover {
-  background: rgba(181, 122, 42, 0.08);
+  background: rgba(181,122,42,0.08);
 }
 
-/* Optional numeric alignment (generic) */
+/* ---------- Column helpers ---------- */
 .skin2-table td.num {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-/* =========================================================
-   Centered Columns for Barrel Pickers Picker List
-   ========================================================= */
-
-.skin2-table th.col-state,
-.skin2-table td.col-state,
-.skin2-table th.col-picks,
-.skin2-table td.col-picks,
-.skin2-table th.col-tastings,
-.skin2-table td.col-tastings {
-  text-align: center;
-}
-
-/* =========================================================
-   Skin2: Column Alignment + Widths
-   Common order patterns:
-   - Inventory: Score | MSRP | Proof | Age | Bottle Expression | Distillery Name
-   - Distillery bottom: Score | MSRP | Proof | Age | Barrel Picker Name | Bottle Expression (no Distillery)
-   - Barrel Picker bottom: Score | MSRP | Proof | Age | Distillery Name | Bottle Expression
-   ========================================================= */
-
-/* Tight numeric columns */
-.skin2-table th.col-score,
-.skin2-table td.col-score,
-.skin2-table th.col-msrp,
-.skin2-table td.col-msrp,
-.skin2-table th.col-proof,
-.skin2-table td.col-proof,
-.skin2-table th.col-age,
-.skin2-table td.col-age {
-  text-align: center;
+/* Journal date column */
+.skin2-table td.col-date {
+  text-align: right;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 
-/* Width tuning for numeric columns */
-.skin2-table th.col-score,
-.skin2-table td.col-score { width: 80px; }
-
-.skin2-table th.col-msrp,
-.skin2-table td.col-msrp { width: 95px; }
-
-.skin2-table th.col-proof,
-.skin2-table td.col-proof { width: 85px; }
-
-.skin2-table th.col-age,
-.skin2-table td.col-age { width: 70px; }
-
-/* Text columns (wrap enabled) */
-.skin2-table th.col-expression,
-.skin2-table td.col-expression {
-  text-align: left;
-  width: 360px;
+/* Centered picker columns */
+.skin2-table th.col-state,
+.skin2-table td.col-state,
+.skin2-table th.col-tastings,
+.skin2-table td.col-tastings,
+.skin2-table th.col-picks,
+.skin2-table td.col-picks {
+  text-align: center;
 }
 
-.skin2-table th.col-distillery,
-.skin2-table td.col-distillery {
-  text-align: left;
-  width: 280px;
-}
-
-/* Optional: used only on pages that still display a barrel picker column */
-.skin2-table th.col-barrel-picker,
-.skin2-table td.col-barrel-picker {
-  text-align: left;
-  width: 220px;
-}
-
-/* Wrap long names/expressions nicely */
-.skin2-table td.col-barrel-picker,
-.skin2-table td.col-expression,
-.skin2-table td.col-distillery {
-  white-space: normal;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
-
-/* Keep headers tidy even if cells wrap */
-.skin2-table th.col-barrel-picker,
-.skin2-table th.col-expression,
-.skin2-table th.col-distillery {
-  white-space: nowrap;
-}
-
-/*
-   OLD
-   =========================================================
-   Spinning Star Styling
-   ========================================================= 
-
-.new-tasting-star {
-  height: 1.5em;
-  width: auto;
-  margin-left: 6px;
-  vertical-align: -0.2em;
-  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35));
-  pointer-events: none;
-}
-*/
-/* =========================================================
-   HBH Rotating Star (Global)
-   Applies to all SVG stars using rotatingStarSVG()
-   ========================================================= */
-
+/* ---------- Global Rotating Star ---------- */
 .star-icon,
 .hbh-star-icon {
   display: inline-block;
   filter: drop-shadow(0 1px 1px rgba(0,0,0,0.18));
-  animation: hbhSpin 3.2s linear infinite !important;
+  animation: hbhSpin 3.2s linear infinite;
   transform-origin: 50% 50%;
   transform-style: preserve-3d;
 }
@@ -348,14 +231,12 @@ table.skin2-table tbody tr:hover {
   to   { transform: rotateY(360deg); }
 }
 
-/* Respect reduced-motion */
 @media (prefers-reduced-motion: reduce) {
   .star-icon,
   .hbh-star-icon {
-    animation: none !important;
+    animation: none;
   }
 }
-
 
 /* ---------- Links ---------- */
 .skin2-link {
@@ -378,5 +259,3 @@ table.skin2-table tbody tr:hover {
   background: #fdecec;
   border-top: 1px solid #f5c2c2;
 }
-
-/* (Flight Ticker section remains unchanged below) */
