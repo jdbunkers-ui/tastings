@@ -178,6 +178,7 @@
         cursor: pointer;
         user-select: none;
         transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+        perspective: 600px; /* helps rotateY look 3D */
       }
 
       .star-toggle:active { transform: scale(0.98); }
@@ -187,26 +188,10 @@
         border-color: rgba(181, 122, 42, 0.55);
       }
 
-      /* Slow down slightly when active so it feels “selected” */
-      .star-toggle[aria-pressed="true"] .star-icon {
-        animation-duration: 2.2s;
-      }
-
-      /* Add perspective so rotateY looks like a flip instead of a blur */
-      .star-toggle {
-        perspective: 600px;
-      }
-      
-      @keyframes hbhSpin {
-        from { transform: rotateY(0deg); }
-        to   { transform: rotateY(360deg); }
-      }
-
-
-      /* Respect reduced-motion */
-      @media (prefers-reduced-motion: reduce) {
-        .star-icon { animation: none; }
-      }
+      /* IMPORTANT:
+         No .star-icon or @keyframes here.
+         Global star animation/speed is controlled in assets/css/skin2.css.
+      */
 
       .toggle-label {
         font-size: 12px;
@@ -237,7 +222,6 @@
           <li><strong>Independent</strong> approach with no paid placements or sponsored scores.</li>
         </ul>
 
-        <!-- Below-the-fold depth (still crawlable, but not in-your-face) -->
         <details class="details">
           <summary>Learn how Honey Barrel Hunter works</summary>
           <div class="details-inner">
