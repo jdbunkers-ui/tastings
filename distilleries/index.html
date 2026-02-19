@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="../assets/css/skin2.css" />
 
     <style>
-      /* Match barrel_pickers/index.html page scaffold */
       :root {
         --s2-bg: #f6f1ea;
         --s2-panel: #ffffff;
@@ -27,8 +26,10 @@
         --s2-link: #8a5a20;
         --s2-link-hover: #b57a2a;
 
-        --s2-font-sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-        --s2-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+        --s2-font-sans: ui-sans-serif, system-ui, -apple-system,
+                        Segoe UI, Roboto, Helvetica, Arial;
+        --s2-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco,
+                        Consolas, "Liberation Mono", monospace;
       }
 
       html, body { height: 100%; }
@@ -37,13 +38,10 @@
         font-family: var(--s2-font-sans);
         color: var(--s2-text);
         background:
-          radial-gradient(1200px 800px at 20% -10%, rgba(181, 122, 42, 0.14), transparent 55%),
-          radial-gradient(900px 700px at 90% 0%, rgba(225, 182, 106, 0.12), transparent 50%),
+          radial-gradient(1200px 800px at 20% -10%, rgba(181,122,42,0.14), transparent 55%),
+          radial-gradient(900px 700px at 90% 0%, rgba(225,182,106,0.12), transparent 50%),
           var(--s2-bg);
       }
-
-      a { color: var(--s2-link); text-decoration: underline; }
-      a:hover { color: var(--s2-link-hover); }
 
       .wrap {
         max-width: 980px;
@@ -53,17 +51,15 @@
 
       .card {
         border: 1px solid var(--s2-border);
-        background: rgba(255, 255, 255, 0.86);
+        background: rgba(255,255,255,0.86);
         border-radius: 16px;
         padding: 14px;
       }
 
-      /* HERO layout same framing as barrel_pickers */
       .hero {
         display: grid;
         grid-template-columns: 360px 1fr;
         gap: 14px;
-        align-items: start;
         margin-top: 10px;
       }
       @media (max-width: 860px) {
@@ -72,160 +68,138 @@
 
       .photo {
         border: 1px solid var(--s2-border);
-        background: rgba(255,255,255,0.62);
         border-radius: 16px;
         overflow: hidden;
         min-height: 220px;
         display: grid;
         place-items: center;
         color: var(--s2-text-muted);
-        font-size: 12px;
-      }
-      .photo img {
-        width: 100%;
-        height: auto;
-        display: block;
-        object-fit: cover;
       }
 
       .title {
         margin: 0;
         font-size: 22px;
-        letter-spacing: 0.2px;
         font-weight: 900;
       }
 
       .meta {
+        margin-top: 10px;
         display: grid;
         gap: 6px;
-        margin-top: 10px;
-        color: rgba(43, 29, 20, 0.86);
         font-size: 13px;
-        line-height: 1.35;
       }
-
-      .mono { font-family: var(--s2-font-mono); }
 
       .links {
         display: flex;
-        flex-wrap: wrap;
         gap: 12px;
         margin-top: 10px;
-        font-size: 13px;
       }
 
-      .section-title {
+      /* -------- Filter Row (MATCH inventory/sensory) -------- */
+      .hbh-filter-row {
         display: flex;
-        align-items: baseline;
-        justify-content: space-between;
+        align-items: center;
         gap: 10px;
-        margin: 18px 2px 10px;
+        flex-wrap: wrap;
+        margin: 18px 0 10px;
       }
-      .section-title h2 {
-        margin: 0;
-        font-size: 14px;
-        letter-spacing: 0.3px;
-        color: rgba(43, 29, 20, 0.90);
-        text-transform: uppercase;
+
+      .hbh-filter-row #filter {
+        flex: 1 1 auto;
+        min-width: 220px;
       }
-      .section-title .hint {
-        color: rgba(122, 103, 88, 0.78);
+
+      .hbh-toggle-wrap {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .hbh-toggle-label {
         font-size: 12px;
+        color: rgba(43,29,20,0.82);
+        white-space: nowrap;
       }
 
-      /* ✅ IMPORTANT:
-         Removed the global table/thead/tbody styles so Skin2 table styling applies cleanly.
-         If you ever need table styles here, scope them tightly (e.g. #some-wrap table { ... }). */
-
-      .muted-card {
-        border: 1px solid var(--s2-border);
-        background: rgba(255,255,255,0.55);
-        border-radius: 16px;
-        padding: 14px;
-        color: var(--s2-text-muted);
-      }
-
-      .error {
-        border: 1px solid rgba(231, 76, 60, 0.35);
-        background: rgba(231, 76, 60, 0.10);
-        color: rgba(43, 29, 20, 0.92);
+      @media (max-width: 760px) {
+        .hbh-toggle-label { display: none; }
       }
     </style>
   </head>
 
   <body data-page="distilleries">
     <div class="wrap">
-      <!-- Skin2 Header Injection Target -->
       <div id="site-header"></div>
 
-      <!-- Error -->
-      <div id="error" class="muted-card error" style="display:none;"></div>
-
-      <!-- Loading -->
+      <div id="error" class="skin2-error" style="display:none;"></div>
       <div id="loading" class="muted-card">Loading distillery…</div>
 
-      <!-- Content (JS will show/hide) -->
       <div id="content" style="display:none;">
         <div class="hero">
-          <!-- Photo card -->
-          <div class="photo" id="distillery-photo-wrap">
-            <img
-              id="distillery-photo"
-              alt="Distillery photo"
-              style="width:100%; height:auto; display:block; object-fit:cover;"
-              onerror="this.style.display='none'; document.getElementById('photo-missing').style.display='block';"
-            />
-            <div id="photo-missing" style="display:none;">No photo available yet.</div>
+          <div class="photo">
+            <img id="distillery-photo" alt="Distillery photo" />
+            <div id="photo-missing" style="display:none;">No photo available</div>
           </div>
 
-          <!-- Details card -->
-          <div class="card" id="distillery-card">
+          <div class="card">
             <h1 id="distillery-name" class="title">—</h1>
 
             <div class="meta">
-              <div>
-                <b>Address:</b>
-                <span id="distillery-address">—</span>
-              </div>
-
-              <div>
-                <b>State:</b>
-                <span id="distillery-state" class="mono">—</span>
-              </div>
+              <div><b>Address:</b> <span id="distillery-address">—</span></div>
+              <div><b>State:</b> <span id="distillery-state">—</span></div>
             </div>
 
             <div class="links">
-              <a id="maps-link" class="skin2-link" target="_blank" rel="noopener">Open in Google Maps</a>
-              <a id="back-link" class="skin2-link" href="../inventory/index.html">Back to Inventory</a>
+              <a id="maps-link" class="skin2-link" target="_blank">Open in Google Maps</a>
+              <a class="skin2-link" href="../inventory/index.html">Back to Inventory</a>
             </div>
 
-            <div class="section-title" style="margin:18px 0 8px;">
-              <h2 style="text-transform:uppercase;">About</h2>
-            </div>
-            <div id="distillery-description" class="muted-card" style="white-space:pre-wrap;">—</div>
+            <h2 style="margin-top:18px;">About</h2>
+            <div id="distillery-description" class="muted-card">—</div>
           </div>
         </div>
 
-        <!-- ✅ Inventory-style Bottles section (Skin2 table rendered by distillery-page.js) -->
-        <div class="section-title" style="margin-top:22px;">
-          <h2>Tasted Bottles</h2>
-          <div class="hint" id="inventory-status"></div>
+        <!-- 🔍 FILTER ROW -->
+        <div class="hbh-filter-row">
+          <input
+            id="filter"
+            type="text"
+            placeholder="Search tasted bottles…"
+            aria-label="Search distillery inventory"
+          />
+
+          <div class="hbh-toggle-wrap">
+            <button
+              id="distilleryNewOnlyToggle"
+              class="hbh-star-toggle"
+              type="button"
+              aria-pressed="false"
+              title="Filter to only recently updated tastings"
+            >
+              <svg class="hbh-star-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M12 2.2l2.9 6.2 6.8.6-5.2 4.5 1.6 6.7L12 16.9 5.9 20.2l1.6-6.7L2.3 9l6.8-.6L12 2.2z"
+                  fill="rgba(215,162,74,0.95)"
+                  stroke="rgba(181,122,42,0.85)"
+                  stroke-width="0.9"
+                />
+              </svg>
+            </button>
+            <span class="hbh-toggle-label">Only new updates</span>
+          </div>
+
+          <span class="skin2-status" id="inventory-status"></span>
         </div>
 
-        <!-- Table mount (JS will inject <table class="skin2-table"> ... ) -->
-        <div id="inventory-table-wrap" class="skin2-table-wrap">
+        <div class="skin2-table-wrap">
           <div id="inventory-content"></div>
         </div>
       </div>
 
-      <!-- Skin2 Footer Injection Target -->
       <div id="site-footer"></div>
     </div>
 
-    <!-- Skin2 header/footer injector -->
     <script src="../assets/js/site-chrome.js"></script>
-
-    <!-- Distillery page controller -->
     <script type="module" src="../assets/js/distillery-page.js"></script>
   </body>
 </html>
