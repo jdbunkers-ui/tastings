@@ -245,6 +245,22 @@ table.skin2-table tbody tr:hover {
   text-align: center;
 }
 
+/* Sensory — Bottle column (allow wrapping) */
+.skin2-table th.col-bottle,
+.skin2-table td.col-bottle {
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+/* Sensory — Bottle column (allow wrapping) */
+.skin2-table th.col-sensory-bottle,
+.skin2-table td.col-sensory-bottle {
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
 /* ---------- Global Rotating Star ---------- */
 
 /* Safe global perspective so rotateY always looks 3D */
