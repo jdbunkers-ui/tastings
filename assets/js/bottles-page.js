@@ -1,3 +1,8 @@
+/* =========================================================
+   Honey Barrel Hunter — Skin2 Bottle (Single Barrel) Page
+   File: assets/js/bottles-page.js
+   ========================================================= */
+
 import { supabase } from "./supabaseClient.js";
 import { rotatingStarSVG } from "./ui/star.js";
 
@@ -188,16 +193,20 @@ function renderHero(barrel) {
   const msrp = fmtMoney(barrel?.msrp);
 
   // Headline
-  const headline = `${brand}` + (expr ? ` - ${expr}` : "") + (pick ? ` (${pick})` : "");
+  const headline =
+    `${brand}` + (expr ? ` - ${expr}` : "") + (pick ? ` (${pick})` : "");
   if (titleEl) titleEl.textContent = headline;
 
-  const rowStyle = "font-size:15px; line-height:1.2; font-weight:700; margin-top:6px;";
+  const rowStyle =
+    "font-size:15px; line-height:1.2; font-weight:700; margin-top:6px;";
   const labelStyle = "opacity:.75;";
 
   // Distillery line
   if (subtitleEl) {
     if (distId) {
-      const href = `../distilleries/index.html?distillery_id=${encodeURIComponent(distId)}`;
+      const href = `../distilleries/index.html?distillery_id=${encodeURIComponent(
+        distId
+      )}`;
       subtitleEl.innerHTML = `
         <div style="${rowStyle}">
           <span style="${labelStyle}">Distillery:</span>
@@ -216,7 +225,9 @@ function renderHero(barrel) {
   // Barrel picker line
   if (pickerLineEl) {
     if (pickerId && pickerDisplay !== "N/A") {
-      const href = `../barrel_pickers/index.html?barrel_picker_id=${encodeURIComponent(pickerId)}`;
+      const href = `../barrel_pickers/index.html?barrel_picker_id=${encodeURIComponent(
+        pickerId
+      )}`;
       pickerLineEl.innerHTML = `
         <div style="${rowStyle}">
           <span style="${labelStyle}">Barrel Picker:</span>
@@ -226,7 +237,9 @@ function renderHero(barrel) {
     } else {
       pickerLineEl.innerHTML = `
         <div style="${rowStyle}">
-          <span style="${labelStyle}">Barrel Picker:</span> ${escapeHtml(pickerDisplay)}
+          <span style="${labelStyle}">Barrel Picker:</span> ${escapeHtml(
+            pickerDisplay
+          )}
         </div>
       `;
     }
@@ -244,7 +257,13 @@ function renderHero(barrel) {
       ${
         desc
           ? `
-            <div style="margin-top:6px; font-size:14px; line-height:1.35; color: rgba(43,29,20,0.88);">
+            <!-- ✅ Label uses same heading class as "Sensory Notes and Scores" -->
+            <div class="section-title" style="margin-top:12px;">
+              Final thoughts on this expression from from HBH...
+            </div>
+
+            <!-- ✅ Render description in italics -->
+            <div style="margin-top:6px; font-size:14px; line-height:1.35; color: rgba(43,29,20,0.88); font-style: italic;">
               ${escapeHtml(desc)}
             </div>
           `
@@ -294,11 +313,14 @@ function renderTastings(tastings) {
   const sorted = sortByDateDesc(tastings, "flight_date");
 
   if (hintEl) {
-    hintEl.textContent = `${sorted.length} tasting${sorted.length === 1 ? "" : "s"} • sorted by flight date (desc)`;
+    hintEl.textContent = `${sorted.length} tasting${
+      sorted.length === 1 ? "" : "s"
+    } • sorted by flight date (desc)`;
   }
 
   if (!sorted.length) {
-    if (tastingsEl) tastingsEl.innerHTML = `<div class="card muted">No tastings found.</div>`;
+    if (tastingsEl)
+      tastingsEl.innerHTML = `<div class="card muted">No tastings found.</div>`;
     return;
   }
   if (!tastingsEl) return;
@@ -319,19 +341,19 @@ function renderTastings(tastings) {
       </thead>
       <tbody>
         ${sorted
-          .map(
-            (t) => `
+          .map((t) => {
+            const star = t?.new_update
+              ? rotatingStarSVG({
+                  style:
+                    "height:16px; width:16px; vertical-align:middle; margin-right:6px;",
+                  title: "Recently updated tasting",
+                })
+              : "";
+
+            return `
               <tr>
                 <td class="mono no-wrap date-cell">
-                  ${
-                    t?.new_update
-                      ? `<img
-                           rotatingStarSVG({ style: "margin-left:6px;" })
-                           alt="Recently updated tasting"
-                           style="height:16px; width:16px; vertical-align:middle; margin-right:6px;"
-                         />`
-                      : ""
-                  }
+                  ${star}
                   ${escapeHtml(fmt(t.flight_date))}
                 </td>
                 <td class="score-cell"><b>${escapeHtml(fmt(t.nose_score))}</b></td>
@@ -342,8 +364,8 @@ function renderTastings(tastings) {
                 <td class="notes">${notesToHtml(fmt(t.finish_notes, ""))}</td>
                 <td class="num"><b>${escapeHtml(fmt1(t.score))}</b></td>
               </tr>
-            `
-          )
+            `;
+          })
           .join("")}
       </tbody>
     </table>
@@ -484,12 +506,18 @@ function renderFoes({ foe_beat, foe_lost }) {
 
                   // hyperlink only on brand_name
                   const brandHtml = id
-                    ? `<a class="foe-link" href="${escapeHtml(href)}" data-barrel-link="1" data-barrel-id="${escapeHtml(id)}">${escapeHtml(brand)}</a>`
+                    ? `<a class="foe-link" href="${escapeHtml(
+                        href
+                      )}" data-barrel-link="1" data-barrel-id="${escapeHtml(
+                        id
+                      )}">${escapeHtml(brand)}</a>`
                     : `<span>${escapeHtml(brand)}</span>`;
 
                   const rest = [expr, pick].filter(Boolean).join(" • ");
                   const titleHtml = rest
-                    ? `${brandHtml} <span style="opacity:.85;">— ${escapeHtml(rest)}</span>`
+                    ? `${brandHtml} <span style="opacity:.85;">— ${escapeHtml(
+                        rest
+                      )}</span>`
                     : brandHtml;
 
                   return `
@@ -501,13 +529,17 @@ function renderFoes({ foe_beat, foe_lost }) {
 
                       <div class="foe-right">
                         <div class="foe-score">${escapeHtml(fmt1(it.score))}</div>
-                        <div class="foe-meta2">${escapeHtml(it.size_ml ? `${it.size_ml} ml` : "")}</div>
+                        <div class="foe-meta2">${escapeHtml(
+                          it.size_ml ? `${it.size_ml} ml` : ""
+                        )}</div>
                       </div>
                     </div>
                   `;
                 })
                 .join("")
-            : `<div class="muted" style="padding:10px;">${escapeHtml(empty)}</div>`
+            : `<div class="muted" style="padding:10px;">${escapeHtml(
+                empty
+              )}</div>`
         }
       </div>
     `;
