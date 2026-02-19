@@ -4,32 +4,14 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Barrel Picker | Honey Barrel Hunter</title>
+
+    <!-- Skin2 -->
     <link rel="stylesheet" href="../assets/css/skin2.css" />
 
     <style>
-      /* ---------- Skin2 Theme Vars (same as your new landing page) ---------- */
-      :root {
-        --s2-bg: #f6f1ea;
-        --s2-panel: #ffffff;
-        --s2-border: #d8cfc3;
-
-        --s2-brown-dark: #3b2a20;
-        --s2-brown-mid: #6a4a32;
-        --s2-amber: #b57a2a;
-        --s2-amber-soft: #e1b66a;
-
-        --s2-text: #2b1d14;
-        --s2-text-muted: #7a6758;
-        --s2-text-invert: #ffffff;
-
-        --s2-link: #8a5a20;
-        --s2-link-hover: #b57a2a;
-
-        --s2-font-sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-        --s2-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      }
-
+      /* ---------- Page scaffold ---------- */
       html, body { height: 100%; }
+
       body {
         margin: 0;
         font-family: var(--s2-font-sans);
@@ -40,22 +22,19 @@
           var(--s2-bg);
       }
 
-      a { color: var(--s2-link); text-decoration: underline; }
-      a:hover { color: var(--s2-link-hover); }
-
       .wrap {
         max-width: 980px;
         margin: 0 auto;
         padding: 18px 14px 46px;
       }
 
-      /* top line similar to other Skin2 pages */
+      /* ---------- Top bar ---------- */
       .topbar {
-        display:flex;
-        align-items:flex-start;
-        justify-content:space-between;
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
         gap: 14px;
-        margin-bottom: 14px;
+        margin-bottom: 12px;
       }
 
       .brand h1 {
@@ -64,20 +43,74 @@
         letter-spacing: 0.2px;
       }
 
-      .card {
-        border: 1px solid var(--s2-border);
-        background: rgba(255, 255, 255, 0.86);
-        border-radius: 16px;
-        padding: 14px;
+      /* ---------- Filter row (MATCH inventory/sensory) ---------- */
+      .hbh-filter-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
       }
 
+      .hbh-filter-row #filter {
+        flex: 1 1 auto;
+        min-width: 220px;
+      }
+
+      .hbh-toggle-wrap {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        flex: 0 0 auto;
+      }
+
+      .hbh-star-toggle {
+        appearance: none;
+        -webkit-appearance: none;
+        border: 1px solid var(--s2-border);
+        background: rgba(255, 255, 255, 0.70);
+        border-radius: 999px;
+        padding: 6px 10px;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        user-select: none;
+        transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+      }
+
+      .hbh-star-toggle:active { transform: scale(0.98); }
+
+      .hbh-star-toggle[aria-pressed="true"] {
+        background: rgba(246, 241, 234, 0.92);
+        border-color: rgba(181, 122, 42, 0.55);
+      }
+
+      .hbh-star-icon {
+        width: 16px;
+        height: 16px;
+      }
+
+      .hbh-toggle-label {
+        font-size: 12px;
+        letter-spacing: 0.2px;
+        color: rgba(43, 29, 20, 0.82);
+        white-space: nowrap;
+      }
+
+      @media (max-width: 760px) {
+        .hbh-toggle-label { display: none; }
+      }
+
+      /* ---------- Hero ---------- */
       .hero {
-        display:grid;
+        display: grid;
         grid-template-columns: 360px 1fr;
         gap: 14px;
-        align-items: start;
         margin-top: 10px;
       }
+
       @media (max-width: 860px) {
         .hero { grid-template-columns: 1fr; }
       }
@@ -86,79 +119,47 @@
         border: 1px solid var(--s2-border);
         background: rgba(255,255,255,0.62);
         border-radius: 16px;
-        overflow: hidden;
         min-height: 220px;
-        display:grid;
-        place-items:center;
-        color: var(--s2-text-muted);
-        font-size: 12px;
-      }
-      .photo img {
-        width: 100%;
-        height: auto;
-        display:block;
-        object-fit: cover;
+        display: grid;
+        place-items: center;
       }
 
-      .meta {
-        display:grid;
-        gap: 6px;
-        margin-top: 8px;
-        color: rgba(43, 29, 20, 0.80);
-        font-size: 13px;
-        line-height: 1.35;
-      }
-
-      .links {
-        display:flex;
-        flex-wrap:wrap;
-        gap: 12px;
-        margin-top: 10px;
-        font-size: 13px;
+      .card {
+        border: 1px solid var(--s2-border);
+        background: rgba(255,255,255,0.86);
+        border-radius: 16px;
+        padding: 14px;
       }
 
       .section-title {
-        display:flex;
-        align-items: baseline;
+        display: flex;
         justify-content: space-between;
-        gap: 10px;
+        align-items: baseline;
         margin: 18px 2px 10px;
       }
+
       .section-title h2 {
         margin: 0;
         font-size: 14px;
         letter-spacing: 0.3px;
-        color: rgba(43, 29, 20, 0.90);
-        /* removed text-transform: uppercase; to keep Camel Case */
       }
-      .section-title .hint {
-        color: rgba(122, 103, 88, 0.78);
+
+      .hint {
         font-size: 12px;
+        color: rgba(122, 103, 88, 0.78);
       }
 
-      .muted-card {
-        border: 1px solid var(--s2-border);
-        background: rgba(255,255,255,0.55);
-        border-radius: 16px;
-        padding: 14px;
-        color: var(--s2-text-muted);
-      }
-
-      .mono { font-family: var(--s2-font-mono); }
-
-      /* Keep your existing ids for JS */
       #bp-debug {
         white-space: pre-wrap;
         font-family: var(--s2-font-mono);
         font-size: 12px;
-        color: rgba(43, 29, 20, 0.90);
       }
     </style>
   </head>
 
   <body data-page="barrel_pickers">
     <div class="wrap">
-      <!-- Skin2 Header Injection Target -->
+      <!-- Header -->
       <div id="site-header"></div>
 
       <div class="topbar">
@@ -167,6 +168,40 @@
         </div>
       </div>
 
+      <!-- ✅ Filters -->
+      <div class="hbh-filter-row">
+        <input
+          id="filter"
+          type="text"
+          placeholder="Search barrel picks…"
+          aria-label="Search barrel picks"
+        />
+
+        <div class="hbh-toggle-wrap">
+          <button
+            id="barrelPickerNewOnlyToggle"
+            class="hbh-star-toggle"
+            type="button"
+            aria-pressed="false"
+            title="Filter to only recently updated tastings"
+          >
+            <svg class="hbh-star-icon star-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M12 2.2l2.9 6.2 6.8.6-5.2 4.5 1.6 6.7L12 16.9 5.9 20.2l1.6-6.7L2.3 9l6.8-.6L12 2.2z"
+                fill="rgba(215, 162, 74, 0.95)"
+                stroke="rgba(181, 122, 42, 0.85)"
+                stroke-width="0.9"
+              />
+            </svg>
+          </button>
+
+          <span class="hbh-toggle-label">Only recently updated</span>
+        </div>
+
+        <span class="skin2-status" id="bp-table-hint"></span>
+      </div>
+
+      <!-- Hero -->
       <div class="hero">
         <div class="photo" id="bp-photo"></div>
         <div class="card" id="bp-card"></div>
@@ -174,8 +209,8 @@
 
       <div class="section-title">
         <h2 id="bp-table-title">Barrel Picks</h2>
-        <div class="hint" id="bp-table-hint"></div>
       </div>
+
       <div id="bp-table"></div>
 
       <details style="margin-top:18px;">
@@ -183,13 +218,48 @@
         <pre id="bp-debug">{}</pre>
       </details>
 
-      <!-- Skin2 Footer Injection Target -->
       <div id="site-footer"></div>
     </div>
 
-    <!-- Skin2 layout injector -->
+    <!-- Layout -->
     <script src="../assets/js/site-chrome.js"></script>
 
+    <!-- Toggle + state (MATCH inventory/sensory pattern) -->
+    <script>
+      (function () {
+        const KEY = "hbh_barrel_picker_new_only";
+        const btn = document.getElementById("barrelPickerNewOnlyToggle");
+        if (!btn) return;
+
+        window.HBH_BarrelPickerFilter = window.HBH_BarrelPickerFilter || { onlyNew: false };
+
+        function emit(onlyNew) {
+          window.HBH_BarrelPickerFilter.onlyNew = !!onlyNew;
+          window.dispatchEvent(
+            new CustomEvent("hbh:barrelPickerFilterChanged", {
+              detail: { onlyNew }
+            })
+          );
+        }
+
+        function setPressed(v) {
+          btn.setAttribute("aria-pressed", v ? "true" : "false");
+        }
+
+        const initial = localStorage.getItem(KEY) === "1";
+        setPressed(initial);
+        emit(initial);
+
+        btn.addEventListener("click", () => {
+          const next = btn.getAttribute("aria-pressed") !== "true";
+          setPressed(next);
+          localStorage.setItem(KEY, next ? "1" : "0");
+          emit(next);
+        });
+      })();
+    </script>
+
+    <!-- Page logic -->
     <script type="module" src="../assets/js/barrel-picker-page.js"></script>
   </body>
 </html>
