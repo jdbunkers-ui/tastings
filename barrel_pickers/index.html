@@ -91,7 +91,6 @@
         padding: 6px 10px;
         display: inline-flex;
         align-items: center;
-        gap: 8px;
         cursor: pointer;
       }
 
@@ -148,20 +147,8 @@
                 aria-pressed="false"
                 title="Filter for only recently updated Tastings"
               >
-                <!-- ⭐ REAL STAR (spins via skin2.css) -->
-                <svg
-                  class="hbh-star-icon"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                  style="width:16px;height:16px;"
-                >
-                  <path
-                    d="M12 2.2l2.9 6.2 6.8.6-5.2 4.5 1.6 6.7L12 16.9 5.9 20.2l1.6-6.7L2.3 9l6.8-.6L12 2.2z"
-                    fill="rgba(215,162,74,0.95)"
-                    stroke="rgba(181,122,42,0.85)"
-                    stroke-width="0.9"
-                  />
-                </svg>
+                <!-- Star injected/controlled by JS (matches other pages) -->
+                <span id="bp-star-slot"></span>
               </button>
 
               <span class="hbh-toggle-label">
