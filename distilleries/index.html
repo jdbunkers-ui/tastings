@@ -62,14 +62,6 @@
         object-fit: cover;
       }
 
-      .section-title {
-        display: flex;
-        align-items: baseline;
-        justify-content: space-between;
-        gap: 10px;
-        margin: 18px 2px 10px;
-      }
-
       /* ---------- Filter row ---------- */
       .hbh-filter-row {
         display: flex;
@@ -148,7 +140,7 @@
           </div>
         </div>
 
-        <!-- ===== FILTER CONTROLS (NEW) ===== -->
+        <!-- ===== FILTER CONTROLS ===== -->
         <section class="skin2-card" style="margin-top:22px;">
           <div class="skin2-controls">
             <div class="hbh-filter-row">
@@ -165,11 +157,13 @@
                   class="hbh-star-toggle"
                   type="button"
                   aria-pressed="false"
-                  title="Filter to recently updated tastings"
+                  title="Filter for only recently updated Tastings"
                 >
                   <span id="distillery-star-slot"></span>
                 </button>
-                <span class="hbh-toggle-label">Only recent updates</span>
+                <span class="hbh-toggle-label">
+                  Filter for only recently updated Tastings
+                </span>
               </div>
 
               <span class="skin2-status" id="inventory-status"></span>

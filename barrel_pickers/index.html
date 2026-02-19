@@ -63,7 +63,7 @@
         object-fit: cover;
       }
 
-      /* ---------- Filter row (relocated) ---------- */
+      /* ---------- Filter row ---------- */
       .hbh-filter-row {
         display: flex;
         align-items: center;
@@ -91,6 +91,7 @@
         padding: 6px 10px;
         display: inline-flex;
         align-items: center;
+        gap: 8px;
         cursor: pointer;
       }
 
@@ -128,7 +129,7 @@
         </div>
       </div>
 
-      <!-- ✅ FILTERS MOVED HERE (replaces “Barrel Picks (N) ⭐”) -->
+      <!-- FILTERS -->
       <section class="skin2-card" style="margin-top:22px;">
         <div class="skin2-controls">
           <div class="hbh-filter-row">
@@ -145,11 +146,27 @@
                 class="hbh-star-toggle"
                 type="button"
                 aria-pressed="false"
-                title="Filter to recently updated tastings"
+                title="Filter for only recently updated Tastings"
               >
-                <span id="bp-star-slot"></span>
+                <!-- ⭐ REAL STAR (spins via skin2.css) -->
+                <svg
+                  class="hbh-star-icon"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                  style="width:16px;height:16px;"
+                >
+                  <path
+                    d="M12 2.2l2.9 6.2 6.8.6-5.2 4.5 1.6 6.7L12 16.9 5.9 20.2l1.6-6.7L2.3 9l6.8-.6L12 2.2z"
+                    fill="rgba(215,162,74,0.95)"
+                    stroke="rgba(181,122,42,0.85)"
+                    stroke-width="0.9"
+                  />
+                </svg>
               </button>
-              <span class="hbh-toggle-label">Only recent updates</span>
+
+              <span class="hbh-toggle-label">
+                Filter for only recently updated Tastings
+              </span>
             </div>
 
             <span class="skin2-status" id="bp-table-hint"></span>
