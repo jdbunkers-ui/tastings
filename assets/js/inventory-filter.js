@@ -1,6 +1,6 @@
 /* =========================================================
    Velvet Room — Skin2 Inventory Filter (SAFE)
-   File: assets/js/inventorySkin2Filter.js
+   File: assets/js/inventory-filter.js:
 
    How it works:
    - Listens to #filter input

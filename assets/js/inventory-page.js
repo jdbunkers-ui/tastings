@@ -159,10 +159,7 @@ function renderCell(col, row) {
       ? rotatingStarSVG({ size: 16, style: "margin-right:6px;" })
       : "";
 
-    return `${star}${barrelLink(
-      row.single_barrel_id,
-      row.bottle_expression
-    )}`;
+    return `${star}${barrelLink(row.single_barrel_id, row.bottle_expression)}`;
   }
 
   if (col === "distillery_name") {
@@ -182,6 +179,7 @@ function renderTable(rows) {
 
   if (!rows || rows.length === 0) {
     elContent.innerHTML = `<div style="padding:12px;">No inventory rows returned.</div>`;
+    window.dispatchEvent(new Event("skin2:inventoryRendered"));
     return;
   }
 
@@ -202,12 +200,29 @@ function renderTable(rows) {
   const thead = displayCols
     .map((c) => {
       const cls = invColClass(c);
-      return `<th class="${cls}">${headerLabel(c)}</th>`;
+      return `<th class="${cls}">${escapeHtml(headerLabel(c))}</th>`;
     })
     .join("");
 
+  // Build data-search for inventory-filter.js
+  const searchableFields = [
+    "bottle_expression",
+    "distillery_name",
+    "barrel_picker_name",
+    "single_barrel_id",
+    "distillery_id",
+    "barrel_picker_id",
+    "blender_name",
+  ];
+
   const tbody = rows
     .map((r) => {
+      const searchable = searchableFields
+        .filter((k) => k in r)
+        .map((k) => (r[k] == null ? "" : String(r[k])))
+        .join(" | ")
+        .toLowerCase();
+
       const tds = displayCols
         .map((c) => {
           const cls = invColClass(c);
@@ -215,7 +230,7 @@ function renderTable(rows) {
         })
         .join("");
 
-      return `<tr>${tds}</tr>`;
+      return `<tr class="inv-row" data-search="${escapeHtml(searchable)}">${tds}</tr>`;
     })
     .join("");
 
@@ -225,11 +240,16 @@ function renderTable(rows) {
       <tbody>${tbody}</tbody>
     </table>
   `;
+
+  // ✅ CRITICAL: inventory-filter.js listens for this to (re)apply filter safely
+  window.dispatchEvent(new Event("skin2:inventoryRendered"));
 }
 
 async function loadInventory() {
   clearError();
-  setStatus(inventoryOnlyNew ? "Loading inventory (recent only)…" : "Loading inventory…");
+  setStatus(
+    inventoryOnlyNew ? "Loading inventory (recent only)…" : "Loading inventory…"
+  );
 
   try {
     let q = supabase.from(VIEW_NAME).select("*");
@@ -247,6 +267,7 @@ async function loadInventory() {
     setStatus("Error loading inventory");
     showError("Failed to load v_bottle_inventory from Supabase.", e);
     if (elContent) elContent.innerHTML = "";
+    window.dispatchEvent(new Event("skin2:inventoryRendered"));
   }
 }
 
@@ -262,7 +283,10 @@ function wireInventoryToggle() {
 
 // ---------- Boot ----------
 wireInventoryToggle();
+
+// Re-read once in case order of scripts differs
 inventoryOnlyNew = !!(
   window.HBH_InventoryFilter && window.HBH_InventoryFilter.onlyNew
 );
+
 loadInventory();
