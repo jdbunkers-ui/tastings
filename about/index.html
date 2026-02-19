@@ -55,7 +55,6 @@
         }
       }
 
-      /* --- NEW: Real photo styling --- */
       .about-photo {
         width: 100%;
         height: 320px;
@@ -67,7 +66,7 @@
       }
 
       h2 {
-        margin: 0 0 16px;
+        margin: 0 0 10px;
         font-size: 22px;
         letter-spacing: 0.3px;
       }
@@ -87,6 +86,7 @@
 
       .muted {
         color: var(--s2-text-muted);
+        font-size: 13px;
       }
 
       .contact-table {
@@ -131,12 +131,10 @@
 
   <body data-page="about">
     <div class="wrap">
-      <!-- Site Chrome Header Injection -->
       <div id="site-header"></div>
 
       <section class="card">
         <div class="about-grid">
-          <!-- Photo Column -->
           <div>
             <img
               src="../assets/img/about/josh.png"
@@ -145,10 +143,33 @@
             />
           </div>
 
-          <!-- Story Column -->
           <div>
             <h2>About Honey Barrel Hunter</h2>
 
+            <!-- SEO ANCHOR (subtle but crawlable) -->
+            <p class="muted">
+              Honey Barrel Hunter is an independent whiskey evaluation project focused on blind tasting,
+              data-driven scoring, and performance analysis of single-barrel and store pick bourbons.
+            </p>
+
+            <!-- PROJECT CONTEXT -->
+            <p>
+              <strong>Where whiskey and analytics collide.</strong>
+              Honey Barrel Hunter is the result of more than 25 years spent in data warehousing,
+              business intelligence, and analytics applied to a world that rarely benefits from
+              disciplined measurement. This project brings structure, consistency, and data-driven
+              thinking to whiskey evaluation, transforming blind tastings into repeatable insights
+              rather than one-off opinions.
+            </p>
+
+            <p>
+              The goal is not to strip the romance from whiskey, but to better understand it.
+              By combining sensory experience with analytical rigor, Honey Barrel Hunter creates
+              a framework where patterns emerge over time, performance can be compared objectively,
+              and exceptional single barrels can be identified with confidence.
+            </p>
+
+            <!-- ORIGINAL STORY -->
             <p>
               When I started my bourbon journey, I was fascinated by how something as simple as grain alcohol,
               oak barrels, and water could create such a diverse array of sensory notes across the nose,
@@ -238,11 +259,9 @@
         </div>
       </section>
 
-      <!-- Site Chrome Footer Injection -->
       <div id="site-footer"></div>
     </div>
 
-    <!-- Site Chrome -->
     <script src="../assets/js/site-chrome.js"></script>
   </body>
 </html>
