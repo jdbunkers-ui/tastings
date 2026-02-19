@@ -4,26 +4,28 @@
    ========================================================= */
 
 import { supabase } from "./supabaseClient.js";
+import { rotatingStarSVG } from "./ui/star.js";
 
 const VIEW_PROFILE   = "v_barrel_picker_detail";
 const VIEW_INVENTORY = "v_bottle_inventory";
 const BOTTLES_LIMIT  = 500;
 
-// ---------------- DOM ----------------
-const elTitle      = document.getElementById("bp-title");
-const elPhoto      = document.getElementById("bp-photo");
-const elCard       = document.getElementById("bp-card");
-const elTable      = document.getElementById("bp-table");
-const elTableTitle = document.getElementById("bp-table-title");
-const elHint       = document.getElementById("bp-table-hint");
-const elFilter     = document.getElementById("filter");
+/* ---------------- DOM ---------------- */
+const elTitle    = document.getElementById("bp-title");
+const elPhoto    = document.getElementById("bp-photo");
+const elCard     = document.getElementById("bp-card");
+const elTable    = document.getElementById("bp-table");
+const elFilter   = document.getElementById("filter");
+const elToggle   = document.getElementById("barrelPickerNewOnlyToggle");
 
-// ---------------- State ----------------
+/* ---------------- State ---------------- */
 let ALL_ROWS = [];
 let ONLY_NEW = false;
-let QUERY = "";
+let QUERY    = "";
 
-// ---------------- Utilities ----------------
+const KEY_ONLY_NEW = "hbh_barrel_picker_new_only";
+
+/* ---------------- Utilities ---------------- */
 function escapeHtml(v) {
   return String(v ?? "")
     .replaceAll("&", "&amp;")
@@ -34,8 +36,7 @@ function escapeHtml(v) {
 }
 
 function isNumberLike(v) {
-  const n = Number(v);
-  return Number.isFinite(n);
+  return Number.isFinite(Number(v));
 }
 
 const fmt1   = (v) => (isNumberLike(v) ? Number(v).toFixed(1) : "—");
@@ -55,37 +56,24 @@ function imgUrl(f) {
   return f ? `../assets/img/barrel_pickers/${encodeURIComponent(f)}` : "";
 }
 
-// ---------------- Links ----------------
+/* ---------------- Links ---------------- */
 function barrelLink(id, label) {
   if (!id) return escapeHtml(label);
-  return `<a class="skin2-link" href="../bottles/index.html?single_barrel_id=${encodeURIComponent(id)}">${escapeHtml(label)}</a>`;
+  return `<a class="skin2-link"
+    href="../bottles/index.html?single_barrel_id=${encodeURIComponent(id)}">
+    ${escapeHtml(label)}
+  </a>`;
 }
 
 function distilleryLink(id, label) {
   if (!id) return escapeHtml(label);
-  return `<a class="skin2-link" href="../distilleries/index.html?distillery_id=${encodeURIComponent(id)}">${escapeHtml(label)}</a>`;
+  return `<a class="skin2-link"
+    href="../distilleries/index.html?distillery_id=${encodeURIComponent(id)}">
+    ${escapeHtml(label)}
+  </a>`;
 }
 
-// ---------------- Global star (SVG) ----------------
-function rotatingStarSVG({ size = 18, style = "" } = {}) {
-  return `
-    <svg
-      class="star-icon"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      style="width:${size}px;height:${size}px;vertical-align:middle;${style}"
-    >
-      <path
-        d="M12 2.2l2.9 6.2 6.8.6-5.2 4.5 1.6 6.7L12 16.9 5.9 20.2l1.6-6.7L2.3 9l6.8-.6L12 2.2z"
-        fill="rgba(215,162,74,0.95)"
-        stroke="rgba(181,122,42,0.85)"
-        stroke-width="0.9"
-      />
-    </svg>
-  `;
-}
-
-// ---------------- Hero ----------------
+/* ---------------- Hero ---------------- */
 function renderHero(rows) {
   const r = rows[0] || {};
 
@@ -111,7 +99,7 @@ function renderHero(rows) {
   `;
 }
 
-// ---------------- Table helpers ----------------
+/* ---------------- Table helpers ---------------- */
 function headerLabel(col) {
   return {
     score: "Score",
@@ -137,7 +125,7 @@ function invColClass(col) {
 function renderCell(col, row) {
   if (col === "bottle_expression") {
     const star = row.new_update
-      ? rotatingStarSVG({ size: 18, style: "margin-right:6px;" })
+      ? rotatingStarSVG({ size: 16, style: "margin-right:6px;" })
       : "";
     return `${star}${barrelLink(row.single_barrel_id, row.bottle_expression)}`;
   }
@@ -154,7 +142,7 @@ function renderCell(col, row) {
   return escapeHtml(row[col]);
 }
 
-// ---------------- Filtering ----------------
+/* ---------------- Filtering ---------------- */
 function applyFilters() {
   let rows = [...ALL_ROWS];
 
@@ -163,35 +151,26 @@ function applyFilters() {
   }
 
   if (QUERY) {
-    rows = rows.filter(r => {
-      const haystack = [
+    rows = rows.filter(r =>
+      [
         r.bottle_expression,
         r.distillery_name,
         r.single_barrel_id,
-        r.distillery_id
+        r.distillery_id,
       ]
+        .filter(Boolean)
         .join(" ")
-        .toLowerCase();
-      return haystack.includes(QUERY);
-    });
+        .toLowerCase()
+        .includes(QUERY)
+    );
   }
 
   renderTable(rows);
 }
 
-// ---------------- Table render ----------------
+/* ---------------- Table render ---------------- */
 function renderTable(rows) {
   if (!elTable) return;
-
-  if (elTableTitle) {
-    const hasNew = rows.some(r => r.new_update === true);
-    elTableTitle.innerHTML =
-      `Barrel Picks (${rows.length})${hasNew ? " " + rotatingStarSVG({ size: 16 }) : ""}`;
-  }
-
-  if (elHint) {
-    elHint.textContent = ONLY_NEW ? "Filtered to new updates" : "";
-  }
 
   if (!rows.length) {
     elTable.innerHTML = `<div class="muted-card">No barrel picks found.</div>`;
@@ -200,16 +179,18 @@ function renderTable(rows) {
 
   const cols = ["score", "msrp", "proof", "age", "bottle_expression", "distillery_name"];
 
-  const thead = cols.map(c =>
-    `<th class="${invColClass(c)}">${headerLabel(c)}</th>`
-  ).join("");
+  const thead = cols
+    .map(c => `<th class="${invColClass(c)}">${headerLabel(c)}</th>`)
+    .join("");
 
-  const tbody = rows.map(r => {
-    const tds = cols.map(c =>
-      `<td class="${invColClass(c)}">${renderCell(c, r)}</td>`
-    ).join("");
-    return `<tr>${tds}</tr>`;
-  }).join("");
+  const tbody = rows
+    .map(r => {
+      const tds = cols
+        .map(c => `<td class="${invColClass(c)}">${renderCell(c, r)}</td>`)
+        .join("");
+      return `<tr>${tds}</tr>`;
+    })
+    .join("");
 
   elTable.innerHTML = `
     <table class="skin2-table">
@@ -219,7 +200,31 @@ function renderTable(rows) {
   `;
 }
 
-// ---------------- Load ----------------
+/* ---------------- Toggle wiring ---------------- */
+(function initToggle() {
+  if (!elToggle) return;
+
+  const initial = localStorage.getItem(KEY_ONLY_NEW) === "1";
+  ONLY_NEW = initial;
+  elToggle.setAttribute("aria-pressed", initial ? "true" : "false");
+
+  elToggle.addEventListener("click", () => {
+    ONLY_NEW = !ONLY_NEW;
+    elToggle.setAttribute("aria-pressed", ONLY_NEW ? "true" : "false");
+    localStorage.setItem(KEY_ONLY_NEW, ONLY_NEW ? "1" : "0");
+    applyFilters();
+  });
+})();
+
+/* ---------------- Search wiring ---------------- */
+if (elFilter) {
+  elFilter.addEventListener("input", (e) => {
+    QUERY = e.target.value.toLowerCase().trim();
+    applyFilters();
+  });
+}
+
+/* ---------------- Load ---------------- */
 async function load() {
   const id = getId();
   if (!id) return;
@@ -242,18 +247,4 @@ async function load() {
   applyFilters();
 }
 
-// ---------------- Events ----------------
-window.addEventListener("hbh:barrelPickerFilterChanged", (e) => {
-  ONLY_NEW = !!e.detail?.onlyNew;
-  applyFilters();
-});
-
-if (elFilter) {
-  elFilter.addEventListener("input", (e) => {
-    QUERY = e.target.value.toLowerCase().trim();
-    applyFilters();
-  });
-}
-
-// ---------------- Boot ----------------
 load();
