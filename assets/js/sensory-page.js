@@ -95,13 +95,15 @@ function headerLabel(col) {
 
 function sensoryColClass(col) {
   const map = {
-    bottle_expression: "col-expression",
+    bottle_expression: "col-sensory-bottle", // 👈 wraps
     nose_notes: "col-notes",
     palate_notes: "col-notes",
     finish_notes: "col-notes",
+    score: "col-score",
   };
   return map[col] || "";
 }
+
 
 /** Spinning star image (reuses your existing asset) */
 function newUpdateStarImg(altText = "New tasting") {
