@@ -259,7 +259,7 @@ function renderHero(barrel) {
           ? `
             <!-- ✅ Match the label font to Distillery / Barrel Picker / MSRP -->
             <div style="${rowStyle}">
-              <span style="${labelStyle}">Final thoughts on this expression from from HBH...</span>
+              <span style="${labelStyle}">Final thoughts on this expression from HBH...</span>
             </div>
 
             <!-- ✅ Render description in italics -->
