@@ -245,7 +245,7 @@ function renderHero(barrel) {
     }
   }
 
-  // MSRP + description (IDs removed)
+  // MSRP + description
   if (msrpLineEl) {
     const desc = String(barrel?.single_barrel_description ?? "").trim();
 
@@ -257,9 +257,9 @@ function renderHero(barrel) {
       ${
         desc
           ? `
-            <!-- ✅ Label uses same heading class as "Sensory Notes and Scores" -->
-            <div class="section-title" style="margin-top:12px;">
-              Final thoughts on this expression from from HBH...
+            <!-- ✅ Match the label font to Distillery / Barrel Picker / MSRP -->
+            <div style="${rowStyle}">
+              <span style="${labelStyle}">Final thoughts on this expression from from HBH...</span>
             </div>
 
             <!-- ✅ Render description in italics -->
@@ -603,7 +603,10 @@ async function load() {
   const barrel = payload?.barrel || {};
   renderHero(barrel);
   renderTastings(payload?.tastings || []);
-  renderFoes({ foe_beat: payload?.foe_beat || [], foe_lost: payload?.foe_lost || [] });
+  renderFoes({
+    foe_beat: payload?.foe_beat || [],
+    foe_lost: payload?.foe_lost || [],
+  });
 }
 
 document.querySelector(".wrap")?.addEventListener("click", (e) => {
