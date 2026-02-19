@@ -9,14 +9,19 @@ const VIEW_PROFILE   = "v_barrel_picker_detail";
 const VIEW_INVENTORY = "v_bottle_inventory";
 const BOTTLES_LIMIT  = 500;
 
-// DOM
+// ---------------- DOM ----------------
 const elTitle      = document.getElementById("bp-title");
-const elSubtitle   = document.getElementById("bp-subtitle");
 const elPhoto      = document.getElementById("bp-photo");
 const elCard       = document.getElementById("bp-card");
 const elTable      = document.getElementById("bp-table");
 const elTableTitle = document.getElementById("bp-table-title");
-const elDebug      = document.getElementById("bp-debug");
+const elHint       = document.getElementById("bp-table-hint");
+const elFilter     = document.getElementById("filter");
+
+// ---------------- State ----------------
+let ALL_ROWS = [];
+let ONLY_NEW = false;
+let QUERY = "";
 
 // ---------------- Utilities ----------------
 function escapeHtml(v) {
@@ -33,7 +38,7 @@ function isNumberLike(v) {
   return Number.isFinite(n);
 }
 
-const fmt1 = (v) => (isNumberLike(v) ? Number(v).toFixed(1) : "—");
+const fmt1   = (v) => (isNumberLike(v) ? Number(v).toFixed(1) : "—");
 const fmtUsd = (v) => (isNumberLike(v) ? `$${Number(v).toFixed(2)}` : "—");
 
 function fmtAge(v) {
@@ -61,16 +66,14 @@ function distilleryLink(id, label) {
   return `<a class="skin2-link" href="../distilleries/index.html?distillery_id=${encodeURIComponent(id)}">${escapeHtml(label)}</a>`;
 }
 
-// ---------------- Star (GLOBAL SVG) ----------------
+// ---------------- Global star (SVG) ----------------
 function rotatingStarSVG({ size = 18, style = "" } = {}) {
   return `
     <svg
       class="star-icon"
       viewBox="0 0 24 24"
-      width="${size}"
-      height="${size}"
       aria-hidden="true"
-      style="${style}"
+      style="width:${size}px;height:${size}px;vertical-align:middle;${style}"
     >
       <path
         d="M12 2.2l2.9 6.2 6.8.6-5.2 4.5 1.6 6.7L12 16.9 5.9 20.2l1.6-6.7L2.3 9l6.8-.6L12 2.2z"
@@ -83,17 +86,10 @@ function rotatingStarSVG({ size = 18, style = "" } = {}) {
 }
 
 // ---------------- Hero ----------------
-function cityState(r) {
-  const city = (r.city || "").trim();
-  const state = (r.state || "").trim();
-  return `${city}${city && state ? ", " : ""}${state}` || "—";
-}
-
 function renderHero(rows) {
   const r = rows[0] || {};
 
   if (elTitle) elTitle.textContent = r.barrel_picker_name || "Barrel Picker";
-  if (elSubtitle) elSubtitle.textContent = cityState(r);
 
   if (elPhoto) {
     elPhoto.innerHTML = r.barrel_picker_photo_filename
@@ -146,15 +142,41 @@ function renderCell(col, row) {
     return `${star}${barrelLink(row.single_barrel_id, row.bottle_expression)}`;
   }
 
-  if (col === "distillery_name")
+  if (col === "distillery_name") {
     return distilleryLink(row.distillery_id, row.distillery_name);
+  }
 
-  if (col === "msrp") return fmtUsd(row.msrp);
+  if (col === "msrp")  return fmtUsd(row.msrp);
   if (col === "score") return fmt1(row.score ?? row.avg_score ?? row.composite_score);
   if (col === "proof") return fmt1(row.proof);
-  if (col === "age") return fmtAge(row.age);
+  if (col === "age")   return fmtAge(row.age);
 
   return escapeHtml(row[col]);
+}
+
+// ---------------- Filtering ----------------
+function applyFilters() {
+  let rows = [...ALL_ROWS];
+
+  if (ONLY_NEW) {
+    rows = rows.filter(r => r.new_update === true);
+  }
+
+  if (QUERY) {
+    rows = rows.filter(r => {
+      const haystack = [
+        r.bottle_expression,
+        r.distillery_name,
+        r.single_barrel_id,
+        r.distillery_id
+      ]
+        .join(" ")
+        .toLowerCase();
+      return haystack.includes(QUERY);
+    });
+  }
+
+  renderTable(rows);
 }
 
 // ---------------- Table render ----------------
@@ -163,7 +185,12 @@ function renderTable(rows) {
 
   if (elTableTitle) {
     const hasNew = rows.some(r => r.new_update === true);
-    elTableTitle.innerHTML = `Barrel Picks (${rows.length})${hasNew ? " " + rotatingStarSVG({ size: 16 }) : ""}`;
+    elTableTitle.innerHTML =
+      `Barrel Picks (${rows.length})${hasNew ? " " + rotatingStarSVG({ size: 16 }) : ""}`;
+  }
+
+  if (elHint) {
+    elHint.textContent = ONLY_NEW ? "Filtered to new updates" : "";
   }
 
   if (!rows.length) {
@@ -171,20 +198,18 @@ function renderTable(rows) {
     return;
   }
 
-  const displayCols = ["score", "msrp", "proof", "age", "bottle_expression", "distillery_name"];
+  const cols = ["score", "msrp", "proof", "age", "bottle_expression", "distillery_name"];
 
-  const thead = displayCols
-    .map(c => `<th class="${invColClass(c)}">${headerLabel(c)}</th>`)
-    .join("");
+  const thead = cols.map(c =>
+    `<th class="${invColClass(c)}">${headerLabel(c)}</th>`
+  ).join("");
 
-  const tbody = rows
-    .map(r => {
-      const tds = displayCols
-        .map(c => `<td class="${invColClass(c)}">${renderCell(c, r)}</td>`)
-        .join("");
-      return `<tr>${tds}</tr>`;
-    })
-    .join("");
+  const tbody = rows.map(r => {
+    const tds = cols.map(c =>
+      `<td class="${invColClass(c)}">${renderCell(c, r)}</td>`
+    ).join("");
+    return `<tr>${tds}</tr>`;
+  }).join("");
 
   elTable.innerHTML = `
     <table class="skin2-table">
@@ -199,16 +224,36 @@ async function load() {
   const id = getId();
   if (!id) return;
 
-  const { data: hero } = await supabase.from(VIEW_PROFILE).select("*").eq("barrel_picker_id", id).limit(1);
+  const { data: hero } = await supabase
+    .from(VIEW_PROFILE)
+    .select("*")
+    .eq("barrel_picker_id", id)
+    .limit(1);
+
   if (hero?.length) renderHero(hero);
 
-  const { data: inv } = await supabase
+  const { data } = await supabase
     .from(VIEW_INVENTORY)
     .select("*")
     .eq("barrel_picker_id", id)
     .limit(BOTTLES_LIMIT);
 
-  renderTable(inv || []);
+  ALL_ROWS = data || [];
+  applyFilters();
 }
 
+// ---------------- Events ----------------
+window.addEventListener("hbh:barrelPickerFilterChanged", (e) => {
+  ONLY_NEW = !!e.detail?.onlyNew;
+  applyFilters();
+});
+
+if (elFilter) {
+  elFilter.addEventListener("input", (e) => {
+    QUERY = e.target.value.toLowerCase().trim();
+    applyFilters();
+  });
+}
+
+// ---------------- Boot ----------------
 load();
