@@ -8,6 +8,7 @@
 
     <style>
       html, body { height: 100%; }
+
       body {
         margin: 0;
         font-family: var(--s2-font-sans);
@@ -55,12 +56,12 @@
         color: rgba(43, 29, 20, 0.92);
       }
 
-      /* ---------- Homepage narrative styles (Skin2-friendly) ---------- */
+      /* ---------- Homepage narrative styles ---------- */
       .hero-card {
         border: 1px solid var(--s2-border);
         background: rgba(255, 255, 255, 0.86);
         border-radius: 16px;
-        padding: 22px 22px;
+        padding: 22px;
         margin: 14px 0 18px;
         color: var(--s2-text);
       }
@@ -85,7 +86,6 @@
         padding-left: 18px;
         display: grid;
         gap: 6px;
-        color: rgba(43, 29, 20, 0.86);
         font-size: 14px;
         line-height: 1.55;
       }
@@ -100,13 +100,11 @@
         background: rgba(255, 255, 255, 0.70);
         border-radius: 16px;
         padding: 14px 16px;
-        color: rgba(43, 29, 20, 0.88);
       }
 
       details summary {
         cursor: pointer;
         font-weight: 700;
-        color: rgba(43, 29, 20, 0.92);
         list-style: none;
       }
 
@@ -121,26 +119,12 @@
       .details-inner h3 {
         margin: 0 0 6px;
         font-size: 15px;
-        letter-spacing: 0.2px;
-        color: rgba(43, 29, 20, 0.92);
       }
 
-      .details-inner p {
-        margin: 0;
+      .details-inner p,
+      .details-inner ul {
         font-size: 14px;
         line-height: 1.65;
-        color: rgba(43, 29, 20, 0.88);
-        max-width: 90ch;
-      }
-
-      .details-inner ul {
-        margin: 6px 0 0;
-        padding-left: 18px;
-        display: grid;
-        gap: 6px;
-        font-size: 14px;
-        line-height: 1.6;
-        color: rgba(43, 29, 20, 0.88);
       }
 
       .callout {
@@ -150,7 +134,7 @@
         border-radius: 12px;
       }
 
-      /* ---------- Star Toggle (Barrel Pickers filter) ---------- */
+      /* ---------- Barrel Picker Toggle ---------- */
       .title-with-toggle {
         display: flex;
         align-items: center;
@@ -167,7 +151,6 @@
 
       .star-toggle {
         appearance: none;
-        -webkit-appearance: none;
         border: 1px solid var(--s2-border);
         background: rgba(255, 255, 255, 0.70);
         border-radius: 999px;
@@ -176,9 +159,8 @@
         align-items: center;
         gap: 10px;
         cursor: pointer;
-        user-select: none;
-        transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
-        perspective: 600px; /* helps rotateY look 3D */
+        transition: transform 120ms ease;
+        perspective: 600px;
       }
 
       .star-toggle:active { transform: scale(0.98); }
@@ -188,15 +170,8 @@
         border-color: rgba(181, 122, 42, 0.55);
       }
 
-      /* IMPORTANT:
-         No .star-icon or @keyframes here.
-         Global star animation/speed is controlled in assets/css/skin2.css.
-      */
-
       .toggle-label {
         font-size: 12px;
-        letter-spacing: 0.2px;
-        color: rgba(43, 29, 20, 0.82);
         white-space: nowrap;
       }
     </style>
@@ -204,22 +179,40 @@
 
   <body data-page="home">
     <div class="wrap">
-      <!-- Skin2 Header Injection Target -->
+
+      <!-- Header Injection -->
       <div id="site-header"></div>
 
-      <!-- Hero Narrative (above the fold) -->
+      <!-- Hero Section -->
       <section class="hero-card" aria-label="Honey Barrel Hunter overview">
+
+        <!-- Fight Video -->
+        <div class="hero-video-wrap">
+          <video
+            class="hero-video"
+            autoplay
+            muted
+            loop
+            playsinline
+            preload="metadata"
+          >
+            <source src="./assets/img/fights/fight_video.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+
         <h1 class="hero-title">Honey Barrel Hunter</h1>
+
         <p class="hero-subtitle">
           <strong>Here, whiskey and analytics collide.</strong><br />
           Honey Barrel Hunter is an independent whiskey evaluation project focused on blind tasting and disciplined scoring of single-barrel and store picks. Every bottle is judged on data, not hype—helping consumers buy with confidence and retailers understand the real performance of their picks.
         </p>
 
         <ul class="hero-bullets">
-          <li><strong>Blind flights</strong> to reduce bias from labels, price, and reputation.</li>
-          <li><strong>Repeat tastings</strong> so a bottle is not defined by one pour or one day.</li>
-          <li><strong>Transparent scoring</strong> across nose, palate, and finish with stable weighting.</li>
-          <li><strong>Independent</strong> approach with no paid placements or sponsored scores.</li>
+          <li><strong>Blind flights</strong> reduce label and price bias.</li>
+          <li><strong>Repeat tastings</strong> prevent one-pour distortion.</li>
+          <li><strong>Transparent scoring</strong> across nose, palate, and finish.</li>
+          <li><strong>Independent methodology</strong> — no paid placements.</li>
         </ul>
 
         <details class="details">
@@ -228,50 +221,26 @@
             <div>
               <h3>Why blind tasting matters</h3>
               <p>
-                Expectation changes perception. When you know the distillery, proof, price, or reputation of a bottle,
-                it is almost impossible to taste without bias. Blind tasting removes those expectations and forces the focus
-                onto aroma, flavor, texture, and finish alone.
+                Expectation changes perception. Blind tasting forces focus on aroma, flavor, texture, and finish alone.
               </p>
             </div>
 
             <div>
-              <h3>How scoring works</h3>
-              <p>
-                Each bottle is evaluated across three sensory categories: nose, palate, and finish. Scores are assigned using
-                a modified T8ke-style scale and weighted to emphasize drinking experience.
-              </p>
+              <h3>Scoring methodology</h3>
               <ul>
-                <li>Nose: 30 percent</li>
-                <li>Palate: 50 percent</li>
-                <li>Finish: 20 percent</li>
+                <li>Nose — 30%</li>
+                <li>Palate — 50%</li>
+                <li>Finish — 20%</li>
               </ul>
-              <p class="callout" style="margin-top:10px;">
-                Bottles are tasted multiple times. A bourbon’s final score is an average across all tastings, which favors repeatable quality over first impressions.
+              <p class="callout">
+                Final scores are averaged across multiple tastings to reward repeatable quality.
               </p>
             </div>
 
             <div>
-              <h3>What makes a “Honey Barrel”</h3>
+              <h3>Independence</h3>
               <p>
-                A Honey Barrel is not determined by marketing, hype, or reputation. It is a barrel that consistently performs at a higher level
-                across multiple blind tastings. Not every barrel earns that designation. The term exists to identify something genuinely exceptional.
-              </p>
-            </div>
-
-            <div>
-              <h3>Who this is for</h3>
-              <ul>
-                <li><strong>Whiskey consumers</strong> who want unbiased insight before buying.</li>
-                <li><strong>Retailers</strong> who do barrel picks and want honest feedback on how selections perform.</li>
-                <li><strong>Enthusiasts</strong> interested in tasting methodology, consistency, and sensory evaluation.</li>
-              </ul>
-            </div>
-
-            <div>
-              <h3>Independence and transparency</h3>
-              <p>
-                Honey Barrel Hunter does not accept paid placements or sponsored scores. Bottles are evaluated the same way regardless of where they come from.
-                Results are published whether they are favorable or not. The value of the project depends on consistency, transparency, and trust.
+                No sponsored scores. No paid placements. Every bottle is evaluated equally.
               </p>
             </div>
           </div>
@@ -295,70 +264,29 @@
               class="star-toggle"
               type="button"
               aria-pressed="false"
-              title="Filter barrel pickers to those with recently updated tastings"
             >
               <svg class="star-icon" viewBox="0 0 24 24" aria-hidden="true">
                 <path
                   d="M12 2.2l2.9 6.2 6.8.6-5.2 4.5 1.6 6.7L12 16.9 5.9 20.2l1.6-6.7L2.3 9l6.8-.6L12 2.2z"
                   fill="rgba(215, 162, 74, 0.95)"
-                  stroke="rgba(181, 122, 42, 0.85)"
-                  stroke-width="0.9"
                 />
               </svg>
             </button>
 
-            <span class="toggle-label">Filter for only recently updated Tastings</span>
+            <span class="toggle-label">
+              Filter for only recently updated Tastings
+            </span>
           </div>
         </div>
       </div>
 
       <div id="pickerMount" class="muted-card">Loading barrel pickers…</div>
 
-      <!-- Skin2 Footer Injection Target -->
+      <!-- Footer Injection -->
       <div id="site-footer"></div>
     </div>
 
-    <!-- Skin2 layout injector -->
     <script src="./assets/js/site-chrome.js"></script>
-
-    <!-- Star toggle logic (dispatches event + stores preference) -->
-    <script>
-      (function () {
-        const KEY = "hbh_picker_new_only";
-        const btn = document.getElementById("pickerNewOnlyToggle");
-        if (!btn) return;
-
-        window.HBH_PickerFilter = window.HBH_PickerFilter || { onlyNew: false };
-
-        function emit(onlyNew) {
-          window.HBH_PickerFilter.onlyNew = !!onlyNew;
-
-          window.dispatchEvent(new CustomEvent("hbh:pickerFilterChanged", {
-            detail: { onlyNew: window.HBH_PickerFilter.onlyNew }
-          }));
-        }
-
-        function setPressed(pressed) {
-          btn.setAttribute("aria-pressed", pressed ? "true" : "false");
-          btn.title = pressed
-            ? "Showing only barrel pickers with recently updated tastings (click to show all)"
-            : "Filter barrel pickers to those with recently updated tastings";
-        }
-
-        const initial = localStorage.getItem(KEY) === "1";
-        setPressed(initial);
-        emit(initial);
-
-        btn.addEventListener("click", () => {
-          const next = btn.getAttribute("aria-pressed") !== "true";
-          setPressed(next);
-          localStorage.setItem(KEY, next ? "1" : "0");
-          emit(next);
-        });
-      })();
-    </script>
-
-    <!-- Landing logic -->
     <script type="module" src="./assets/js/home-page.js"></script>
   </body>
 </html>
