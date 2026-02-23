@@ -27,6 +27,42 @@
                   Consolas, "Liberation Mono", monospace;
 }
 
+/* =========================================================
+   Hero Fight Video (Home Only)
+   Scoped to prevent leakage across pages
+   ========================================================= */
+
+body[data-page="home"] .hero-video-wrap {
+  position: relative;
+  width: 100%;
+  margin: 0 0 16px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--s2-border);
+  background: #000;
+  max-height: clamp(240px, 40vw, 420px);
+}
+
+body[data-page="home"] .hero-video {
+  width: 100%;
+  height: clamp(240px, 40vw, 420px);
+  display: block;
+  object-fit: cover;
+}
+
+/* Optional subtle cinematic overlay */
+body[data-page="home"] .hero-video-wrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.20),
+    rgba(0,0,0,0.35)
+  );
+  pointer-events: none;
+}
+
 /* ---------- Base ---------- */
 html, body {
   margin: 0;
@@ -199,14 +235,12 @@ table.skin2-table tbody tr:hover {
   font-variant-numeric: tabular-nums;
 }
 
-/* Journal date column */
 .skin2-table td.col-date {
   text-align: right;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 
-/* Centered picker columns */
 .skin2-table th.col-state,
 .skin2-table td.col-state,
 .skin2-table th.col-tastings,
@@ -216,7 +250,6 @@ table.skin2-table tbody tr:hover {
   text-align: center;
 }
 
-/* Tight numeric columns — inventory & journal */
 .skin2-table th.col-score,
 .skin2-table td.col-score {
   width: 70px;
@@ -245,15 +278,8 @@ table.skin2-table tbody tr:hover {
   text-align: center;
 }
 
-/* Sensory — Bottle column (allow wrapping) */
 .skin2-table th.col-bottle,
-.skin2-table td.col-bottle {
-  white-space: normal;
-  word-break: break-word;
-  overflow-wrap: anywhere;
-}
-
-/* Sensory — Bottle column (allow wrapping) */
+.skin2-table td.col-bottle,
 .skin2-table th.col-sensory-bottle,
 .skin2-table td.col-sensory-bottle {
   white-space: normal;
@@ -262,8 +288,6 @@ table.skin2-table tbody tr:hover {
 }
 
 /* ---------- Global Rotating Star ---------- */
-
-/* Safe global perspective so rotateY always looks 3D */
 :where(.star-toggle, .hbh-star-toggle, .skin2-card) {
   perspective: 600px;
 }
