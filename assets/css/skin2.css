@@ -30,21 +30,23 @@
 /* =========================================================
    Hero Fight Video (Home Only)
    No cropping — natural aspect ratio
+   Responsive + safe sizing
    ========================================================= */
 
 body[data-page="home"] .hero-video-wrap {
   width: 100%;
-  max-width: 700px;          /* Controls how wide it can be */
-  margin: 0 auto 18px;       /* Centered */
+  max-width: clamp(320px, 85vw, 700px); /* Responsive width */
+  margin: 0 auto 18px;                 /* Centered */
   border-radius: 14px;
   overflow: hidden;
   border: 1px solid var(--s2-border);
   background: #000;
+  box-sizing: border-box;              /* Prevent edge overflow */
 }
 
 body[data-page="home"] .hero-video {
   width: 100%;
-  height: auto;              /* Keeps original aspect ratio */
+  height: auto;                        /* Keeps original aspect ratio */
   display: block;
 }
 
