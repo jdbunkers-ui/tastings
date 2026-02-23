@@ -44,6 +44,18 @@
   object-fit: cover;
 }
 
+.hero-video-wrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.25),
+    rgba(0,0,0,0.35)
+  );
+  pointer-events: none;
+}
+
 /* ---------- Base ---------- */
 html, body {
   margin: 0;
