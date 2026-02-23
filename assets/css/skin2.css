@@ -26,6 +26,23 @@
   --s2-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco,
                   Consolas, "Liberation Mono", monospace;
 }
+/* ---------- Hero Fight Video ---------- */
+.hero-video-wrap {
+  position: relative;
+  width: 100%;
+  margin: 0 0 16px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--s2-border);
+  background: #000;
+}
+
+.hero-video {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
 
 /* ---------- Base ---------- */
 html, body {
