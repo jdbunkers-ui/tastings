@@ -13,8 +13,8 @@ document.getElementById("single_barrel_id").value = singleBarrelId ?? "";
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
-
   message.textContent = "";
+  message.style.color = "inherit";
 
   const payload = {
     single_barrel_id: singleBarrelId,
@@ -40,8 +40,18 @@ form.addEventListener("submit", async (e) => {
   }
 
   message.style.color = "green";
-  message.textContent = "Thank you. Your review has been submitted for approval.";
+  message.textContent =
+    "Thank you. Your review has been submitted for approval.";
 
-  form.reset();
-  document.getElementById("single_barrel_id").value = singleBarrelId;
+  // Small delay so user sees confirmation
+  setTimeout(() => {
+    try {
+      window.close();
+    } catch (e) {
+      // ignore
+    }
+
+    // If window did not close (most browsers block it unless opened via JS)
+    window.location.href = "../coterie/index.html";
+  }, 1500);
 });
