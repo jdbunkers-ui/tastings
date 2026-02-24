@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Add to Coterie – Honey Barrel Hunter</title>
+
+  <link rel="stylesheet" href="../assets/css/skin2.css" />
+
+  <style>
+    .coterie-form {
+      display: grid;
+      gap: 14px;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .coterie-form label {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .coterie-form input,
+    .coterie-form textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid var(--s2-border);
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .coterie-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 120px;
+      gap: 10px;
+    }
+
+    .coterie-submit {
+      margin-top: 10px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      border: 1px solid var(--s2-border);
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .coterie-success {
+      color: green;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+
+<body data-page="coterie-add">
+  <main class="skin2-wrap">
+
+    <div id="site-header"></div>
+
+    <section class="skin2-card">
+      <h2>Add Your Sensory Notes to the Coterie</h2>
+
+      <form id="coterieForm" class="coterie-form">
+
+        <div>
+          <label>Single Barrel ID</label>
+          <input id="single_barrel_id" readonly />
+        </div>
+
+        <div>
+          <label>Your Name</label>
+          <input id="coterie_name" required />
+        </div>
+
+        <div>
+          <label>Date of Review</label>
+          <input id="review_date" type="date" required />
+        </div>
+
+        <div>
+          <label>Color</label>
+          <input id="color" />
+        </div>
+
+        <div class="coterie-grid-2">
+          <div>
+            <label>Nose Notes</label>
+            <textarea id="nose_notes" rows="3"></textarea>
+          </div>
+          <div>
+            <label>Nose Score</label>
+            <input id="nose_score" type="number" min="0" max="10" step="1" />
+          </div>
+        </div>
+
+        <div class="coterie-grid-2">
+          <div>
+            <label>Palate Notes</label>
+            <textarea id="palate_notes" rows="3"></textarea>
+          </div>
+          <div>
+            <label>Palate Score</label>
+            <input id="palate_score" type="number" min="0" max="10" step="1" />
+          </div>
+        </div>
+
+        <div class="coterie-grid-2">
+          <div>
+            <label>Finish Notes</label>
+            <textarea id="finish_notes" rows="3"></textarea>
+          </div>
+          <div>
+            <label>Finish Score</label>
+            <input id="finish_score" type="number" min="0" max="10" step="1" />
+          </div>
+        </div>
+
+        <button class="coterie-submit" type="submit">
+          Submit to Coterie
+        </button>
+
+        <div id="formMessage" class="coterie-success"></div>
+
+      </form>
+    </section>
+
+    <div id="site-footer"></div>
+  </main>
+
+  <script src="../assets/js/site-chrome.js"></script>
+  <script type="module" src="../assets/js/coterie-add.js"></script>
+</body>
+</html>
