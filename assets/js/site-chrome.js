@@ -50,21 +50,22 @@
     `;
   }
 
-  // Reordered: Home, Inventory, Sensory, About, Comments
-  const navHtml = `
-    <nav class="skin2-nav-row hb-nav-row" aria-label="Primary navigation">
-      ${navLink("Home", "index.html", "home")}
-      ${navDivider()}
-      ${navLink("Inventory", "inventory/index.html", "inventory")}
-      ${navDivider()}
-      ${navLink("Sensory", "sensory/index.html", "sensory")}
-      ${navDivider()}
-      ${navLink("About", "about/index.html", "about")}
-      ${navDivider()}
-      ${navLink("Comments", "comments/index.html", "comments")}
-    </nav>
-  `;
-
+// Reordered: Home, Inventory, Sensory, Coterie, About, Comments
+const navHtml = `
+  <nav class="skin2-nav-row hb-nav-row" aria-label="Primary navigation">
+    ${navLink("Home", "index.html", "home")}
+    ${navDivider()}
+    ${navLink("Inventory", "inventory/index.html", "inventory")}
+    ${navDivider()}
+    ${navLink("Sensory", "sensory/index.html", "sensory")}
+    ${navDivider()}
+    ${navLink("Coterie", "coterie/index.html", "coterie")}
+    ${navDivider()}
+    ${navLink("About", "about/index.html", "about")}
+    ${navDivider()}
+    ${navLink("Comments", "comments/index.html", "comments")}
+  </nav>
+`;
   // ---------- Header ----------
   const headerHtml = `
     <style>
