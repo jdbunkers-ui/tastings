@@ -230,7 +230,11 @@ function renderTable(rows) {
         })
         .join("");
 
-      return `<tr class="inv-row" data-search="${escapeHtml(searchable)}">${tds}</tr>`;
+      return `<tr 
+        class="inv-row" 
+        data-search="${escapeHtml(searchable)}"
+        data-proof="${escapeHtml(r.proof)}"
+      >${tds}</tr>`;
     })
     .join("");
 
