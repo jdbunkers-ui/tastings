@@ -13,16 +13,37 @@
       .hbh-filter-row {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
         width: 100%;
         flex-wrap: wrap;
       }
 
+      /* LEFT: Proof Filter */
+      .hbh-proof-wrap {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        flex: 0 0 auto;
+      }
+
+      .hbh-proof-label {
+        font-size: 12px;
+        letter-spacing: 0.2px;
+        color: rgba(43, 29, 20, 0.82);
+        white-space: nowrap;
+      }
+
+      .hbh-proof-wrap input {
+        width: 110px;
+      }
+
+      /* CENTER: Search */
       .hbh-filter-row #filter {
         flex: 1 1 auto;
         min-width: 220px;
       }
 
+      /* RIGHT: Toggle */
       .hbh-toggle-wrap {
         display: inline-flex;
         align-items: center;
@@ -46,7 +67,7 @@
           transform 120ms ease,
           background 120ms ease,
           border-color 120ms ease;
-        perspective: 600px; /* enables 3D rotateY */
+        perspective: 600px;
       }
 
       .hbh-star-toggle:active {
@@ -57,11 +78,6 @@
         background: rgba(246, 241, 234, 0.92);
         border-color: rgba(181, 122, 42, 0.55);
       }
-
-      /* IMPORTANT:
-         No star animation, speed, or keyframes here.
-         All star motion is controlled globally in skin2.css
-      */
 
       .hbh-toggle-label {
         font-size: 12px;
@@ -86,6 +102,21 @@
       <section class="skin2-card">
         <div class="skin2-controls">
           <div class="hbh-filter-row">
+
+            <!-- LEFT: Proof Filter -->
+            <div class="hbh-proof-wrap">
+              <label for="proofMax" class="hbh-proof-label">Proof ≤</label>
+              <input
+                id="proofMax"
+                type="number"
+                min="0"
+                step="1"
+                placeholder="Max proof"
+                aria-label="Filter bottles by maximum proof"
+              />
+            </div>
+
+            <!-- CENTER: Search -->
             <input
               id="filter"
               type="text"
@@ -93,6 +124,7 @@
               aria-label="Search bottle inventory"
             />
 
+            <!-- RIGHT: Star Toggle -->
             <div class="hbh-toggle-wrap">
               <button
                 id="inventoryNewOnlyToggle"
@@ -117,6 +149,7 @@
             </div>
 
             <span class="skin2-status" id="status">Loading…</span>
+
           </div>
         </div>
 
