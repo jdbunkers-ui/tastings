@@ -204,7 +204,6 @@ function renderTable(rows) {
     })
     .join("");
 
-  // Build data-search for inventory-filter.js
   const searchableFields = [
     "bottle_expression",
     "distillery_name",
@@ -230,7 +229,11 @@ function renderTable(rows) {
         })
         .join("");
 
-      return `<tr class="inv-row" data-search="${escapeHtml(searchable)}">${tds}</tr>`;
+      return `<tr 
+        class="inv-row"
+        data-search="${escapeHtml(searchable)}"
+        data-proof="${escapeHtml(r.proof)}"
+      >${tds}</tr>`;
     })
     .join("");
 
@@ -241,7 +244,6 @@ function renderTable(rows) {
     </table>
   `;
 
-  // ✅ CRITICAL: inventory-filter.js listens for this to (re)apply filter safely
   window.dispatchEvent(new Event("skin2:inventoryRendered"));
 }
 
@@ -271,7 +273,6 @@ async function loadInventory() {
   }
 }
 
-// ---------- Toggle Wiring ----------
 function wireInventoryToggle() {
   window.addEventListener("hbh:inventoryFilterChanged", (e) => {
     const onlyNew = !!(e && e.detail && e.detail.onlyNew);
@@ -281,10 +282,8 @@ function wireInventoryToggle() {
   });
 }
 
-// ---------- Boot ----------
 wireInventoryToggle();
 
-// Re-read once in case order of scripts differs
 inventoryOnlyNew = !!(
   window.HBH_InventoryFilter && window.HBH_InventoryFilter.onlyNew
 );
