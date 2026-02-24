@@ -1,22 +1,14 @@
 /* =========================================================
-   Velvet Room — Skin2 Inventory Filter (SAFE)
-   File: assets/js/inventory-filter.js:
+   Honey Barrel Hunter — Skin2 Inventory Filter
+   File: assets/js/inventory-filter.js
 
-   How it works:
-   - Listens to #filter input
-   - Filters rows with class ".inv-row"
-   - Uses each row's data-search attribute (set by inventorySkin2Page.js)
-   - Updates #status with visible counts
-
-   Requires:
-   - index_skin2.html has #filter and #status
-   - inventorySkin2Page.js renders rows as:
-       <tr class="inv-row" data-search="...">
-   - inventorySkin2Page.js dispatches:
-       window.dispatchEvent(new Event("skin2:inventoryRendered"));
+   Adds:
+   - Proof ≤ filter (#proofMax)
+   - Stacks with existing search filter
    ========================================================= */
 
 const elFilter = document.getElementById("filter");
+const elProof = document.getElementById("proofMax");
 const elStatus = document.getElementById("status");
 
 function setStatus(text) {
@@ -36,30 +28,47 @@ function countVisible(rows) {
   return n;
 }
 
-function applyFilter(query) {
-  const q = (query ?? "").trim().toLowerCase();
-  const rows = getRows();
+function applyFilter() {
+  const query = (elFilter?.value ?? "").trim().toLowerCase();
+  const maxProofRaw = elProof?.value ?? "";
+  const maxProof =
+    maxProofRaw.trim() === "" ? null : parseFloat(maxProofRaw);
 
-  // If table isn't rendered yet, just no-op
+  const rows = getRows();
   if (!rows.length) return;
 
-  // Filter
-  if (!q) {
-    for (const r of rows) r.style.display = "";
-  } else {
-    for (const r of rows) {
+  for (const r of rows) {
+    let show = true;
+
+    // ---- Search Filter ----
+    if (query) {
       const hay = (r.getAttribute("data-search") || "").toLowerCase();
-      r.style.display = hay.includes(q) ? "" : "none";
+      if (!hay.includes(query)) show = false;
     }
+
+    // ---- Proof Filter ----
+    if (show && maxProof !== null) {
+      const proofAttr = r.getAttribute("data-proof");
+      const proof = proofAttr == null ? null : parseFloat(proofAttr);
+
+      if (proof == null || Number.isNaN(proof) || proof > maxProof) {
+        show = false;
+      }
+    }
+
+    r.style.display = show ? "" : "none";
   }
 
   const visible = countVisible(rows);
   const total = rows.length;
 
-  if (!q) {
+  if (!query && maxProof === null) {
     setStatus(`Loaded ${total} rows`);
   } else {
-    setStatus(`Showing ${visible} of ${total} (filter: "${query}")`);
+    let parts = [];
+    if (query) parts.push(`search: "${elFilter.value}"`);
+    if (maxProof !== null) parts.push(`proof ≤ ${maxProof}`);
+    setStatus(`Showing ${visible} of ${total} (${parts.join(", ")})`);
   }
 }
 
@@ -71,14 +80,18 @@ function debounce(fn, waitMs = 60) {
   };
 }
 
-const onInput = debounce(() => applyFilter(elFilter?.value ?? ""));
+const onInput = debounce(applyFilter);
 
 // Wire listeners
 if (elFilter) {
   elFilter.addEventListener("input", onInput);
 }
 
-// Re-apply after table renders (SAFE: explicit event from inventorySkin2Page.js)
+if (elProof) {
+  elProof.addEventListener("input", onInput);
+}
+
+// Re-apply after table renders
 window.addEventListener("skin2:inventoryRendered", () => {
-  applyFilter(elFilter?.value ?? "");
+  applyFilter();
 });
