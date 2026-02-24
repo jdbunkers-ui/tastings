@@ -1,94 +1,179 @@
-import { supabase } from "./supabaseClient.js";
-import { rotatingStarSVG } from "./ui/star.js";
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Honey Barrel Hunter – Coterie</title>
 
-const VIEW_NAME = "v_coterie";
-const ROW_LIMIT = 300;
+    <!-- Skin2 styles -->
+    <link rel="stylesheet" href="../assets/css/skin2.css" />
 
-const elContent = document.getElementById("coterie-content");
-const elStatus = document.getElementById("status");
-const elError = document.getElementById("error");
+    <style>
+      /* ---------- Coterie Filter Row ---------- */
+      .hbh-filter-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        flex-wrap: wrap;
+      }
 
-function setStatus(text) {
-  if (elStatus) elStatus.textContent = text ?? "";
-}
+      /* LEFT: Proof Filter */
+      .hbh-proof-wrap {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        flex: 0 0 auto;
+      }
 
-function escapeHtml(v) {
-  return String(v ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;");
-}
+      .hbh-proof-label {
+        font-size: 12px;
+        letter-spacing: 0.2px;
+        color: rgba(43, 29, 20, 0.82);
+        white-space: nowrap;
+      }
 
-function renderTable(rows) {
-  if (!rows?.length) {
-    elContent.innerHTML = "No Coterie rows returned.";
-    return;
-  }
+      .hbh-proof-wrap input {
+        width: 110px;
+      }
 
-  const tbody = rows.map(r => {
+      /* CENTER: Search */
+      .hbh-filter-row #filter {
+        flex: 1 1 auto;
+        min-width: 220px;
+      }
 
-    const star = r.new_update
-      ? rotatingStarSVG({ size: 16, style: "margin-right:6px;" })
-      : "";
+      /* RIGHT: Toggle */
+      .hbh-toggle-wrap {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        flex: 0 0 auto;
+      }
 
-    const bottleLink =
-      `<a class="skin2-link"
-         href="../bottles/index.html?single_barrel_id=${encodeURIComponent(r.single_barrel_id)}">
-         ${escapeHtml(r.bottle_expression)}
-       </a>`;
+      .hbh-star-toggle {
+        appearance: none;
+        -webkit-appearance: none;
+        border: 1px solid var(--s2-border);
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 999px;
+        padding: 6px 10px;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        user-select: none;
+        transition:
+          transform 120ms ease,
+          background 120ms ease,
+          border-color 120ms ease;
+        perspective: 600px;
+      }
 
-    const addLink =
-      `<div class="coterie-add-link">
-         <a class="skin2-link"
-           href="../coterie/add.html?single_barrel_id=${encodeURIComponent(r.single_barrel_id)}">
-           Add your sensory notes to the Coterie
-         </a>
-       </div>`;
+      .hbh-star-toggle:active {
+        transform: scale(0.98);
+      }
 
-    return `
-      <tr class="inv-row"
-          data-search="${escapeHtml(r.bottle_expression)}"
-          data-proof="${escapeHtml(r.proof)}">
-        <td>${star}${bottleLink}${addLink}</td>
-        <td>${escapeHtml(r.score)}</td>
-        <td>${escapeHtml(r.msrp)}</td>
-        <td>${escapeHtml(r.proof)}</td>
-        <td>${escapeHtml(r.age)}</td>
-      </tr>
-    `;
-  }).join("");
+      .hbh-star-toggle[aria-pressed="true"] {
+        background: rgba(246, 241, 234, 0.92);
+        border-color: rgba(181, 122, 42, 0.55);
+      }
 
-  elContent.innerHTML = `
-    <table class="skin2-table">
-      <thead>
-        <tr>
-          <th>Bottle</th>
-          <th>Score</th>
-          <th>MSRP</th>
-          <th>Proof</th>
-          <th>Age</th>
-        </tr>
-      </thead>
-      <tbody>${tbody}</tbody>
-    </table>
-  `;
+      .hbh-toggle-label {
+        font-size: 12px;
+        letter-spacing: 0.2px;
+        color: rgba(43, 29, 20, 0.82);
+        white-space: nowrap;
+      }
 
-  window.dispatchEvent(new Event("skin2:inventoryRendered"));
-}
+      @media (max-width: 760px) {
+        .hbh-toggle-label {
+          display: none;
+        }
+      }
 
-async function load() {
-  setStatus("Loading coterie…");
+      .coterie-add-link {
+        font-size: 12px;
+        display: inline-block;
+        margin-top: 4px;
+      }
+    </style>
+  </head>
 
-  const { data, error } =
-    await supabase.from(VIEW_NAME).select("*").limit(ROW_LIMIT);
+  <body data-page="coterie">
+    <main class="skin2-wrap">
+      <!-- Skin2 Header Injection Target -->
+      <div id="site-header"></div>
 
-  if (error) {
-    elError.textContent = error.message;
-    return;
-  }
+      <section class="skin2-card">
+        <div class="skin2-controls">
+          <div class="hbh-filter-row">
+            <!-- LEFT: Proof Filter -->
+            <div class="hbh-proof-wrap">
+              <label for="proofMax" class="hbh-proof-label">Proof ≤</label>
+              <input
+                id="proofMax"
+                type="number"
+                min="0"
+                step="1"
+                placeholder="Max proof"
+                aria-label="Filter bottles by maximum proof"
+              />
+            </div>
 
-  renderTable(data || []);
-  setStatus(`Loaded ${data?.length ?? 0} rows`);
-}
+            <!-- CENTER: Search -->
+            <input
+              id="filter"
+              type="text"
+              placeholder="Search bottle expression…"
+              aria-label="Search coterie bottle list"
+            />
 
-load();
+            <!-- RIGHT: Star Toggle (visual only for now, optional wiring later) -->
+            <div class="hbh-toggle-wrap">
+              <button
+                id="coterieNewOnlyToggle"
+                class="hbh-star-toggle"
+                type="button"
+                aria-pressed="false"
+                title="Filter bottles to only those with recently updated coterie"
+              >
+                <svg class="hbh-star-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M12 2.2l2.9 6.2 6.8.6-5.2 4.5 1.6 6.7L12 16.9 5.9 20.2l1.6-6.7L2.3 9l6.8-.6L12 2.2z"
+                    fill="rgba(215, 162, 74, 0.95)"
+                    stroke="rgba(181, 122, 42, 0.85)"
+                    stroke-width="0.9"
+                  />
+                </svg>
+              </button>
+
+              <span class="hbh-toggle-label">
+                Filter recently updated Coterie
+              </span>
+            </div>
+
+            <span class="skin2-status" id="status">Loading…</span>
+          </div>
+        </div>
+
+        <!-- Coterie Render Target -->
+        <div class="skin2-table-wrap">
+          <div id="coterie-content"></div>
+        </div>
+
+        <div id="error" class="skin2-error" style="display:none;"></div>
+      </section>
+
+      <!-- Skin2 Footer Injection Target -->
+      <div id="site-footer"></div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="../assets/js/site-chrome.js"></script>
+
+    <!-- IMPORTANT: Must be module scripts -->
+    <script type="module" src="../assets/js/coterie-page.js"></script>
+    <script type="module" src="../assets/js/inventory-filter.js"></script>
+  </body>
+</html>
