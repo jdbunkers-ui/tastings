@@ -57,35 +57,6 @@
         padding: 14px;
         color: var(--s2-text-muted);
       }
-
-      .faq-card {
-        border: 1px solid var(--s2-border);
-        background: rgba(255, 255, 255, 0.80);
-        border-radius: 16px;
-        padding: 14px;
-        margin: 10px 0;
-      }
-
-      .faq-q {
-        margin: 0;
-        font-size: 14px;
-        font-weight: 900;
-        color: rgba(43, 29, 20, 0.94);
-      }
-
-      .faq-a {
-        margin: 8px 0 0;
-        font-size: 14px;
-        line-height: 1.65;
-        color: rgba(43, 29, 20, 0.86);
-        white-space: pre-wrap;
-      }
-
-      .faq-meta {
-        margin-top: 10px;
-        font-size: 12px;
-        opacity: 0.75;
-      }
     </style>
   </head>
 
@@ -107,9 +78,9 @@
 
     <script src="../assets/js/site-chrome.js"></script>
 
-    <!-- Inline loader: safe until v_faqs exists -->
     <script type="module">
       import { supabase } from "../assets/js/supabaseClient.js";
+      import { rotatingStarSVG } from "../assets/js/ui/star.js";
 
       const VIEW_FAQS = "v_faqs";
       const elMount = document.getElementById("faqMount");
@@ -123,42 +94,62 @@
           .replaceAll("'", "&#039;");
       }
 
-      function renderComingSoon(message) {
+      function renderError(message) {
         if (!elMount) return;
         elMount.innerHTML = `
-          <div class="muted-card">
-            <div style="font-weight:900; color: rgba(43,29,20,0.92); margin-bottom:6px;">
-              Coming soon
-            </div>
-            <div style="line-height:1.65;">
-              ${escapeHtml(message)}
-            </div>
+          <div class="muted-card error">
+            <b>Error:</b> ${escapeHtml(message)}
           </div>
         `;
       }
 
-      function renderFaqs(rows) {
-        if (!rows || !rows.length) {
-          renderComingSoon("No FAQs have been published yet.");
-          return;
-        }
+      function renderFaqTable(rows) {
+        return `
+          <div class="skin2-card" style="padding:12px;">
+            <div style="overflow-x:auto;">
+              <table class="skin2-table">
+                <thead>
+                  <tr>
+                    <th style="width:140px;">Date</th>
+                    <th style="width:320px;">Question</th>
+                    <th>Answer</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${
+                    rows.length
+                      ? rows.map((r) => {
+                          const star = r.new_update
+                            ? rotatingStarSVG({ size: 18, style: "margin-right:6px;" })
+                            : "";
 
-        const html = rows.map((r) => {
-          const q = r.question ?? r.faq_question ?? r.q ?? "";
-          const a = r.answer ?? r.faq_answer ?? r.a ?? "";
-          const updated =
-            r.updated_at ?? r.updated_timestamp ?? r.modified_at ?? r.create_date ?? null;
-
-          return `
-            <article class="faq-card">
-              <h2 class="faq-q">${escapeHtml(q)}</h2>
-              <p class="faq-a">${escapeHtml(a)}</p>
-              ${updated ? `<div class="faq-meta">Updated: ${escapeHtml(String(updated))}</div>` : ""}
-            </article>
-          `;
-        }).join("");
-
-        elMount.innerHTML = html;
+                          return `
+                            <tr>
+                              <td class="mono col-date">
+                                ${star}${escapeHtml(r.faq_date)}
+                              </td>
+                              <td style="font-weight:800;">
+                                ${escapeHtml(r.question)}
+                              </td>
+                              <td style="white-space:pre-wrap;">
+                                ${escapeHtml(r.answer)}
+                              </td>
+                            </tr>
+                          `;
+                        }).join("")
+                      : `
+                        <tr>
+                          <td colspan="3" style="padding:12px 10px;">
+                            No FAQs yet.
+                          </td>
+                        </tr>
+                      `
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
       }
 
       async function loadFaqs() {
@@ -168,17 +159,14 @@
 
         const { data, error } = await supabase
           .from(VIEW_FAQS)
-          .select("*");
+          .select("faq_id,faq_date,question,answer,new_update");
 
         if (error) {
-          // Most common right now: view doesn't exist (42P01) or permissions
-          renderComingSoon(
-            "The FAQ database view (v_faqs) isn’t available yet. Once it’s created and enabled, FAQs will show here automatically."
-          );
+          renderError(error.message || String(error));
           return;
         }
 
-        renderFaqs(data || []);
+        elMount.innerHTML = renderFaqTable(data || []);
       }
 
       loadFaqs();
