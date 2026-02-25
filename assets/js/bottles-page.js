@@ -611,6 +611,9 @@ function renderCoterieError(message, details) {
   `;
 }
 
+/* =========================================================
+   ✅ UPDATED: "Submitted By" is now its own column
+   ========================================================= */
 function renderCoterieRows(rows) {
   if (!coteriePanelEl) return;
 
@@ -632,6 +635,7 @@ function renderCoterieRows(rows) {
             <thead>
               <tr>
                 <th class="no-wrap">Date</th>
+                <th class="no-wrap">Submitted By</th>
                 <th class="score-head">Score</th>
                 <th>Nose Notes</th>
                 <th class="score-head">Score</th>
@@ -656,13 +660,6 @@ function renderCoterieRows(rows) {
                     r.review_date ?? r.created_timestamp
                   );
 
-                  const submittedBy = fmt(r.submitted_by, "");
-                  const submittedLine = submittedBy
-                    ? `<div class="sub" style="margin-bottom:4px; color: var(--muted2);">Submitted by: ${escapeHtml(
-                        submittedBy
-                      )}</div>`
-                    : "";
-
                   return `
                     <tr>
                       <td class="mono no-wrap date-cell">
@@ -670,11 +667,12 @@ function renderCoterieRows(rows) {
                         ${escapeHtml(dateVal)}
                       </td>
 
-                      <td class="score-cell"><b>${escapeHtml(fmt(r.nose_score))}</b></td>
-                      <td class="notes">
-                        ${submittedLine}
-                        ${notesToHtml(fmt(r.nose_notes, ""))}
+                      <td class="no-wrap">
+                        ${escapeHtml(fmt(r.submitted_by, "—"))}
                       </td>
+
+                      <td class="score-cell"><b>${escapeHtml(fmt(r.nose_score))}</b></td>
+                      <td class="notes">${notesToHtml(fmt(r.nose_notes, ""))}</td>
 
                       <td class="score-cell"><b>${escapeHtml(fmt(r.palate_score))}</b></td>
                       <td class="notes">${notesToHtml(fmt(r.palate_notes, ""))}</td>
