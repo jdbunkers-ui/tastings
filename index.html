@@ -40,8 +40,6 @@
         color: rgba(43, 29, 20, 0.90);
       }
 
-      .mono { font-family: var(--s2-font-mono); }
-
       .muted-card {
         border: 1px solid var(--s2-border);
         background: rgba(255, 255, 255, 0.55);
@@ -50,13 +48,7 @@
         color: var(--s2-text-muted);
       }
 
-      .error {
-        border: 1px solid rgba(231, 76, 60, 0.35);
-        background: rgba(231, 76, 60, 0.10);
-        color: rgba(43, 29, 20, 0.92);
-      }
-
-      /* ---------- Homepage narrative styles ---------- */
+      /* ---------- Hero Section ---------- */
       .hero-card {
         border: 1px solid var(--s2-border);
         background: rgba(255, 255, 255, 0.86);
@@ -94,44 +86,20 @@
         color: rgba(43, 29, 20, 0.94);
       }
 
-      .details {
-        margin-top: 14px;
+      /* ---------- Latest Updates Image (MATCH ABOUT PAGE) ---------- */
+      .latest-image-wrap {
+        margin: 6px 0 14px;
+        max-width: 320px; /* keeps it portrait-sized like About */
+      }
+
+      .latest-image {
+        width: 100%;
+        height: 320px;
+        object-fit: cover;
+        border-radius: 14px;
         border: 1px solid var(--s2-border);
-        background: rgba(255, 255, 255, 0.70);
-        border-radius: 16px;
-        padding: 14px 16px;
-      }
-
-      details summary {
-        cursor: pointer;
-        font-weight: 700;
-        list-style: none;
-      }
-
-      details summary::-webkit-details-marker { display: none; }
-
-      .details-inner {
-        margin-top: 10px;
-        display: grid;
-        gap: 14px;
-      }
-
-      .details-inner h3 {
-        margin: 0 0 6px;
-        font-size: 15px;
-      }
-
-      .details-inner p,
-      .details-inner ul {
-        font-size: 14px;
-        line-height: 1.65;
-      }
-
-      .callout {
-        border-left: 4px solid rgba(181, 122, 42, 0.55);
-        padding: 10px 12px;
-        background: rgba(246, 241, 234, 0.55);
-        border-radius: 12px;
+        background: rgba(246, 241, 234, 0.6);
+        display: block;
       }
 
       /* ---------- Barrel Picker Toggle ---------- */
@@ -160,7 +128,6 @@
         gap: 10px;
         cursor: pointer;
         transition: transform 120ms ease;
-        perspective: 600px;
       }
 
       .star-toggle:active { transform: scale(0.98); }
@@ -180,32 +147,15 @@
   <body data-page="home">
     <div class="wrap">
 
-      <!-- Header Injection -->
       <div id="site-header"></div>
 
       <!-- Hero Section -->
-      <section class="hero-card" aria-label="Honey Barrel Hunter overview">
-
-        <!-- Fight Video -->
-        <div class="hero-video-wrap">
-          <video
-            class="hero-video"
-            autoplay
-            muted
-            loop
-            playsinline
-            preload="metadata"
-          >
-            <source src="./assets/img/fights/fight_video.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-        </div>
-
+      <section class="hero-card">
         <h1 class="hero-title">Honey Barrel Hunter</h1>
 
         <p class="hero-subtitle">
           <strong>Here, whiskey and analytics collide.</strong><br />
-          Honey Barrel Hunter is an independent whiskey evaluation project focused on blind tasting and disciplined scoring of single-barrel and store picks. Every bottle is judged on data, not hype—helping consumers buy with confidence and retailers understand the real performance of their picks.
+          Honey Barrel Hunter is an independent whiskey evaluation project focused on blind tasting and disciplined scoring of single-barrel and store picks.
         </p>
 
         <ul class="hero-bullets">
@@ -214,43 +164,21 @@
           <li><strong>Transparent scoring</strong> across nose, palate, and finish.</li>
           <li><strong>Independent methodology</strong> — no paid placements.</li>
         </ul>
-
-        <details class="details">
-          <summary>Learn how Honey Barrel Hunter works</summary>
-          <div class="details-inner">
-            <div>
-              <h3>Why blind tasting matters</h3>
-              <p>
-                Expectation changes perception. Blind tasting forces focus on aroma, flavor, texture, and finish alone.
-              </p>
-            </div>
-
-            <div>
-              <h3>Scoring methodology</h3>
-              <ul>
-                <li>Nose — 30%</li>
-                <li>Palate — 50%</li>
-                <li>Finish — 20%</li>
-              </ul>
-              <p class="callout">
-                Final scores are averaged across multiple tastings to reward repeatable quality.
-              </p>
-            </div>
-
-            <div>
-              <h3>Independence</h3>
-              <p>
-                No sponsored scores. No paid placements. Every bottle is evaluated equally.
-              </p>
-            </div>
-          </div>
-        </details>
       </section>
 
-      <!-- Journal -->
+      <!-- Latest Updates -->
       <div class="section-title">
         <h2>Latest Updates</h2>
       </div>
+
+      <div class="latest-image-wrap">
+        <img
+          src="./assets/img/fights/fight.png"
+          alt="Honey Barrel Hunter Flight"
+          class="latest-image"
+        />
+      </div>
+
       <div id="journalMount" class="muted-card">Loading updates…</div>
 
       <!-- Barrel Pickers -->
@@ -265,14 +193,13 @@
               type="button"
               aria-pressed="false"
             >
-              <svg class="star-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="16" height="16">
                 <path
                   d="M12 2.2l2.9 6.2 6.8.6-5.2 4.5 1.6 6.7L12 16.9 5.9 20.2l1.6-6.7L2.3 9l6.8-.6L12 2.2z"
                   fill="rgba(215, 162, 74, 0.95)"
                 />
               </svg>
             </button>
-
             <span class="toggle-label">
               Filter for only recently updated Tastings
             </span>
@@ -282,7 +209,6 @@
 
       <div id="pickerMount" class="muted-card">Loading barrel pickers…</div>
 
-      <!-- Footer Injection -->
       <div id="site-footer"></div>
     </div>
 
