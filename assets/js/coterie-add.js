@@ -7,7 +7,7 @@ import { supabase } from "./supabaseClient.js";
 
 // ---- Config ----
 // Change this if your insert table is different:
-const INSERT_TABLE = "fact_coterie";
+const INSERT_TABLE = "stg_coterie";
 
 // ---- DOM ----
 const form = document.getElementById("coterieForm");
