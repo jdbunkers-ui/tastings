@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Barrel Details</title>
+    <link rel="stylesheet" href="../assets/css/skin2.css" />
+
+    <style>
+      :root {
+        --s2-bg: #f6f1ea;
+        --s2-panel: #ffffff;
+        --s2-border: #d8cfc3;
+
+        --s2-brown-dark: #3b2a20;
+        --s2-brown-mid: #6a4a32;
+        --s2-amber: #b57a2a;
+        --s2-amber-soft: #e1b66a;
+
+        --s2-text: #2b1d14;
+        --s2-text-muted: #7a6758;
+
+        --bg: var(--s2-bg);
+        --panel: rgba(255, 255, 255, 0.86);
+        --panel2: rgba(255, 255, 255, 0.70);
+        --border: var(--s2-border);
+
+        --text: var(--s2-text);
+        --muted: var(--s2-text-muted);
+        --muted2: rgba(122, 103, 88, 0.78);
+
+        --good: rgba(46, 204, 113, 0.18);
+        --bad: rgba(231, 76, 60, 0.18);
+
+        --link: #8a5a20;
+        --link-hover: #b57a2a;
+      }
+
+      html, body { height: 100%; }
+
+      body {
+        margin: 0;
+        background:
+          radial-gradient(1200px 800px at 20% -10%, rgba(181, 122, 42, 0.14), transparent 55%),
+          radial-gradient(900px 700px at 90% 0%, rgba(225, 182, 106, 0.12), transparent 50%),
+          var(--bg);
+        color: var(--text);
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      }
+
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 18px 14px 46px;
+      }
+
+      /* ✅ Top header layout */
+      .topbar {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 14px;
+      }
+
+      .brand {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        flex: 1;
+        min-width: 0;
+      }
+
+      .brand h1 {
+        margin: 0;
+        font-size: 20px;
+        letter-spacing: 0.2px;
+      }
+
+      .brand .sub {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .card {
+        border: 1px solid var(--border);
+        background: var(--panel);
+        border-radius: 16px;
+        padding: 14px;
+      }
+
+      .section-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin: 18px 2px 10px;
+      }
+
+      .section-title h2 {
+        margin: 0;
+        font-size: 14px;
+        letter-spacing: 0.3px;
+        color: rgba(43, 29, 20, 0.90);
+        text-transform: none;
+      }
+
+      .section-title .hint {
+        color: var(--muted2);
+        font-size: 12px;
+      }
+
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      @media (max-width: 860px) {
+        .grid-2 { grid-template-columns: 1fr; }
+        .topbar { flex-direction: column; }
+        #composite-score { text-align: left !important; }
+      }
+
+      a { color: var(--link); }
+      a:hover { color: var(--link-hover); }
+
+      /* ✅ Foldable Flight Outcomes */
+      .hb-details {
+        border: 0;
+        margin: 0;
+      }
+
+      .hb-details > summary {
+        list-style: none;
+        cursor: pointer;
+      }
+
+      .hb-details > summary::-webkit-details-marker { display: none; }
+
+      .hb-details .summary-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin: 18px 2px 10px; /* matches .section-title spacing */
+      }
+
+      .hb-details .summary-row h2 {
+        margin: 0;
+        font-size: 14px;
+        letter-spacing: 0.3px;
+        color: rgba(43, 29, 20, 0.90);
+        text-transform: none;
+      }
+
+      .hb-details .summary-row .hint {
+        color: var(--muted2);
+        font-size: 12px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .hb-details .chev {
+        width: 10px;
+        height: 10px;
+        border-right: 2px solid rgba(43, 29, 20, 0.55);
+        border-bottom: 2px solid rgba(43, 29, 20, 0.55);
+        transform: rotate(45deg);
+        transition: transform 140ms ease;
+        margin-left: 4px;
+      }
+
+      .hb-details[open] .chev {
+        transform: rotate(225deg);
+      }
+    </style>
+  </head>
+
+  <body data-page="bottles">
+    <div class="wrap">
+      <!-- Skin2 Header Injection Target -->
+      <div id="site-header"></div>
+
+      <!-- ✅ Correct header -->
+      <div class="topbar">
+        <div class="brand">
+          <h1 id="page-title">Loading…</h1>
+          <div class="sub" id="page-subtitle"></div>
+          <div class="sub" id="picker-line"></div>
+          <div class="sub" id="msrp-line"></div>
+          <div id="bottle-specs" style="margin-top:10px;"></div>
+        </div>
+
+        <!-- Composite Score -->
+        <div id="composite-score" style="text-align:right; white-space:nowrap;"></div>
+      </div>
+
+      <div class="card hero" id="hero"></div>
+
+      <div class="section-title">
+        <h2>Sensory Notes and Scores</h2>
+        <div class="hint" id="tastings-hint"></div>
+      </div>
+      <div id="tastings"></div>
+
+      <!-- ✅ Flight Outcomes (foldable) -->
+      <details class="hb-details" id="flight-outcomes" open>
+        <summary>
+          <div class="summary-row">
+            <h2>Flight Outcomes</h2>
+            <div class="hint">
+              Wins and losses <span class="chev" aria-hidden="true"></span>
+            </div>
+          </div>
+        </summary>
+
+        <div class="grid-2">
+          <div class="card" id="wins"></div>
+          <div class="card" id="losses"></div>
+        </div>
+      </details>
+
+      <div class="section-title">
+        <h2>Debug</h2>
+        <div class="hint">Raw payload</div>
+      </div>
+      <details>
+        <summary>Show raw JSON</summary>
+        <pre id="debug-json" class="mono">{}</pre>
+      </details>
+
+      <!-- Skin2 Footer Injection Target -->
+      <div id="site-footer"></div>
+    </div>
+
+    <script src="../assets/js/site-chrome.js"></script>
+    <script type="module" src="../assets/js/bottles-page.js"></script>
+  </body>
+</html>

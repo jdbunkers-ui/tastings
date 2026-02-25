@@ -175,6 +175,79 @@
       .hb-details[open] .chev {
         transform: rotate(225deg);
       }
+
+      /* =========================
+         ✅ V17 Tabs
+         ========================= */
+      .tabs {
+        display: flex;
+        align-items: flex-end;
+        gap: 8px;
+        margin: 14px 0 0;
+        border-bottom: 1px solid rgba(216, 207, 195, 0.85);
+      }
+
+      .tab {
+        appearance: none;
+        border: 1px solid rgba(216, 207, 195, 0.95);
+        border-bottom: 0;
+        background: rgba(255,255,255,0.55);
+        color: rgba(43, 29, 20, 0.85);
+        padding: 10px 12px;
+        border-top-left-radius: 14px;
+        border-top-right-radius: 14px;
+        font-size: 14px;
+        cursor: pointer;
+        line-height: 1;
+        user-select: none;
+      }
+
+      .tab:hover {
+        background: rgba(255,255,255,0.70);
+      }
+
+      .tab[aria-selected="true"] {
+        background: rgba(255,255,255,0.90);
+        color: rgba(43, 29, 20, 0.95);
+        position: relative;
+      }
+
+      /* amber underline accent for active tab */
+      .tab[aria-selected="true"]::after {
+        content: "";
+        position: absolute;
+        left: 10px;
+        right: 10px;
+        bottom: -1px;
+        height: 3px;
+        background: rgba(181, 122, 42, 0.95);
+        border-radius: 4px;
+      }
+
+      .tab-panels {
+        padding-top: 14px;
+      }
+
+      /* under construction panel */
+      .uc-card {
+        border: 1px dashed rgba(216, 207, 195, 0.95);
+        background: rgba(255, 255, 255, 0.62);
+        border-radius: 18px;
+        padding: 22px 16px;
+        text-align: center;
+      }
+
+      .uc-icon {
+        font-size: 34px;
+        line-height: 1;
+        margin-bottom: 10px;
+      }
+
+      .uc-title {
+        font-size: 22px;
+        letter-spacing: 0.2px;
+        margin: 0;
+      }
     </style>
   </head>
 
@@ -183,7 +256,7 @@
       <!-- Skin2 Header Injection Target -->
       <div id="site-header"></div>
 
-      <!-- ✅ Correct header -->
+      <!-- ✅ HERO (static) -->
       <div class="topbar">
         <div class="brand">
           <h1 id="page-title">Loading…</h1>
@@ -199,37 +272,81 @@
 
       <div class="card hero" id="hero"></div>
 
-      <div class="section-title">
-        <h2>Sensory Notes and Scores</h2>
-        <div class="hint" id="tastings-hint"></div>
-      </div>
-      <div id="tastings"></div>
+      <!-- ✅ V17 Tabs -->
+      <div class="tabs" role="tablist" aria-label="Bottle detail tabs">
+        <button
+          class="tab"
+          id="tab-sensory"
+          type="button"
+          role="tab"
+          aria-selected="true"
+          aria-controls="panel-sensory"
+        >
+          Sensory Notes and Scores
+        </button>
 
-      <!-- ✅ Flight Outcomes (foldable) -->
-      <details class="hb-details" id="flight-outcomes" open>
-        <summary>
-          <div class="summary-row">
-            <h2>Flight Outcomes</h2>
-            <div class="hint">
-              Wins and losses <span class="chev" aria-hidden="true"></span>
-            </div>
+        <button
+          class="tab"
+          id="tab-coterie"
+          type="button"
+          role="tab"
+          aria-selected="false"
+          aria-controls="panel-coterie"
+          tabindex="-1"
+        >
+          Honey Barrel Hunter Coterie
+        </button>
+      </div>
+
+      <div class="tab-panels">
+        <!-- ✅ TAB 1: existing content -->
+        <section id="panel-sensory" role="tabpanel" aria-labelledby="tab-sensory">
+          <div class="section-title">
+            <h2>Sensory Notes and Scores</h2>
+            <div class="hint" id="tastings-hint"></div>
           </div>
-        </summary>
+          <div id="tastings"></div>
 
-        <div class="grid-2">
-          <div class="card" id="wins"></div>
-          <div class="card" id="losses"></div>
-        </div>
-      </details>
+          <!-- ✅ Flight Outcomes (foldable) -->
+          <details class="hb-details" id="flight-outcomes" open>
+            <summary>
+              <div class="summary-row">
+                <h2>Flight Outcomes</h2>
+                <div class="hint">
+                  Wins and losses <span class="chev" aria-hidden="true"></span>
+                </div>
+              </div>
+            </summary>
 
-      <div class="section-title">
-        <h2>Debug</h2>
-        <div class="hint">Raw payload</div>
+            <div class="grid-2">
+              <div class="card" id="wins"></div>
+              <div class="card" id="losses"></div>
+            </div>
+          </details>
+
+          <div class="section-title">
+            <h2>Debug</h2>
+            <div class="hint">Raw payload</div>
+          </div>
+          <details>
+            <summary>Show raw JSON</summary>
+            <pre id="debug-json" class="mono">{}</pre>
+          </details>
+        </section>
+
+        <!-- ✅ TAB 2: Coterie placeholder -->
+        <section
+          id="panel-coterie"
+          role="tabpanel"
+          aria-labelledby="tab-coterie"
+          hidden
+        >
+          <div class="uc-card">
+            <div class="uc-icon" aria-hidden="true">🦺</div>
+            <h3 class="uc-title">HBH_V17 - Under Construction</h3>
+          </div>
+        </section>
       </div>
-      <details>
-        <summary>Show raw JSON</summary>
-        <pre id="debug-json" class="mono">{}</pre>
-      </details>
 
       <!-- Skin2 Footer Injection Target -->
       <div id="site-footer"></div>
@@ -237,5 +354,39 @@
 
     <script src="../assets/js/site-chrome.js"></script>
     <script type="module" src="../assets/js/bottles-page.js"></script>
+
+    <!-- ✅ Tab switching (V17) -->
+    <script>
+      (function () {
+        const tabs = [
+          { tab: document.getElementById("tab-sensory"), panel: document.getElementById("panel-sensory") },
+          { tab: document.getElementById("tab-coterie"), panel: document.getElementById("panel-coterie") }
+        ];
+
+        function setActive(activeId) {
+          for (const t of tabs) {
+            const isActive = t.tab.id === activeId;
+            t.tab.setAttribute("aria-selected", isActive ? "true" : "false");
+            t.tab.tabIndex = isActive ? 0 : -1;
+            if (isActive) t.panel.removeAttribute("hidden");
+            else t.panel.setAttribute("hidden", "");
+          }
+        }
+
+        for (const t of tabs) {
+          t.tab.addEventListener("click", () => setActive(t.tab.id));
+          t.tab.addEventListener("keydown", (e) => {
+            if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+            e.preventDefault();
+            const idx = tabs.findIndex(x => x.tab.id === t.tab.id);
+            const nextIdx = e.key === "ArrowRight"
+              ? (idx + 1) % tabs.length
+              : (idx - 1 + tabs.length) % tabs.length;
+            tabs[nextIdx].tab.focus();
+            setActive(tabs[nextIdx].tab.id);
+          });
+        }
+      })();
+    </script>
   </body>
 </html>
