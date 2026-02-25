@@ -75,6 +75,7 @@ html, body {
 
 /* Utility helpers used across pages */
 .mono { font-family: var(--s2-font-mono); }
+
 .muted-card {
   border: 1px solid var(--s2-border);
   background: rgba(255, 255, 255, 0.55);
@@ -275,7 +276,7 @@ table.skin2-table tbody tr:hover {
   white-space: nowrap;
 }
 
-/* ---------- Rotating Star ---------- */
+/* ---------- Rotating Star (row indicators) ---------- */
 .star-icon,
 .hbh-star-icon {
   display: inline-block;
@@ -287,6 +288,13 @@ table.skin2-table tbody tr:hover {
 @keyframes hbhSpin {
   from { transform: rotateY(0deg); }
   to   { transform: rotateY(360deg); }
+}
+
+/* Toggle stars should be static (row stars can still spin) */
+.hbh-star-toggle .star-icon,
+.star-toggle .star-icon,
+.hbh-star-toggle .hbh-star-icon {
+  animation: none !important;
 }
 
 /* ---------- Links ---------- */
