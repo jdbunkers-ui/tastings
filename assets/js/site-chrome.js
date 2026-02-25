@@ -1,6 +1,6 @@
 /* =========================================================
-   Site Chrome
-   Injects shared header and footer used across all pages
+   Site Chrome (Bulletproof Root-Based Navigation)
+   Injects shared header and footer across all pages
    Page-aware via <body data-page="...">
    ========================================================= */
 
@@ -18,32 +18,21 @@
       ? document.body.dataset.page.toLowerCase()
       : "";
 
-  // ---------- Determine correct relative paths ----------
-// Determine if we are at root level (e.g., /index.html)
-   const path = window.location.pathname;
-   
-   const isSubfolder =
-     path.includes("/inventory/") ||
-     path.includes("/sensory/") ||
-     path.includes("/distilleries/") ||
-     path.includes("/bottles/") ||
-     path.includes("/barrel_pickers/") ||
-     path.includes("/comments/") ||
-     path.includes("/about/") ||
-     path.includes("/coterie/");   // ← ADD THIS
-   
-   const rootPrefix = isSubfolder ? "../" : "./";
+  // -------------------------------------------------------
+  // Absolute root prefix (no folder guessing ever again)
+  // -------------------------------------------------------
+  const ROOT = "/";
 
   // ---------- Assets ----------
-  const logoLeftSrc = `${rootPrefix}assets/img/logo/honey_barrel_hunter_text.png`;
-  const logoRightSrc = `${rootPrefix}assets/img/logo/honey_barrel_hunter.png`;
-  const headerBgSrc = `${rootPrefix}assets/img/logo/barrel_stacks.png`;
-  const barrelDividerSrc = `${rootPrefix}assets/img/logo/barrel_divider.png`;
+  const logoLeftSrc = `${ROOT}assets/img/logo/honey_barrel_hunter_text.png`;
+  const logoRightSrc = `${ROOT}assets/img/logo/honey_barrel_hunter.png`;
+  const headerBgSrc = `${ROOT}assets/img/logo/barrel_stacks.png`;
+  const barrelDividerSrc = `${ROOT}assets/img/logo/barrel_divider.png`;
 
   // ---------- Navigation ----------
   function navLink(label, target, key) {
     const active = pageKey === key ? "skin2-nav-active" : "";
-    return `<a href="${rootPrefix}${target}" class="skin2-nav ${active}">${label}</a>`;
+    return `<a href="${ROOT}${target}" class="skin2-nav ${active}">${label}</a>`;
   }
 
   function navDivider() {
@@ -54,22 +43,22 @@
     `;
   }
 
-// Reordered: Home, Inventory, Sensory, Coterie, About, Comments
-const navHtml = `
-  <nav class="skin2-nav-row hb-nav-row" aria-label="Primary navigation">
-    ${navLink("Home", "index.html", "home")}
-    ${navDivider()}
-    ${navLink("Inventory", "inventory/index.html", "inventory")}
-    ${navDivider()}
-    ${navLink("Sensory", "sensory/index.html", "sensory")}
-    ${navDivider()}
-    ${navLink("Coterie", "coterie/index.html", "coterie")}
-    ${navDivider()}
-    ${navLink("About", "about/index.html", "about")}
-    ${navDivider()}
-    ${navLink("Comments", "comments/index.html", "comments")}
-  </nav>
-`;
+  const navHtml = `
+    <nav class="skin2-nav-row hb-nav-row" aria-label="Primary navigation">
+      ${navLink("Home", "index.html", "home")}
+      ${navDivider()}
+      ${navLink("Inventory", "inventory/index.html", "inventory")}
+      ${navDivider()}
+      ${navLink("Sensory", "sensory/index.html", "sensory")}
+      ${navDivider()}
+      ${navLink("Coterie", "coterie/index.html", "coterie")}
+      ${navDivider()}
+      ${navLink("About", "about/index.html", "about")}
+      ${navDivider()}
+      ${navLink("Comments", "comments/index.html", "comments")}
+    </nav>
+  `;
+
   // ---------- Header ----------
   const headerHtml = `
     <style>
