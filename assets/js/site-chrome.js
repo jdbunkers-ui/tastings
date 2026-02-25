@@ -19,16 +19,20 @@
       : "";
 
   // ---------- Determine correct relative paths ----------
-  const isRoot =
-    !window.location.pathname.includes("/inventory/") &&
-    !window.location.pathname.includes("/sensory/") &&
-    !window.location.pathname.includes("/distilleries/") &&
-    !window.location.pathname.includes("/bottles/") &&
-    !window.location.pathname.includes("/barrel_pickers/") &&
-    !window.location.pathname.includes("/comments/") &&
-    !window.location.pathname.includes("/about/");
-
-  const rootPrefix = isRoot ? "./" : "../";
+// Determine if we are at root level (e.g., /index.html)
+   const path = window.location.pathname;
+   
+   const isSubfolder =
+     path.includes("/inventory/") ||
+     path.includes("/sensory/") ||
+     path.includes("/distilleries/") ||
+     path.includes("/bottles/") ||
+     path.includes("/barrel_pickers/") ||
+     path.includes("/comments/") ||
+     path.includes("/about/") ||
+     path.includes("/coterie/");   // ← ADD THIS
+   
+   const rootPrefix = isSubfolder ? "../" : "./";
 
   // ---------- Assets ----------
   const logoLeftSrc = `${rootPrefix}assets/img/logo/honey_barrel_hunter_text.png`;
