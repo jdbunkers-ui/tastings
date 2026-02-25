@@ -403,24 +403,6 @@ function renderTastings(tastings) {
           .join("")}
       </tbody>
     </table>
-
-    <style>
-      table.sensory-table tbody tr:nth-child(even){ background: rgba(246, 241, 234, 0.75); }
-      table.sensory-table tbody tr:nth-child(odd){ background: rgba(255, 255, 255, 0.62); }
-      table.sensory-table tbody tr:hover{ background: rgba(225, 182, 106, 0.18); }
-
-      .no-wrap{ white-space: nowrap; }
-      td.date-cell{ text-align: right; }
-
-      th.score-head{ text-align: center; white-space: nowrap; }
-      td.score-cell{ text-align: center; white-space: nowrap; }
-
-      th.num,
-      td.num {
-        text-align: center;
-        white-space: nowrap;
-      }
-    </style>
   `;
 }
 
@@ -633,7 +615,9 @@ function renderCoterieRows(rows) {
   if (!coteriePanelEl) return;
 
   const list = rows || [];
-  const hint = `${list.length} submission${list.length === 1 ? "" : "s"} • sorted by submitted date (desc)`;
+  const hint = `${list.length} submission${
+    list.length === 1 ? "" : "s"
+  } • sorted by submitted date (desc)`;
 
   coteriePanelEl.innerHTML = `
     <div class="section-title" style="margin-top:0;">
@@ -668,7 +652,9 @@ function renderCoterieRows(rows) {
                       })
                     : "";
 
-                  const dateVal = fmtDatePretty(r.review_date ?? r.created_timestamp);
+                  const dateVal = fmtDatePretty(
+                    r.review_date ?? r.created_timestamp
+                  );
 
                   const submittedBy = fmt(r.submitted_by, "");
                   const submittedLine = submittedBy
@@ -703,25 +689,6 @@ function renderCoterieRows(rows) {
                 .join("")}
             </tbody>
           </table>
-
-          <style>
-            /* Match Honey Barrel Hunter Notes table behavior */
-            table.coterie-table tbody tr:nth-child(even){ background: rgba(246, 241, 234, 0.75); }
-            table.coterie-table tbody tr:nth-child(odd){ background: rgba(255, 255, 255, 0.62); }
-            table.coterie-table tbody tr:hover{ background: rgba(225, 182, 106, 0.18); }
-
-            .no-wrap{ white-space: nowrap; }
-            td.date-cell{ text-align: right; }
-
-            th.score-head{ text-align: center; white-space: nowrap; }
-            td.score-cell{ text-align: center; white-space: nowrap; }
-
-            th.num,
-            td.num {
-              text-align: center;
-              white-space: nowrap;
-            }
-          </style>
         `
         : `<div class="card muted">No Coterie submissions yet for this barrel.</div>`
     }
