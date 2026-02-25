@@ -21,12 +21,14 @@
   // -------------------------------------------------------
   // Absolute root prefix (no folder guessing ever again)
   // -------------------------------------------------------
-   const ROOT = "/tastings/";
-   //const ROOT = window.location.hostname.includes("honeybarrelhunter.com")
-   //  ? "/"
-   //  : "./";
 
-  // ---------- Assets ----------
+   const seg1 = (window.location.pathname.split("/")[1] || "").trim();
+   const ROOT =
+     window.location.hostname.endsWith("github.io") && seg1
+       ? `/${seg1}/`
+       : "/";
+  
+   // ---------- Assets ----------
   const logoLeftSrc = `${ROOT}assets/img/logo/honey_barrel_hunter_text.png`;
   const logoRightSrc = `${ROOT}assets/img/logo/honey_barrel_hunter.png`;
   const headerBgSrc = `${ROOT}assets/img/logo/barrel_stacks.png`;
