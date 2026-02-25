@@ -21,14 +21,13 @@
   // -------------------------------------------------------
   // Absolute root prefix (no folder guessing ever again)
   // -------------------------------------------------------
+  const seg1 = (window.location.pathname.split("/")[1] || "").trim();
+  const ROOT =
+    window.location.hostname.endsWith("github.io") && seg1
+      ? `/${seg1}/`
+      : "/";
 
-   const seg1 = (window.location.pathname.split("/")[1] || "").trim();
-   const ROOT =
-     window.location.hostname.endsWith("github.io") && seg1
-       ? `/${seg1}/`
-       : "/";
-  
-   // ---------- Assets ----------
+  // ---------- Assets ----------
   const logoLeftSrc = `${ROOT}assets/img/logo/honey_barrel_hunter_text.png`;
   const logoRightSrc = `${ROOT}assets/img/logo/honey_barrel_hunter.png`;
   const headerBgSrc = `${ROOT}assets/img/logo/barrel_stacks.png`;
@@ -48,15 +47,21 @@
     `;
   }
 
+  // Navigation order:
+  // Home Inventory Coterie Pickers Sensory FAQ About Comments
   const navHtml = `
     <nav class="skin2-nav-row hb-nav-row" aria-label="Primary navigation">
       ${navLink("Home", "index.html", "home")}
       ${navDivider()}
       ${navLink("Inventory", "inventory/index.html", "inventory")}
       ${navDivider()}
+      ${navLink("Coterie", "coterie/index.html", "coterie")}
+      ${navDivider()}
+      ${navLink("Pickers", "pickers/index.html", "pickers")}
+      ${navDivider()}
       ${navLink("Sensory", "sensory/index.html", "sensory")}
       ${navDivider()}
-      ${navLink("Coterie", "coterie/index.html", "coterie")}
+      ${navLink("FAQ", "faqs/index.html", "faqs")}
       ${navDivider()}
       ${navLink("About", "about/index.html", "about")}
       ${navDivider()}
