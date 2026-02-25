@@ -1,24 +1,175 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>FAQ | Honey Barrel Hunter</title>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>FAQ | Honey Barrel Hunter</title>
 
-  <link rel="stylesheet" href="../assets/css/skin2.css" />
-  <script defer src="../assets/js/site-chrome.js"></script>
-</head>
+    <link rel="stylesheet" href="../assets/css/skin2.css" />
 
-<body data-page="faqs">
+    <style>
+      html, body { height: 100%; }
 
-  <div id="site-header"></div>
+      body {
+        margin: 0;
+        font-family: var(--s2-font-sans);
+        color: var(--s2-text);
+        background:
+          radial-gradient(1200px 800px at 20% -10%, rgba(181, 122, 42, 0.14), transparent 55%),
+          radial-gradient(900px 700px at 90% 0%, rgba(225, 182, 106, 0.12), transparent 50%),
+          var(--s2-bg);
+      }
 
-  <main class="skin2-wrap" style="max-width:1100px;margin:0 auto;padding:32px 20px;">
-    <h1>Frequently Asked Questions</h1>
-    <p>Answers to common questions about Honey Barrel Hunter.</p>
-  </main>
+      .wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 18px 14px 46px;
+      }
 
-  <div id="site-footer"></div>
+      .intro-card {
+        border: 1px solid var(--s2-border);
+        background: rgba(255, 255, 255, 0.86);
+        border-radius: 16px;
+        padding: 18px;
+        margin: 14px 0 18px;
+        color: var(--s2-text);
+      }
 
-</body>
+      .intro-title {
+        margin: 0 0 8px;
+        font-size: 22px;
+        letter-spacing: 0.3px;
+        color: rgba(43, 29, 20, 0.94);
+      }
+
+      .intro-subtitle {
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.6;
+        color: rgba(43, 29, 20, 0.88);
+        max-width: 92ch;
+      }
+
+      .muted-card {
+        border: 1px solid var(--s2-border);
+        background: rgba(255, 255, 255, 0.55);
+        border-radius: 16px;
+        padding: 14px;
+        color: var(--s2-text-muted);
+      }
+    </style>
+  </head>
+
+  <body data-page="faqs">
+    <div class="wrap">
+      <div id="site-header"></div>
+
+      <section class="intro-card">
+        <h1 class="intro-title">FAQ</h1>
+        <p class="intro-subtitle">
+          Answers to common questions about Honey Barrel Hunter — methodology, scoring, and how to read the data.
+        </p>
+      </section>
+
+      <div id="faqMount" class="muted-card">Loading FAQs…</div>
+
+      <div id="site-footer"></div>
+    </div>
+
+    <script src="../assets/js/site-chrome.js"></script>
+
+    <script type="module">
+      import { supabase } from "../assets/js/supabaseClient.js";
+      import { rotatingStarSVG } from "../assets/js/ui/star.js";
+
+      const VIEW_FAQS = "v_faqs";
+      const elMount = document.getElementById("faqMount");
+
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function renderError(message) {
+        if (!elMount) return;
+        elMount.innerHTML = `
+          <div class="muted-card error">
+            <b>Error:</b> ${escapeHtml(message)}
+          </div>
+        `;
+      }
+
+      function renderFaqTable(rows) {
+        return `
+          <div class="skin2-card" style="padding:12px;">
+            <div style="overflow-x:auto;">
+              <table class="skin2-table">
+                <thead>
+                  <tr>
+                    <th style="width:140px;">Date</th>
+                    <th style="width:320px;">Question</th>
+                    <th>Answer</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${
+                    rows.length
+                      ? rows.map((r) => {
+                          const star = r.new_update
+                            ? rotatingStarSVG({ size: 18, style: "margin-right:6px;" })
+                            : "";
+
+                          return `
+                            <tr>
+                              <td class="mono col-date">
+                                ${star}${escapeHtml(r.faq_date)}
+                              </td>
+                              <td style="font-weight:800;">
+                                ${escapeHtml(r.question)}
+                              </td>
+                              <td style="white-space:pre-wrap;">
+                                ${escapeHtml(r.answer)}
+                              </td>
+                            </tr>
+                          `;
+                        }).join("")
+                      : `
+                        <tr>
+                          <td colspan="3" style="padding:12px 10px;">
+                            No FAQs yet.
+                          </td>
+                        </tr>
+                      `
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      }
+
+      async function loadFaqs() {
+        if (!elMount) return;
+
+        elMount.innerHTML = `<div class="muted-card">Loading FAQs…</div>`;
+
+        const { data, error } = await supabase
+          .from(VIEW_FAQS)
+          .select("faq_id,faq_date,question,answer,new_update");
+
+        if (error) {
+          renderError(error.message || String(error));
+          return;
+        }
+
+        elMount.innerHTML = renderFaqTable(data || []);
+      }
+
+      loadFaqs();
+    </script>
+  </body>
 </html>
