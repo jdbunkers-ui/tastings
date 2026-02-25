@@ -13,7 +13,7 @@ const elStatus = document.getElementById("status");
 
 function setStatus(text) {
   if (!elStatus) return;
-  elStatus.textContent = text;
+  elStatus.textContent = text ?? "";
 }
 
 function getRows() {
@@ -28,11 +28,25 @@ function countVisible(rows) {
   return n;
 }
 
+function parseMaxProof() {
+  const raw = (elProof?.value ?? "").trim();
+  if (raw === "") return null; // no filter
+  const n = parseFloat(raw);
+  if (!Number.isFinite(n)) return null; // treat invalid as no filter
+  return n;
+}
+
+function parseRowProof(row) {
+  const proofAttr = row.getAttribute("data-proof");
+  if (proofAttr == null) return null;
+  const n = parseFloat(String(proofAttr).trim());
+  if (!Number.isFinite(n)) return null;
+  return n;
+}
+
 function applyFilter() {
   const query = (elFilter?.value ?? "").trim().toLowerCase();
-  const maxProofRaw = elProof?.value ?? "";
-  const maxProof =
-    maxProofRaw.trim() === "" ? null : parseFloat(maxProofRaw);
+  const maxProof = parseMaxProof();
 
   const rows = getRows();
   if (!rows.length) return;
@@ -48,10 +62,10 @@ function applyFilter() {
 
     // ---- Proof Filter ----
     if (show && maxProof !== null) {
-      const proofAttr = r.getAttribute("data-proof");
-      const proof = proofAttr == null ? null : parseFloat(proofAttr);
+      const proof = parseRowProof(r);
 
-      if (proof == null || Number.isNaN(proof) || proof > maxProof) {
+      // If row proof is missing/invalid, hide it under proof filtering
+      if (proof === null || proof > maxProof) {
         show = false;
       }
     }
@@ -65,8 +79,8 @@ function applyFilter() {
   if (!query && maxProof === null) {
     setStatus(`Loaded ${total} rows`);
   } else {
-    let parts = [];
-    if (query) parts.push(`search: "${elFilter.value}"`);
+    const parts = [];
+    if (query) parts.push(`search: "${elFilter?.value ?? ""}"`);
     if (maxProof !== null) parts.push(`proof ≤ ${maxProof}`);
     setStatus(`Showing ${visible} of ${total} (${parts.join(", ")})`);
   }
@@ -83,15 +97,8 @@ function debounce(fn, waitMs = 60) {
 const onInput = debounce(applyFilter);
 
 // Wire listeners
-if (elFilter) {
-  elFilter.addEventListener("input", onInput);
-}
-
-if (elProof) {
-  elProof.addEventListener("input", onInput);
-}
+if (elFilter) elFilter.addEventListener("input", onInput);
+if (elProof) elProof.addEventListener("input", onInput);
 
 // Re-apply after table renders
-window.addEventListener("skin2:inventoryRendered", () => {
-  applyFilter();
-});
+window.addEventListener("skin2:inventoryRendered", applyFilter);
