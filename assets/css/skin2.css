@@ -73,6 +73,16 @@ html, body {
   overflow: hidden;
 }
 
+/* Utility helpers used across pages */
+.mono { font-family: var(--s2-font-mono); }
+.muted-card {
+  border: 1px solid var(--s2-border);
+  background: rgba(255, 255, 255, 0.55);
+  border-radius: 16px;
+  padding: 14px;
+  color: var(--s2-text-muted);
+}
+
 /* ---------- Header ---------- */
 .skin2-header {
   display: flex;
@@ -145,7 +155,8 @@ html, body {
   );
 }
 
-.skin2-controls input[type="text"] {
+.skin2-controls input[type="text"],
+.skin2-controls input[type="number"] {
   width: 300px;
   max-width: 100%;
   padding: 8px 10px;
@@ -155,6 +166,10 @@ html, body {
   border: 1px solid var(--s2-border);
   background: #fff;
   color: var(--s2-text);
+}
+
+.skin2-controls input[type="number"] {
+  width: 140px; /* nicer default for proof inputs */
 }
 
 .skin2-controls input::placeholder {
@@ -287,7 +302,8 @@ table.skin2-table tbody tr:hover {
 }
 
 /* ---------- Error ---------- */
-.skin2-error {
+.skin2-error,
+.muted-card.error {
   padding: 10px 16px;
   color: #9b2c2c;
   font-size: 12px;
