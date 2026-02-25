@@ -368,8 +368,14 @@
             const isActive = t.tab.id === activeId;
             t.tab.setAttribute("aria-selected", isActive ? "true" : "false");
             t.tab.tabIndex = isActive ? 0 : -1;
+
             if (isActive) t.panel.removeAttribute("hidden");
             else t.panel.setAttribute("hidden", "");
+
+            // ✅ Lazy-load trigger when Coterie panel is opened
+            if (isActive && t.panel.id === "panel-coterie") {
+              window.dispatchEvent(new CustomEvent("hbh:coterie:open"));
+            }
           }
         }
 
