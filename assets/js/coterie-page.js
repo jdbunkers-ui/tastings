@@ -80,6 +80,20 @@ function fmtInt(v) {
   return String(Math.trunc(n));
 }
 
+// ---------- Column Classes (match Inventory widths) ----------
+function colClass(col) {
+  const map = {
+    score: "col-score",
+    msrp: "col-msrp",
+    proof: "col-proof",
+    age: "col-age",
+    bottle_expression: "col-expression",
+    reviews: "col-reviews",
+    add: "col-add"
+  };
+  return map[col] || "";
+}
+
 // ---------- Popup Logic ----------
 function openCoteriePopup(encodedSingleBarrelId) {
   const url = `../coterie/add.html?single_barrel_id=${encodedSingleBarrelId}`;
@@ -90,16 +104,14 @@ function openCoteriePopup(encodedSingleBarrelId) {
     "width=720,height=820,resizable=yes,scrollbars=yes"
   );
 
-  // Refresh when popup closes
   const timer = setInterval(() => {
     if (popup && popup.closed) {
       clearInterval(timer);
-      load(); // refresh page after submission
+      load();
     }
   }, 800);
 }
 
-// Expose for inline onclick
 window.openCoteriePopup = openCoteriePopup;
 
 // ---------- Render ----------
@@ -114,12 +126,13 @@ function renderTable(rows) {
 
   const thead = `
     <tr>
-      <th>Bottle</th>
-      <th>Score</th>
-      <th>Reviews</th>
-      <th>MSRP</th>
-      <th>Proof</th>
-      <th>Age</th>
+      <th class="${colClass("score")}">Score</th>
+      <th class="${colClass("msrp")}">MSRP</th>
+      <th class="${colClass("proof")}">Proof</th>
+      <th class="${colClass("age")}">Age</th>
+      <th class="${colClass("bottle_expression")}">Bottle Expression</th>
+      <th class="${colClass("reviews")}">Reviews</th>
+      <th class="${colClass("add")}">Add Notes</th>
     </tr>
   `;
 
@@ -138,32 +151,30 @@ function renderTable(rows) {
         </a>
       `;
 
-      const addLink = `
-        <div class="coterie-add-link">
-          <button
-            class="skin2-link"
-            onclick="openCoteriePopup('${encId}')"
-            style="background:none;border:none;padding:0;cursor:pointer;"
-            type="button"
-          >
-            Add your sensory notes to the Coterie
-          </button>
-        </div>
+      const addButton = `
+        <button
+          class="skin2-link"
+          onclick="openCoteriePopup('${encId}')"
+          style="background:none;border:none;padding:0;cursor:pointer;"
+          type="button"
+        >
+          Add
+        </button>
       `;
 
-      // Keep search minimal per your decision: bottle_expression only
       const searchHay = (r.bottle_expression ?? "").toString().toLowerCase();
 
       return `
         <tr class="inv-row"
             data-search="${escapeHtml(searchHay)}"
             data-proof="${escapeHtml(r.proof)}">
-          <td>${star}${bottleLink}${addLink}</td>
-          <td>${fmt2(r.score)}</td>
-          <td>${fmtInt(r.coterie_review_count)}</td>
-          <td>${fmtMoney(r.msrp)}</td>
-          <td>${fmt1(r.proof)}</td>
-          <td>${fmtAge(r.age)}</td>
+          <td class="${colClass("score")}">${fmt2(r.score)}</td>
+          <td class="${colClass("msrp")}">${fmtMoney(r.msrp)}</td>
+          <td class="${colClass("proof")}">${fmt1(r.proof)}</td>
+          <td class="${colClass("age")}">${fmtAge(r.age)}</td>
+          <td class="${colClass("bottle_expression")}">${star}${bottleLink}</td>
+          <td class="${colClass("reviews")}">${fmtInt(r.coterie_review_count)}</td>
+          <td class="${colClass("add")}">${addButton}</td>
         </tr>
       `;
     })
@@ -176,7 +187,6 @@ function renderTable(rows) {
     </table>
   `;
 
-  // inventory-filter.js listens for this to apply search/proof filtering
   window.dispatchEvent(new Event("skin2:inventoryRendered"));
 }
 
