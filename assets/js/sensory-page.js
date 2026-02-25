@@ -220,9 +220,8 @@ async function loadSensory() {
       q = q.eq("new_update", true);
     }
 
-    const { data, error } = await q
-      .order("tasting_id", { ascending: false })
-      .limit(ROW_LIMIT);
+   const { data, error } = await q
+     .limit(ROW_LIMIT);
 
     if (error) throw error;
 
