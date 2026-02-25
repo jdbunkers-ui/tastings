@@ -6,7 +6,6 @@
 import { supabase } from "./supabaseClient.js";
 
 // ---- Config ----
-// Change this if your insert table is different:
 const INSERT_TABLE = "stg_coterie";
 
 // ---- DOM ----
@@ -58,6 +57,7 @@ function lockSingleBarrelId() {
     elSingleBarrelId.value = fromQs;
   }
 
+  // Make non-editable but still submittable (do NOT disable)
   elSingleBarrelId.setAttribute("readonly", "true");
 }
 
@@ -112,6 +112,7 @@ if (form) {
       }
     }
 
+    // Payload keys MUST match stg_coterie column names
     const payload = {
       single_barrel_id,
       coterie_name,
@@ -138,7 +139,7 @@ if (form) {
 
       setMessage("Saved! Closing…");
 
-      // Optional: keep the ID but clear the user-entered fields
+      // Clear user-entered fields (keep ID)
       if (elName) elName.value = "";
       if (elReviewDate) elReviewDate.value = "";
       if (elColor) elColor.value = "";
@@ -149,7 +150,6 @@ if (form) {
       if (elFinishNotes) elFinishNotes.value = "";
       if (elFinishScore) elFinishScore.value = "";
 
-      // Close the popup shortly after success
       setTimeout(() => {
         try { window.close(); } catch (_) {}
       }, 650);
