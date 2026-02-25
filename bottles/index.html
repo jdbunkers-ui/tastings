@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Barrel Details</title>
+    <link rel="stylesheet" href="../assets/css/skin2.css" />
+
+    <style>
+      :root {
+        --s2-bg: #f6f1ea;
+        --s2-panel: #ffffff;
+        --s2-border: #d8cfc3;
+
+        --s2-brown-dark: #3b2a20;
+        --s2-brown-mid: #6a4a32;
+        --s2-amber: #b57a2a;
+        --s2-amber-soft: #e1b66a;
+
+        --s2-text: #2b1d14;
+        --s2-text-muted: #7a6758;
+
+        --bg: var(--s2-bg);
+        --panel: rgba(255, 255, 255, 0.86);
+        --panel2: rgba(255, 255, 255, 0.70);
+        --border: var(--s2-border);
+
+        --text: var(--s2-text);
+        --muted: var(--s2-text-muted);
+        --muted2: rgba(122, 103, 88, 0.78);
+
+        --good: rgba(46, 204, 113, 0.18);
+        --bad: rgba(231, 76, 60, 0.18);
+
+        --link: #8a5a20;
+        --link-hover: #b57a2a;
+      }
+
+      html, body { height: 100%; }
+
+      body {
+        margin: 0;
+        background:
+          radial-gradient(1200px 800px at 20% -10%, rgba(181, 122, 42, 0.14), transparent 55%),
+          radial-gradient(900px 700px at 90% 0%, rgba(225, 182, 106, 0.12), transparent 50%),
+          var(--bg);
+        color: var(--text);
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      }
+
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 18px 14px 46px;
+      }
+
+      /* ✅ Top header layout */
+      .topbar {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 14px;
+      }
+
+      .brand {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        flex: 1;
+        min-width: 0;
+      }
+
+      .brand h1 {
+        margin: 0;
+        font-size: 20px;
+        letter-spacing: 0.2px;
+      }
+
+      .brand .sub {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .card {
+        border: 1px solid var(--border);
+        background: var(--panel);
+        border-radius: 16px;
+        padding: 14px;
+      }
+
+      .section-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin: 18px 2px 10px;
+      }
+
+      .section-title h2 {
+        margin: 0;
+        font-size: 14px;
+        letter-spacing: 0.3px;
+        color: rgba(43, 29, 20, 0.90);
+        text-transform: none;
+      }
+
+      .section-title .hint {
+        color: var(--muted2);
+        font-size: 12px;
+      }
+
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      @media (max-width: 860px) {
+        .grid-2 { grid-template-columns: 1fr; }
+        .topbar { flex-direction: column; }
+        #composite-score { text-align: left !important; }
+      }
+
+      a { color: var(--link); }
+      a:hover { color: var(--link-hover); }
+
+      /* ✅ Foldable Flight Outcomes */
+      .hb-details {
+        border: 0;
+        margin: 0;
+      }
+
+      .hb-details > summary {
+        list-style: none;
+        cursor: pointer;
+      }
+
+      .hb-details > summary::-webkit-details-marker { display: none; }
+
+      .hb-details .summary-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin: 18px 2px 10px; /* matches .section-title spacing */
+      }
+
+      .hb-details .summary-row h2 {
+        margin: 0;
+        font-size: 14px;
+        letter-spacing: 0.3px;
+        color: rgba(43, 29, 20, 0.90);
+        text-transform: none;
+      }
+
+      .hb-details .summary-row .hint {
+        color: var(--muted2);
+        font-size: 12px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .hb-details .chev {
+        width: 10px;
+        height: 10px;
+        border-right: 2px solid rgba(43, 29, 20, 0.55);
+        border-bottom: 2px solid rgba(43, 29, 20, 0.55);
+        transform: rotate(45deg);
+        transition: transform 140ms ease;
+        margin-left: 4px;
+      }
+
+      .hb-details[open] .chev {
+        transform: rotate(225deg);
+      }
+
+      /* =========================
+         ✅ V17 Tabs
+         ========================= */
+      .tabs {
+        display: flex;
+        align-items: flex-end;
+        gap: 8px;
+        margin: 14px 0 0;
+        border-bottom: 1px solid rgba(216, 207, 195, 0.85);
+      }
+
+      .tab {
+        appearance: none;
+        border: 1px solid rgba(216, 207, 195, 0.95);
+        border-bottom: 0;
+        background: rgba(255,255,255,0.55);
+        color: rgba(43, 29, 20, 0.85);
+        padding: 10px 12px;
+        border-top-left-radius: 14px;
+        border-top-right-radius: 14px;
+        font-size: 14px;
+        cursor: pointer;
+        line-height: 1;
+        user-select: none;
+      }
+
+      .tab:hover {
+        background: rgba(255,255,255,0.70);
+      }
+
+      .tab[aria-selected="true"] {
+        background: rgba(255,255,255,0.90);
+        color: rgba(43, 29, 20, 0.95);
+        position: relative;
+      }
+
+      /* amber underline accent for active tab */
+      .tab[aria-selected="true"]::after {
+        content: "";
+        position: absolute;
+        left: 10px;
+        right: 10px;
+        bottom: -1px;
+        height: 3px;
+        background: rgba(181, 122, 42, 0.95);
+        border-radius: 4px;
+      }
+
+      .tab-panels {
+        padding-top: 14px;
+      }
+
+      /* under construction panel */
+      .uc-card {
+        border: 1px dashed rgba(216, 207, 195, 0.95);
+        background: rgba(255, 255, 255, 0.62);
+        border-radius: 18px;
+        padding: 22px 16px;
+        text-align: center;
+      }
+
+      .uc-icon {
+        font-size: 34px;
+        line-height: 1;
+        margin-bottom: 10px;
+      }
+
+      .uc-title {
+        font-size: 22px;
+        letter-spacing: 0.2px;
+        margin: 0;
+      }
+    </style>
+  </head>
+
+  <body data-page="bottles">
+    <div class="wrap">
+      <!-- Skin2 Header Injection Target -->
+      <div id="site-header"></div>
+
+      <!-- ✅ HERO (static) -->
+      <div class="topbar">
+        <div class="brand">
+          <h1 id="page-title">Loading…</h1>
+          <div class="sub" id="page-subtitle"></div>
+          <div class="sub" id="picker-line"></div>
+          <div class="sub" id="msrp-line"></div>
+          <div id="bottle-specs" style="margin-top:10px;"></div>
+        </div>
+
+        <!-- Composite Score -->
+        <div id="composite-score" style="text-align:right; white-space:nowrap;"></div>
+      </div>
+
+      <div class="card hero" id="hero"></div>
+
+      <!-- ✅ V17 Tabs -->
+      <div class="tabs" role="tablist" aria-label="Bottle detail tabs">
+        <button
+          class="tab"
+          id="tab-sensory"
+          type="button"
+          role="tab"
+          aria-selected="true"
+          aria-controls="panel-sensory"
+        >
+          Sensory Notes and Scores
+        </button>
+
+        <button
+          class="tab"
+          id="tab-coterie"
+          type="button"
+          role="tab"
+          aria-selected="false"
+          aria-controls="panel-coterie"
+          tabindex="-1"
+        >
+          Honey Barrel Hunter Coterie
+        </button>
+      </div>
+
+      <div class="tab-panels">
+        <!-- ✅ TAB 1: existing content -->
+        <section id="panel-sensory" role="tabpanel" aria-labelledby="tab-sensory">
+          <div class="section-title">
+            <h2>Sensory Notes and Scores</h2>
+            <div class="hint" id="tastings-hint"></div>
+          </div>
+          <div id="tastings"></div>
+
+          <!-- ✅ Flight Outcomes (foldable) -->
+          <details class="hb-details" id="flight-outcomes" open>
+            <summary>
+              <div class="summary-row">
+                <h2>Flight Outcomes</h2>
+                <div class="hint">
+                  Wins and losses <span class="chev" aria-hidden="true"></span>
+                </div>
+              </div>
+            </summary>
+
+            <div class="grid-2">
+              <div class="card" id="wins"></div>
+              <div class="card" id="losses"></div>
+            </div>
+          </details>
+
+          <div class="section-title">
+            <h2>Debug</h2>
+            <div class="hint">Raw payload</div>
+          </div>
+          <details>
+            <summary>Show raw JSON</summary>
+            <pre id="debug-json" class="mono">{}</pre>
+          </details>
+        </section>
+
+        <!-- ✅ TAB 2: Coterie placeholder -->
+        <section
+          id="panel-coterie"
+          role="tabpanel"
+          aria-labelledby="tab-coterie"
+          hidden
+        >
+          <div class="uc-card">
+            <div class="uc-icon" aria-hidden="true">🦺</div>
+            <h3 class="uc-title">HBH_V17 - Under Construction</h3>
+          </div>
+        </section>
+      </div>
+
+      <!-- Skin2 Footer Injection Target -->
+      <div id="site-footer"></div>
+    </div>
+
+    <script src="../assets/js/site-chrome.js"></script>
+    <script type="module" src="../assets/js/bottles-page.js"></script>
+
+    <!-- ✅ Tab switching (V17) -->
+    <script>
+      (function () {
+        const tabs = [
+          { tab: document.getElementById("tab-sensory"), panel: document.getElementById("panel-sensory") },
+          { tab: document.getElementById("tab-coterie"), panel: document.getElementById("panel-coterie") }
+        ];
+
+        function setActive(activeId) {
+          for (const t of tabs) {
+            const isActive = t.tab.id === activeId;
+            t.tab.setAttribute("aria-selected", isActive ? "true" : "false");
+            t.tab.tabIndex = isActive ? 0 : -1;
+            if (isActive) t.panel.removeAttribute("hidden");
+            else t.panel.setAttribute("hidden", "");
+          }
+        }
+
+        for (const t of tabs) {
+          t.tab.addEventListener("click", () => setActive(t.tab.id));
+          t.tab.addEventListener("keydown", (e) => {
+            if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+            e.preventDefault();
+            const idx = tabs.findIndex(x => x.tab.id === t.tab.id);
+            const nextIdx = e.key === "ArrowRight"
+              ? (idx + 1) % tabs.length
+              : (idx - 1 + tabs.length) % tabs.length;
+            tabs[nextIdx].tab.focus();
+            setActive(tabs[nextIdx].tab.id);
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>
