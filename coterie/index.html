@@ -127,7 +127,7 @@
               aria-label="Search coterie bottle list"
             />
 
-            <!-- RIGHT: Star Toggle (wired) -->
+            <!-- RIGHT: Star Toggle (static star like Pickers) -->
             <div class="hbh-toggle-wrap">
               <button
                 id="coterieNewOnlyToggle"
@@ -136,7 +136,7 @@
                 aria-pressed="false"
                 title="Filter bottles to only those with recently updated coterie"
               >
-                <svg class="hbh-star-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <svg class="star-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">
                   <path
                     d="M12 2.2l2.9 6.2 6.8.6-5.2 4.5 1.6 6.7L12 16.9 5.9 20.2l1.6-6.7L2.3 9l6.8-.6L12 2.2z"
                     fill="rgba(215, 162, 74, 0.95)"
@@ -183,6 +183,9 @@
         function setPressed(isOn) {
           if (!btn) return;
           btn.setAttribute("aria-pressed", isOn ? "true" : "false");
+          btn.title = isOn
+            ? "Showing only bottles with recently updated coterie (click to show all)"
+            : "Filter bottles to only those with recently updated coterie";
         }
 
         function dispatch(isOn) {
