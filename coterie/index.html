@@ -87,9 +87,7 @@
       }
 
       @media (max-width: 760px) {
-        .hbh-toggle-label {
-          display: none;
-        }
+        .hbh-toggle-label { display: none; }
       }
 
       .coterie-add-link {
@@ -129,7 +127,7 @@
               aria-label="Search coterie bottle list"
             />
 
-            <!-- RIGHT: Star Toggle (visual only for now, optional wiring later) -->
+            <!-- RIGHT: Star Toggle (wired) -->
             <div class="hbh-toggle-wrap">
               <button
                 id="coterieNewOnlyToggle"
@@ -171,6 +169,44 @@
 
     <!-- Scripts -->
     <script src="../assets/js/site-chrome.js"></script>
+
+    <!-- Toggle wiring: MUST run before coterie-page.js loads -->
+    <script>
+      (function () {
+        const KEY = "HBH_COTERIE_ONLY_NEW";
+        const btn = document.getElementById("coterieNewOnlyToggle");
+
+        // Initialize shared state
+        const initial = localStorage.getItem(KEY) === "1";
+        window.HBH_CoterieFilter = { onlyNew: initial };
+
+        function setPressed(isOn) {
+          if (!btn) return;
+          btn.setAttribute("aria-pressed", isOn ? "true" : "false");
+        }
+
+        function dispatch(isOn) {
+          window.dispatchEvent(
+            new CustomEvent("hbh:coterieFilterChanged", { detail: { onlyNew: isOn } })
+          );
+        }
+
+        // Paint initial UI state
+        setPressed(initial);
+
+        // Wire click
+        if (btn) {
+          btn.addEventListener("click", () => {
+            const next = !window.HBH_CoterieFilter.onlyNew;
+            window.HBH_CoterieFilter.onlyNew = next;
+
+            localStorage.setItem(KEY, next ? "1" : "0");
+            setPressed(next);
+            dispatch(next);
+          });
+        }
+      })();
+    </script>
 
     <!-- IMPORTANT: Must be module scripts -->
     <script type="module" src="../assets/js/coterie-page.js"></script>
