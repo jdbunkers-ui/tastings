@@ -18,6 +18,10 @@ const elTable    = document.getElementById("bp-table");
 const elFilter   = document.getElementById("filter");
 const elToggle   = document.getElementById("barrelPickerNewOnlyToggle");
 
+// Optional UI slots that exist in your barrel_pickers/index.html
+const elHint     = document.getElementById("bp-table-hint");   // status line like “Loaded 104 rows”
+const elStarSlot = document.getElementById("bp-star-slot");    // star placeholder inside the button
+
 /* ---------------- State ---------------- */
 let ALL_ROWS = [];
 let ONLY_NEW = false;
@@ -73,6 +77,19 @@ function distilleryLink(id, label) {
   </a>`;
 }
 
+/* ---------------- Status helpers ---------------- */
+function setHint(text) {
+  if (elHint) elHint.textContent = text ?? "";
+}
+
+function setTogglePressed(pressed) {
+  if (!elToggle) return;
+  elToggle.setAttribute("aria-pressed", pressed ? "true" : "false");
+  elToggle.title = pressed
+    ? "Showing only bottles with recently updated tastings (click to show all)"
+    : "Filter bottles to only those with recently updated tastings";
+}
+
 /* ---------------- Hero ---------------- */
 function renderHero(rows) {
   const r = rows[0] || {};
@@ -92,8 +109,8 @@ function renderHero(rows) {
     ${r.full_address ? `<p>${escapeHtml(r.full_address)}</p>` : ""}
     ${r.phone_number ? `<p>${escapeHtml(r.phone_number)}</p>` : ""}
     <p>
-      ${r.google_maps_url ? `<a href="${escapeHtml(r.google_maps_url)}" target="_blank">Google Maps</a>` : ""}
-      ${r.website_url ? ` · <a href="${escapeHtml(r.website_url)}" target="_blank">Website</a>` : ""}
+      ${r.google_maps_url ? `<a href="${escapeHtml(r.google_maps_url)}" target="_blank" rel="noreferrer">Google Maps</a>` : ""}
+      ${r.website_url ? ` · <a href="${escapeHtml(r.website_url)}" target="_blank" rel="noreferrer">Website</a>` : ""}
     </p>
     ${r.barrel_picker_description ? `<p>${escapeHtml(r.barrel_picker_description)}</p>` : ""}
   `;
@@ -147,11 +164,11 @@ function applyFilters() {
   let rows = [...ALL_ROWS];
 
   if (ONLY_NEW) {
-    rows = rows.filter(r => r.new_update === true);
+    rows = rows.filter((r) => r.new_update === true);
   }
 
   if (QUERY) {
-    rows = rows.filter(r =>
+    rows = rows.filter((r) =>
       [
         r.bottle_expression,
         r.distillery_name,
@@ -170,6 +187,9 @@ function applyFilters() {
 
 /* ---------------- Table render ---------------- */
 function renderTable(rows) {
+  // Visible status line like Inventory
+  setHint(`Loaded ${rows.length} rows`);
+
   if (!elTable) return;
 
   if (!rows.length) {
@@ -180,13 +200,13 @@ function renderTable(rows) {
   const cols = ["score", "msrp", "proof", "age", "bottle_expression", "distillery_name"];
 
   const thead = cols
-    .map(c => `<th class="${invColClass(c)}">${headerLabel(c)}</th>`)
+    .map((c) => `<th class="${invColClass(c)}">${headerLabel(c)}</th>`)
     .join("");
 
   const tbody = rows
-    .map(r => {
+    .map((r) => {
       const tds = cols
-        .map(c => `<td class="${invColClass(c)}">${renderCell(c, r)}</td>`)
+        .map((c) => `<td class="${invColClass(c)}">${renderCell(c, r)}</td>`)
         .join("");
       return `<tr>${tds}</tr>`;
     })
@@ -202,15 +222,23 @@ function renderTable(rows) {
 
 /* ---------------- Toggle wiring ---------------- */
 (function initToggle() {
+  // Star inside the button (your HTML uses <span id="bp-star-slot"></span>)
+  if (elStarSlot) {
+    elStarSlot.innerHTML = rotatingStarSVG({ size: 16 });
+  } else if (elToggle && !elToggle.querySelector("svg")) {
+    // Fallback: if no slot exists, still show a star
+    elToggle.insertAdjacentHTML("afterbegin", rotatingStarSVG({ size: 16, style: "margin-right:6px;" }));
+  }
+
   if (!elToggle) return;
 
   const initial = localStorage.getItem(KEY_ONLY_NEW) === "1";
   ONLY_NEW = initial;
-  elToggle.setAttribute("aria-pressed", initial ? "true" : "false");
+  setTogglePressed(initial);
 
   elToggle.addEventListener("click", () => {
     ONLY_NEW = !ONLY_NEW;
-    elToggle.setAttribute("aria-pressed", ONLY_NEW ? "true" : "false");
+    setTogglePressed(ONLY_NEW);
     localStorage.setItem(KEY_ONLY_NEW, ONLY_NEW ? "1" : "0");
     applyFilters();
   });
@@ -219,7 +247,7 @@ function renderTable(rows) {
 /* ---------------- Search wiring ---------------- */
 if (elFilter) {
   elFilter.addEventListener("input", (e) => {
-    QUERY = e.target.value.toLowerCase().trim();
+    QUERY = String(e.target.value || "").toLowerCase().trim();
     applyFilters();
   });
 }
@@ -227,24 +255,48 @@ if (elFilter) {
 /* ---------------- Load ---------------- */
 async function load() {
   const id = getId();
-  if (!id) return;
+  if (!id) {
+    setHint("Missing barrel_picker_id");
+    return;
+  }
 
-  const { data: hero } = await supabase
-    .from(VIEW_PROFILE)
-    .select("*")
-    .eq("barrel_picker_id", id)
-    .limit(1);
+  setHint("Loading…");
 
-  if (hero?.length) renderHero(hero);
+  try {
+    const { data: hero, error: heroErr } = await supabase
+      .from(VIEW_PROFILE)
+      .select("*")
+      .eq("barrel_picker_id", id)
+      .limit(1);
 
-  const { data } = await supabase
-    .from(VIEW_INVENTORY)
-    .select("*")
-    .eq("barrel_picker_id", id)
-    .limit(BOTTLES_LIMIT);
+    if (heroErr) {
+      console.warn("Hero load error:", heroErr);
+    } else if (hero?.length) {
+      renderHero(hero);
+    }
 
-  ALL_ROWS = data || [];
-  applyFilters();
+    const { data, error: invErr } = await supabase
+      .from(VIEW_INVENTORY)
+      .select("*")
+      .eq("barrel_picker_id", id)
+      .limit(BOTTLES_LIMIT);
+
+    if (invErr) {
+      console.warn("Inventory load error:", invErr);
+      setHint("Error loading rows");
+      ALL_ROWS = [];
+      applyFilters();
+      return;
+    }
+
+    ALL_ROWS = data || [];
+    applyFilters();
+  } catch (err) {
+    console.error("Barrel picker page load failed:", err);
+    setHint("Error loading rows");
+    ALL_ROWS = [];
+    applyFilters();
+  }
 }
 
 load();
