@@ -282,7 +282,7 @@
           aria-selected="true"
           aria-controls="panel-sensory"
         >
-          Sensory Notes and Scores
+          Honey Barrel Hunter Notes
         </button>
 
         <button
@@ -294,7 +294,7 @@
           aria-controls="panel-coterie"
           tabindex="-1"
         >
-          Honey Barrel Hunter Coterie
+          Coterie Notes
         </button>
       </div>
 
@@ -302,7 +302,7 @@
         <!-- ✅ TAB 1: existing content -->
         <section id="panel-sensory" role="tabpanel" aria-labelledby="tab-sensory">
           <div class="section-title">
-            <h2>Sensory Notes and Scores</h2>
+            <h2>Honey Barrel Hunter Notes</h2>
             <div class="hint" id="tastings-hint"></div>
           </div>
           <div id="tastings"></div>
@@ -334,7 +334,7 @@
           </details>
         </section>
 
-        <!-- ✅ TAB 2: Coterie placeholder -->
+        <!-- ✅ TAB 2: Coterie placeholder (will be replaced by JS when loaded) -->
         <section
           id="panel-coterie"
           role="tabpanel"
@@ -368,8 +368,14 @@
             const isActive = t.tab.id === activeId;
             t.tab.setAttribute("aria-selected", isActive ? "true" : "false");
             t.tab.tabIndex = isActive ? 0 : -1;
+
             if (isActive) t.panel.removeAttribute("hidden");
             else t.panel.setAttribute("hidden", "");
+
+            // ✅ Lazy-load trigger when Coterie panel is opened
+            if (isActive && t.panel.id === "panel-coterie") {
+              window.dispatchEvent(new CustomEvent("hbh:coterie:open"));
+            }
           }
         }
 

@@ -96,6 +96,17 @@ function notesToHtml(raw) {
   return escapeHtml(s.replace(/\[\[([\s\S]*?)\]\]/g, "$1"));
 }
 
+function fmtDatePretty(x, fallback = "—") {
+  if (!x) return fallback;
+  const d = new Date(x);
+  if (Number.isNaN(d.getTime())) return String(x);
+  return d.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+  });
+}
+
 // -----------------------------
 // DOM
 // -----------------------------
@@ -111,6 +122,21 @@ const specsEl = document.getElementById("bottle-specs");
 const hintEl = document.getElementById("tastings-hint");
 const debugEl = document.getElementById("debug-json");
 const compositeEl = document.getElementById("composite-score");
+
+// ✅ Coterie panel (tab 2)
+const coteriePanelEl = document.getElementById("panel-coterie");
+
+// -----------------------------
+// Coterie (V17) config + cache
+// -----------------------------
+const COTERIE_VIEW = "v_single_barrel_coterie_entries";
+
+// cache per single_barrel_id so tab switching & back/forth is instant
+const coterieCache = new Map(); // key: single_barrel_id, value: rows[]
+const coterieInFlight = new Set(); // key: single_barrel_id currently loading
+
+// track the barrel currently rendered on the page (for lazy-load event)
+let currentBarrelId = "";
 
 // -----------------------------
 // Rendering
@@ -560,10 +586,174 @@ function renderDebug(payload) {
 }
 
 // -----------------------------
+// Coterie rendering
+// -----------------------------
+function renderCoterieLoading() {
+  if (!coteriePanelEl) return;
+  coteriePanelEl.innerHTML = `
+    <div class="card">
+      <div class="sub">Loading Coterie submissions…</div>
+    </div>
+  `;
+}
+
+function renderCoterieEmpty() {
+  if (!coteriePanelEl) return;
+  coteriePanelEl.innerHTML = `
+    <div class="card">
+      <div class="sub">No Coterie submissions yet for this barrel.</div>
+    </div>
+  `;
+}
+
+function renderCoterieError(message, details) {
+  if (!coteriePanelEl) return;
+  const extra =
+    details && typeof details === "object"
+      ? `<pre class="mono" style="white-space:pre-wrap;margin-top:10px;">${escapeHtml(
+          JSON.stringify(details, null, 2)
+        )}</pre>`
+      : details
+      ? `<pre class="mono" style="white-space:pre-wrap;margin-top:10px;">${escapeHtml(
+          String(details)
+        )}</pre>`
+      : "";
+  coteriePanelEl.innerHTML = `
+    <div class="card">
+      <div class="sub" style="color:#8b2d2d;">${escapeHtml(message)}</div>
+      ${extra}
+    </div>
+  `;
+}
+
+function renderCoterieRows(rows) {
+  if (!coteriePanelEl) return;
+
+  const items = (rows || [])
+    .map((r) => {
+      const dateText = fmtDatePretty(r.review_date ?? r.created_timestamp);
+
+      // ✅ spinning star next to date when new_update = true
+      const star = r?.new_update
+        ? rotatingStarSVG({
+            style:
+              "height:16px; width:16px; vertical-align:middle; margin-left:6px;",
+            title: "New this week",
+          })
+        : "";
+
+      return `
+        <div class="card" style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;">
+            <div style="min-width:0;">
+              <div style="font-weight:750;">
+                ${escapeHtml(fmt(r.submitted_by, "Coterie"))}
+              </div>
+              <div class="sub">
+                ${escapeHtml(dateText)} ${star}
+              </div>
+            </div>
+
+            <div style="text-align:right;white-space:nowrap;">
+              <div class="sub">Final</div>
+              <div style="font-weight:900;font-size:18px;line-height:1.15;">
+                ${escapeHtml(fmt2(r.final_score))}
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:10px;display:grid;gap:10px;">
+            <div>
+              <div class="sub" style="font-weight:750;">Nose (${escapeHtml(
+                fmt2(r.nose_score)
+              )})</div>
+              <div>${notesToHtml(fmt(r.nose_notes, "")) || "—"}</div>
+            </div>
+
+            <div>
+              <div class="sub" style="font-weight:750;">Palate (${escapeHtml(
+                fmt2(r.palate_score)
+              )})</div>
+              <div>${notesToHtml(fmt(r.palate_notes, "")) || "—"}</div>
+            </div>
+
+            <div>
+              <div class="sub" style="font-weight:750;">Finish (${escapeHtml(
+                fmt2(r.finish_score)
+              )})</div>
+              <div>${notesToHtml(fmt(r.finish_notes, "")) || "—"}</div>
+            </div>
+          </div>
+        </div>
+      `;
+    })
+    .join("");
+
+  coteriePanelEl.innerHTML = `
+    <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:2px 2px 10px;">
+      <div style="font-size:14px;font-weight:900;letter-spacing:.2px;">Honey Barrel Hunter Coterie</div>
+      <div class="sub">${rows.length} submission${rows.length === 1 ? "" : "s"}</div>
+    </div>
+    ${items}
+  `;
+}
+
+async function loadCoterieOnce(singleBarrelId) {
+  if (!singleBarrelId) {
+    renderCoterieError("Missing single_barrel_id for coterie load.");
+    return;
+  }
+
+  // Cached?
+  if (coterieCache.has(singleBarrelId)) {
+    renderCoterieRows(coterieCache.get(singleBarrelId) || []);
+    return;
+  }
+
+  // Already loading?
+  if (coterieInFlight.has(singleBarrelId)) return;
+
+  coterieInFlight.add(singleBarrelId);
+  renderCoterieLoading();
+
+  try {
+    const { data, error } = await supabase
+      .from(COTERIE_VIEW)
+      .select("*")
+      .eq("single_barrel_id", singleBarrelId)
+      .order("created_timestamp", { ascending: false });
+
+    if (error) throw error;
+
+    const rows = data || [];
+    coterieCache.set(singleBarrelId, rows);
+
+    if (!rows.length) renderCoterieEmpty();
+    else renderCoterieRows(rows);
+  } catch (err) {
+    renderCoterieError("Failed to load Coterie submissions.", err);
+  } finally {
+    coterieInFlight.delete(singleBarrelId);
+  }
+}
+
+// ✅ Listen for the tab-open event dispatched by bottles/index.html
+window.addEventListener("hbh:coterie:open", () => {
+  // If the barrel payload hasn't loaded yet, show a friendly stub.
+  if (!currentBarrelId) {
+    renderCoterieLoading();
+    return;
+  }
+  loadCoterieOnce(currentBarrelId);
+});
+
+// -----------------------------
 // Load
 // -----------------------------
 async function load() {
   const barrelId = getBarrelIdFromUrl();
+  currentBarrelId = barrelId || "";
+
   if (!barrelId) {
     if (subtitleEl) {
       subtitleEl.textContent =
@@ -573,6 +763,10 @@ async function load() {
     if (tastingsEl) tastingsEl.innerHTML = `<div class="card muted">No tastings.</div>`;
     if (winsEl) winsEl.innerHTML = `<div class="muted">No wins.</div>`;
     if (lossesEl) lossesEl.innerHTML = `<div class="muted">No losses.</div>`;
+    if (coteriePanelEl) {
+      // keep placeholder sane if user clicks the tab with no id
+      renderCoterieError("No barrel id provided.");
+    }
     renderDebug({ error: "Missing id" });
     return;
   }
@@ -607,6 +801,10 @@ async function load() {
     foe_beat: payload?.foe_beat || [],
     foe_lost: payload?.foe_lost || [],
   });
+
+  // Optional: if user already opened the Coterie tab before data arrived,
+  // we don't auto-load unless the tab was opened (event-driven).
+  // (You can change this later if desired.)
 }
 
 document.querySelector(".wrap")?.addEventListener("click", (e) => {
