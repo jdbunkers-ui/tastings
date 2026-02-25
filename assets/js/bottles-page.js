@@ -98,8 +98,18 @@ function notesToHtml(raw) {
 
 function fmtDatePretty(x, fallback = "—") {
   if (!x) return fallback;
-  const d = new Date(x);
-  if (Number.isNaN(d.getTime())) return String(x);
+
+  // Prefer YYYY-MM-DD if we already have it
+  const s = String(x);
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+
+  // If it's an ISO timestamp, trim date portion
+  if (s.length >= 10 && /^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0, 10);
+
+  const d = new Date(s);
+  if (Number.isNaN(d.getTime())) return s;
+
+  // Fallback: locale short
   return d.toLocaleDateString(undefined, {
     year: "numeric",
     month: "short",
@@ -283,12 +293,10 @@ function renderHero(barrel) {
       ${
         desc
           ? `
-            <!-- ✅ Match the label font to Distillery / Barrel Picker / MSRP -->
             <div style="${rowStyle}">
               <span style="${labelStyle}">Final thoughts on this expression from HBH...</span>
             </div>
 
-            <!-- ✅ Render description in italics -->
             <div style="margin-top:6px; font-size:14px; line-height:1.35; color: rgba(43,29,20,0.88); font-style: italic;">
               ${escapeHtml(desc)}
             </div>
@@ -395,27 +403,6 @@ function renderTastings(tastings) {
           .join("")}
       </tbody>
     </table>
-
-    <style>
-      table.sensory-table tbody tr:nth-child(even){ background: rgba(246, 241, 234, 0.75); }
-      table.sensory-table tbody tr:nth-child(odd){ background: rgba(255, 255, 255, 0.62); }
-      table.sensory-table tbody tr:hover{ background: rgba(225, 182, 106, 0.18); }
-
-      /* keep nowrap behavior generic */
-      .no-wrap{ white-space: nowrap; }
-
-      /* ✅ Right-align ONLY the Date column (and keeps star + date together) */
-      td.date-cell{ text-align: right; }
-
-      th.score-head{ text-align: center; white-space: nowrap; }
-      td.score-cell{ text-align: center; white-space: nowrap; }
-
-      th.num,
-      td.num {
-        text-align: center;
-        white-space: nowrap;
-      }
-    </style>
   `;
 }
 
@@ -600,9 +587,7 @@ function renderCoterieLoading() {
 function renderCoterieEmpty() {
   if (!coteriePanelEl) return;
   coteriePanelEl.innerHTML = `
-    <div class="card">
-      <div class="sub">No Coterie submissions yet for this barrel.</div>
-    </div>
+    <div class="card muted">No Coterie submissions yet for this barrel.</div>
   `;
 }
 
@@ -629,72 +614,84 @@ function renderCoterieError(message, details) {
 function renderCoterieRows(rows) {
   if (!coteriePanelEl) return;
 
-  const items = (rows || [])
-    .map((r) => {
-      const dateText = fmtDatePretty(r.review_date ?? r.created_timestamp);
-
-      // ✅ spinning star next to date when new_update = true
-      const star = r?.new_update
-        ? rotatingStarSVG({
-            style:
-              "height:16px; width:16px; vertical-align:middle; margin-left:6px;",
-            title: "New this week",
-          })
-        : "";
-
-      return `
-        <div class="card" style="margin-bottom:12px;">
-          <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;">
-            <div style="min-width:0;">
-              <div style="font-weight:750;">
-                ${escapeHtml(fmt(r.submitted_by, "Coterie"))}
-              </div>
-              <div class="sub">
-                ${escapeHtml(dateText)} ${star}
-              </div>
-            </div>
-
-            <div style="text-align:right;white-space:nowrap;">
-              <div class="sub">Final</div>
-              <div style="font-weight:900;font-size:18px;line-height:1.15;">
-                ${escapeHtml(fmt2(r.final_score))}
-              </div>
-            </div>
-          </div>
-
-          <div style="margin-top:10px;display:grid;gap:10px;">
-            <div>
-              <div class="sub" style="font-weight:750;">Nose (${escapeHtml(
-                fmt2(r.nose_score)
-              )})</div>
-              <div>${notesToHtml(fmt(r.nose_notes, "")) || "—"}</div>
-            </div>
-
-            <div>
-              <div class="sub" style="font-weight:750;">Palate (${escapeHtml(
-                fmt2(r.palate_score)
-              )})</div>
-              <div>${notesToHtml(fmt(r.palate_notes, "")) || "—"}</div>
-            </div>
-
-            <div>
-              <div class="sub" style="font-weight:750;">Finish (${escapeHtml(
-                fmt2(r.finish_score)
-              )})</div>
-              <div>${notesToHtml(fmt(r.finish_notes, "")) || "—"}</div>
-            </div>
-          </div>
-        </div>
-      `;
-    })
-    .join("");
+  const list = rows || [];
+  const hint = `${list.length} submission${
+    list.length === 1 ? "" : "s"
+  } • sorted by submitted date (desc)`;
 
   coteriePanelEl.innerHTML = `
-    <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:2px 2px 10px;">
-      <div style="font-size:14px;font-weight:900;letter-spacing:.2px;">Honey Barrel Hunter Coterie</div>
-      <div class="sub">${rows.length} submission${rows.length === 1 ? "" : "s"}</div>
+    <div class="section-title" style="margin-top:0;">
+      <h2>Coterie Notes</h2>
+      <div class="hint">${escapeHtml(hint)}</div>
     </div>
-    ${items}
+
+    ${
+      list.length
+        ? `
+          <table class="sensory-table coterie-table">
+            <thead>
+              <tr>
+                <th class="no-wrap">Date</th>
+                <th class="score-head">Score</th>
+                <th>Nose Notes</th>
+                <th class="score-head">Score</th>
+                <th>Palate Notes</th>
+                <th class="score-head">Score</th>
+                <th>Finish Notes</th>
+                <th class="num">Final</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${list
+                .map((r) => {
+                  const star = r?.new_update
+                    ? rotatingStarSVG({
+                        style:
+                          "height:16px; width:16px; vertical-align:middle; margin-right:6px;",
+                        title: "New this week",
+                      })
+                    : "";
+
+                  const dateVal = fmtDatePretty(
+                    r.review_date ?? r.created_timestamp
+                  );
+
+                  const submittedBy = fmt(r.submitted_by, "");
+                  const submittedLine = submittedBy
+                    ? `<div class="sub" style="margin-bottom:4px; color: var(--muted2);">Submitted by: ${escapeHtml(
+                        submittedBy
+                      )}</div>`
+                    : "";
+
+                  return `
+                    <tr>
+                      <td class="mono no-wrap date-cell">
+                        ${star}
+                        ${escapeHtml(dateVal)}
+                      </td>
+
+                      <td class="score-cell"><b>${escapeHtml(fmt(r.nose_score))}</b></td>
+                      <td class="notes">
+                        ${submittedLine}
+                        ${notesToHtml(fmt(r.nose_notes, ""))}
+                      </td>
+
+                      <td class="score-cell"><b>${escapeHtml(fmt(r.palate_score))}</b></td>
+                      <td class="notes">${notesToHtml(fmt(r.palate_notes, ""))}</td>
+
+                      <td class="score-cell"><b>${escapeHtml(fmt(r.finish_score))}</b></td>
+                      <td class="notes">${notesToHtml(fmt(r.finish_notes, ""))}</td>
+
+                      <td class="num"><b>${escapeHtml(fmt2(r.final_score))}</b></td>
+                    </tr>
+                  `;
+                })
+                .join("")}
+            </tbody>
+          </table>
+        `
+        : `<div class="card muted">No Coterie submissions yet for this barrel.</div>`
+    }
   `;
 }
 
@@ -739,7 +736,6 @@ async function loadCoterieOnce(singleBarrelId) {
 
 // ✅ Listen for the tab-open event dispatched by bottles/index.html
 window.addEventListener("hbh:coterie:open", () => {
-  // If the barrel payload hasn't loaded yet, show a friendly stub.
   if (!currentBarrelId) {
     renderCoterieLoading();
     return;
@@ -763,10 +759,7 @@ async function load() {
     if (tastingsEl) tastingsEl.innerHTML = `<div class="card muted">No tastings.</div>`;
     if (winsEl) winsEl.innerHTML = `<div class="muted">No wins.</div>`;
     if (lossesEl) lossesEl.innerHTML = `<div class="muted">No losses.</div>`;
-    if (coteriePanelEl) {
-      // keep placeholder sane if user clicks the tab with no id
-      renderCoterieError("No barrel id provided.");
-    }
+    if (coteriePanelEl) renderCoterieError("No barrel id provided.");
     renderDebug({ error: "Missing id" });
     return;
   }
@@ -801,10 +794,6 @@ async function load() {
     foe_beat: payload?.foe_beat || [],
     foe_lost: payload?.foe_lost || [],
   });
-
-  // Optional: if user already opened the Coterie tab before data arrived,
-  // we don't auto-load unless the tab was opened (event-driven).
-  // (You can change this later if desired.)
 }
 
 document.querySelector(".wrap")?.addEventListener("click", (e) => {
