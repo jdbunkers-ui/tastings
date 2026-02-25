@@ -54,11 +54,6 @@
         border-color: rgba(181, 122, 42, 0.55);
       }
 
-      /* IMPORTANT:
-         No .hbh-star-icon animation or @keyframes here.
-         Sensory inherits global rotating star from skin2.css.
-      */
-
       .hbh-toggle-label {
         font-size: 12px;
         letter-spacing: 0.2px;
@@ -95,7 +90,8 @@
                 aria-pressed="false"
                 title="Filter to only recently updated tastings"
               >
-                <svg class="hbh-star-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <!-- Static star like Pickers (toggle star should not spin) -->
+                <svg class="star-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">
                   <path
                     d="M12 2.2l2.9 6.2 6.8.6-5.2 4.5 1.6 6.7L12 16.9 5.9 20.2l1.6-6.7L2.3 9l6.8-.6L12 2.2z"
                     fill="rgba(215, 162, 74, 0.95)"
