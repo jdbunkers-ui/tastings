@@ -43,6 +43,32 @@
         min-width: 220px;
       }
 
+      /* NEW: Add Bottle button */
+      .hbh-add-bottle-btn {
+        appearance: none;
+        -webkit-appearance: none;
+        border: 1px solid rgba(181, 122, 42, 0.55);
+        background: rgba(246, 241, 234, 0.92);
+        color: var(--s2-text);
+        border-radius: 999px;
+        padding: 8px 12px;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.2px;
+        cursor: pointer;
+        user-select: none;
+        transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+      }
+
+      .hbh-add-bottle-btn:hover {
+        background: rgba(255, 255, 255, 0.92);
+        border-color: rgba(181, 122, 42, 0.75);
+      }
+
+      .hbh-add-bottle-btn:active {
+        transform: scale(0.98);
+      }
+
       /* RIGHT: Toggle */
       .hbh-toggle-wrap {
         display: inline-flex;
@@ -127,6 +153,16 @@
               aria-label="Search coterie bottle list"
             />
 
+            <!-- NEW: Add Bottle button (popup) -->
+            <button
+              id="addBottleBtn"
+              class="hbh-add-bottle-btn"
+              type="button"
+              title="Add a bottle (Phase II enhancement)"
+            >
+              Add Bottle
+            </button>
+
             <!-- RIGHT: Star Toggle (static star like Pickers) -->
             <div class="hbh-toggle-wrap">
               <button
@@ -169,6 +205,25 @@
 
     <!-- Scripts -->
     <script src="../assets/js/site-chrome.js"></script>
+
+    <!-- NEW: Add Bottle popup wiring -->
+    <script>
+      (function () {
+        const btn = document.getElementById("addBottleBtn");
+        if (!btn) return;
+
+        function openAddBottlePopup() {
+          const url = `../coterie/add-bottle.html`;
+          window.open(
+            url,
+            "_blank",
+            "width=720,height=520,resizable=yes,scrollbars=yes"
+          );
+        }
+
+        btn.addEventListener("click", openAddBottlePopup);
+      })();
+    </script>
 
     <!-- Toggle wiring: MUST run before coterie-page.js loads -->
     <script>
