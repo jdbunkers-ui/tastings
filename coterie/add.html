@@ -29,6 +29,13 @@
       font-size: 14px;
     }
 
+    /* Make readonly feel intentional */
+    .coterie-form input[readonly] {
+      background: rgba(246, 241, 234, 0.7);
+      color: rgba(43, 29, 20, 0.92);
+      cursor: not-allowed;
+    }
+
     .coterie-grid-2 {
       display: grid;
       grid-template-columns: 1fr 120px;
@@ -46,6 +53,12 @@
 
     .coterie-success {
       color: green;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    .coterie-error {
+      color: #9b2c2c;
       font-weight: 600;
       margin-top: 8px;
     }
@@ -128,6 +141,36 @@
   </main>
 
   <script src="../assets/js/site-chrome.js"></script>
+
+  <!-- Inject single_barrel_id from query string and lock it -->
+  <script>
+    (function () {
+      const params = new URLSearchParams(window.location.search);
+      const singleBarrelId = (params.get("single_barrel_id") || "").trim();
+
+      const elId = document.getElementById("single_barrel_id");
+      const form = document.getElementById("coterieForm");
+      const msg = document.getElementById("formMessage");
+
+      if (elId) {
+        elId.value = singleBarrelId;
+        elId.setAttribute("readonly", "true");
+      }
+
+      // If opened without an id, prevent submission and show a clear message.
+      if (form && !singleBarrelId) {
+        if (msg) {
+          msg.className = "coterie-error";
+          msg.textContent =
+            "Missing single_barrel_id. Please close this window and click “Add Notes” from the Coterie table.";
+        }
+        form.addEventListener("submit", (e) => {
+          e.preventDefault();
+        });
+      }
+    })();
+  </script>
+
   <script type="module" src="../assets/js/coterie-add.js"></script>
 </body>
 </html>
