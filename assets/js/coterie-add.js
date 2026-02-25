@@ -1,176 +1,165 @@
 /* =========================================================
-   Honey Barrel Hunter — Skin2 Coterie Page
-   File: assets/js/coterie-page.js
+   Honey Barrel Hunter — Coterie Add (Popup)
+   File: assets/js/coterie-add.js
    ========================================================= */
 
 import { supabase } from "./supabaseClient.js";
-import { rotatingStarSVG } from "./ui/star.js";
 
-const VIEW_NAME = "v_coterie";
-const ROW_LIMIT = 300;
+// ---- Config ----
+// Change this if your insert table is different:
+const INSERT_TABLE = "fact_coterie";
 
-// ---------- DOM ----------
-const elContent = document.getElementById("coterie-content");
-const elStatus = document.getElementById("status");
-const elError = document.getElementById("error");
+// ---- DOM ----
+const form = document.getElementById("coterieForm");
+const elMsg = document.getElementById("formMessage");
 
-// ---------- Helpers ----------
-function setStatus(text) {
-  if (elStatus) elStatus.textContent = text ?? "";
+const elSingleBarrelId = document.getElementById("single_barrel_id");
+const elName = document.getElementById("coterie_name");
+const elReviewDate = document.getElementById("review_date");
+const elColor = document.getElementById("color");
+
+const elNoseNotes = document.getElementById("nose_notes");
+const elNoseScore = document.getElementById("nose_score");
+
+const elPalateNotes = document.getElementById("palate_notes");
+const elPalateScore = document.getElementById("palate_score");
+
+const elFinishNotes = document.getElementById("finish_notes");
+const elFinishScore = document.getElementById("finish_score");
+
+const elSubmitBtn = form?.querySelector('button[type="submit"]');
+
+// ---- Helpers ----
+function setMessage(text, kind = "success") {
+  if (!elMsg) return;
+  elMsg.textContent = text ?? "";
+  elMsg.className = kind === "error" ? "coterie-error" : "coterie-success";
 }
 
-function showError(message) {
-  if (!elError) return;
-  elError.style.display = "";
-  elError.textContent = message;
+function getTrimmed(el) {
+  return (el?.value ?? "").toString().trim();
 }
 
-function clearError() {
-  if (!elError) return;
-  elError.style.display = "none";
-  elError.textContent = "";
+function numOrNull(el) {
+  const raw = getTrimmed(el);
+  if (raw === "") return null;
+  const n = Number(raw);
+  return Number.isFinite(n) ? n : null;
 }
 
-function escapeHtml(v) {
-  return String(v ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+function lockSingleBarrelId() {
+  if (!elSingleBarrelId) return;
+
+  // Backup: populate from query string if needed
+  const params = new URLSearchParams(window.location.search);
+  const fromQs = (params.get("single_barrel_id") || "").trim();
+
+  if (!getTrimmed(elSingleBarrelId) && fromQs) {
+    elSingleBarrelId.value = fromQs;
+  }
+
+  elSingleBarrelId.setAttribute("readonly", "true");
 }
 
-function fmt1(v) {
-  const n = Number(v);
-  return Number.isFinite(n) ? n.toFixed(1) : escapeHtml(v);
-}
+// ---- Boot ----
+lockSingleBarrelId();
 
-function fmtMoney(v) {
-  const n = Number(v);
-  return Number.isFinite(n) ? `$${n.toFixed(2)}` : escapeHtml(v);
-}
+// ---- Submit ----
+if (form) {
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    setMessage("");
 
-function fmtAge(v) {
-  const n = Number(v);
-  if (!Number.isFinite(n) || n < 1) return "NAS";
-  return n.toFixed(1);
-}
+    const single_barrel_id = getTrimmed(elSingleBarrelId);
+    const coterie_name = getTrimmed(elName);
+    const review_date = getTrimmed(elReviewDate);
 
-// ---------- Popup Logic ----------
-function openCoteriePopup(singleBarrelId) {
-  const url = `../coterie/add.html?single_barrel_id=${singleBarrelId}`;
-
-  const popup = window.open(
-    url,
-    "_blank",
-    "width=720,height=820,resizable=yes,scrollbars=yes"
-  );
-
-  // Poll to refresh when popup closes
-  const timer = setInterval(() => {
-    if (popup && popup.closed) {
-      clearInterval(timer);
-      load(); // refresh page after submission
+    if (!single_barrel_id) {
+      setMessage(
+        "Missing single_barrel_id. Please close this window and click “Add Notes” from the Coterie table.",
+        "error"
+      );
+      return;
     }
-  }, 800);
+
+    if (!coterie_name) {
+      setMessage("Please enter your name.", "error");
+      elName?.focus();
+      return;
+    }
+
+    if (!review_date) {
+      setMessage("Please select a review date.", "error");
+      elReviewDate?.focus();
+      return;
+    }
+
+    // Validate scores (optional fields, but if present must be 0..10)
+    const scores = [
+      { el: elNoseScore, label: "Nose score" },
+      { el: elPalateScore, label: "Palate score" },
+      { el: elFinishScore, label: "Finish score" },
+    ];
+
+    for (const s of scores) {
+      const raw = getTrimmed(s.el);
+      if (raw === "") continue;
+      const n = Number(raw);
+      if (!Number.isFinite(n) || n < 0 || n > 10) {
+        setMessage(`${s.label} must be a number from 0 to 10.`, "error");
+        s.el?.focus();
+        return;
+      }
+    }
+
+    const payload = {
+      single_barrel_id,
+      coterie_name,
+      review_date,
+      color: getTrimmed(elColor) || null,
+
+      nose_notes: getTrimmed(elNoseNotes) || null,
+      nose_score: numOrNull(elNoseScore),
+
+      palate_notes: getTrimmed(elPalateNotes) || null,
+      palate_score: numOrNull(elPalateScore),
+
+      finish_notes: getTrimmed(elFinishNotes) || null,
+      finish_score: numOrNull(elFinishScore),
+    };
+
+    // UI: disable submit while saving
+    if (elSubmitBtn) elSubmitBtn.disabled = true;
+    setMessage("Submitting…");
+
+    try {
+      const { error } = await supabase.from(INSERT_TABLE).insert(payload);
+      if (error) throw error;
+
+      setMessage("Saved! Closing…");
+
+      // Optional: keep the ID but clear the user-entered fields
+      if (elName) elName.value = "";
+      if (elReviewDate) elReviewDate.value = "";
+      if (elColor) elColor.value = "";
+      if (elNoseNotes) elNoseNotes.value = "";
+      if (elNoseScore) elNoseScore.value = "";
+      if (elPalateNotes) elPalateNotes.value = "";
+      if (elPalateScore) elPalateScore.value = "";
+      if (elFinishNotes) elFinishNotes.value = "";
+      if (elFinishScore) elFinishScore.value = "";
+
+      // Close the popup shortly after success
+      setTimeout(() => {
+        try { window.close(); } catch (_) {}
+      }, 650);
+    } catch (err) {
+      const msg =
+        err?.message ||
+        (typeof err === "string" ? err : "Failed to submit to Coterie.");
+      setMessage(msg, "error");
+    } finally {
+      if (elSubmitBtn) elSubmitBtn.disabled = false;
+    }
+  });
 }
-
-// Make globally accessible for inline onclick
-window.openCoteriePopup = openCoteriePopup;
-
-// ---------- Render ----------
-function renderTable(rows) {
-  if (!rows || rows.length === 0) {
-    elContent.innerHTML =
-      `<div style="padding:12px;">No Coterie rows returned.</div>`;
-    window.dispatchEvent(new Event("skin2:inventoryRendered"));
-    return;
-  }
-
-  const tbody = rows
-    .map((r) => {
-      const star = r.new_update
-        ? rotatingStarSVG({ size: 16, style: "margin-right:6px;" })
-        : "";
-
-      const bottleLink =
-        `<a class="skin2-link"
-           href="../bottles/index.html?single_barrel_id=${encodeURIComponent(
-             r.single_barrel_id
-           )}">
-           ${escapeHtml(r.bottle_expression)}
-         </a>`;
-
-      const addLink =
-        `<div class="coterie-add-link">
-           <button
-             class="skin2-link"
-             onclick="openCoteriePopup('${encodeURIComponent(
-               r.single_barrel_id
-             )}')"
-             style="background:none;border:none;padding:0;cursor:pointer;"
-           >
-             Add your sensory notes to the Coterie
-           </button>
-         </div>`;
-
-      return `
-        <tr class="inv-row"
-            data-search="${escapeHtml(
-              (r.bottle_expression ?? "").toLowerCase()
-            )}"
-            data-proof="${escapeHtml(r.proof)}">
-
-          <td>${star}${bottleLink}${addLink}</td>
-          <td>${fmt1(r.score)}</td>
-          <td>${fmtMoney(r.msrp)}</td>
-          <td>${fmt1(r.proof)}</td>
-          <td>${fmtAge(r.age)}</td>
-
-        </tr>
-      `;
-    })
-    .join("");
-
-  elContent.innerHTML = `
-    <table class="skin2-table" aria-label="Coterie bottle table">
-      <thead>
-        <tr>
-          <th>Bottle</th>
-          <th>Score</th>
-          <th>MSRP</th>
-          <th>Proof</th>
-          <th>Age</th>
-        </tr>
-      </thead>
-      <tbody>${tbody}</tbody>
-    </table>
-  `;
-
-  // Allow inventory-filter.js to reapply proof + search filter
-  window.dispatchEvent(new Event("skin2:inventoryRendered"));
-}
-
-// ---------- Data Load ----------
-async function load() {
-  clearError();
-  setStatus("Loading Coterie…");
-
-  try {
-    const { data, error } = await supabase
-      .from(VIEW_NAME)
-      .select("*")
-      .limit(ROW_LIMIT);
-
-    if (error) throw error;
-
-    renderTable(data || []);
-    setStatus(`Loaded ${data?.length ?? 0} rows`);
-  } catch (e) {
-    showError("Failed to load v_coterie.");
-    setStatus("Error loading Coterie");
-  }
-}
-
-// ---------- Boot ----------
-load();
