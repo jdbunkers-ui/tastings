@@ -14,6 +14,10 @@ const elContent = document.getElementById("coterie-content");
 const elStatus = document.getElementById("status");
 const elError = document.getElementById("error");
 
+// ---------- State ----------
+// Driven by coterie/index.html wiring: window.HBH_CoterieFilter + event.
+let coterieOnlyNew = !!(window.HBH_CoterieFilter && window.HBH_CoterieFilter.onlyNew);
+
 // ---------- Helpers ----------
 function setStatus(text) {
   if (elStatus) elStatus.textContent = text ?? "";
@@ -89,7 +93,7 @@ function colClass(col) {
     age: "col-age",
     bottle_expression: "col-expression",
     reviews: "col-reviews",
-    add: "col-add"
+    add: "col-add",
   };
   return map[col] || "";
 }
@@ -193,14 +197,17 @@ function renderTable(rows) {
 // ---------- Data Load ----------
 async function load() {
   clearError();
-  setStatus("Loading Coterie…");
+  setStatus(coterieOnlyNew ? "Loading Coterie (recent only)…" : "Loading Coterie…");
 
   try {
-    const { data, error } = await supabase
-      .from(VIEW_NAME)
-      .select("*")
-      .limit(ROW_LIMIT);
+    let q = supabase.from(VIEW_NAME).select("*");
 
+    // ✅ Toggle-driven filter (boolean)
+    if (coterieOnlyNew) {
+      q = q.eq("new_update", true);
+    }
+
+    const { data, error } = await q.limit(ROW_LIMIT);
     if (error) throw error;
 
     renderTable(data || []);
@@ -213,5 +220,20 @@ async function load() {
   }
 }
 
+// ---------- Filter Wiring ----------
+function wireCoterieToggle() {
+  window.addEventListener("hbh:coterieFilterChanged", (e) => {
+    const onlyNew = !!(e && e.detail && e.detail.onlyNew);
+    if (onlyNew === coterieOnlyNew) return;
+    coterieOnlyNew = onlyNew;
+    load();
+  });
+}
+
 // ---------- Boot ----------
+wireCoterieToggle();
+
+// Re-read once in case order of scripts differs
+coterieOnlyNew = !!(window.HBH_CoterieFilter && window.HBH_CoterieFilter.onlyNew);
+
 load();
