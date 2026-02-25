@@ -21,9 +21,10 @@
   // -------------------------------------------------------
   // Absolute root prefix (no folder guessing ever again)
   // -------------------------------------------------------
-   const ROOT = window.location.hostname.includes("honeybarrelhunter.com")
-     ? "/"
-     : "./";
+   const ROOT = "/tastings/";
+   //const ROOT = window.location.hostname.includes("honeybarrelhunter.com")
+   //  ? "/"
+   //  : "./";
 
   // ---------- Assets ----------
   const logoLeftSrc = `${ROOT}assets/img/logo/honey_barrel_hunter_text.png`;
