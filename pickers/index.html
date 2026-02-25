@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Pickers | Honey Barrel Hunter</title>
 
-    <!-- Skin2 shared styles -->
     <link rel="stylesheet" href="../assets/css/skin2.css" />
 
     <style>
@@ -51,7 +50,6 @@
         color: var(--s2-text-muted);
       }
 
-      /* ---------- Page Intro ---------- */
       .intro-card {
         border: 1px solid var(--s2-border);
         background: rgba(255, 255, 255, 0.86);
@@ -76,7 +74,6 @@
         max-width: 86ch;
       }
 
-      /* ---------- Barrel Picker Toggle ---------- */
       .title-with-toggle {
         display: flex;
         align-items: center;
@@ -131,16 +128,14 @@
     <div class="wrap">
       <div id="site-header"></div>
 
-      <!-- Page Intro -->
       <section class="intro-card">
         <h1 class="intro-title">Pickers</h1>
         <p class="intro-subtitle">
           Barrel pickers are the people and groups behind the single barrels we evaluate.
-          This page is your hub for exploring those pickers and their tasting activity.
+          Use the filter to focus on recently updated tasting activity.
         </p>
       </section>
 
-      <!-- Barrel Pickers -->
       <div class="section-title" style="margin-top:22px;">
         <div class="title-with-toggle">
           <h2>Barrel Pickers</h2>
@@ -172,11 +167,7 @@
       <div id="site-footer"></div>
     </div>
 
-    <!-- Shared header/footer -->
     <script src="../assets/js/site-chrome.js"></script>
-
-    <!-- TODO: wire a pickers page JS after you confirm page renders.
-         If your existing home-page.js currently renders pickers,
-         we can extract that picker block into a shared module and reuse it here. -->
+    <script type="module" src="../assets/js/pickers-page.js"></script>
   </body>
 </html>
