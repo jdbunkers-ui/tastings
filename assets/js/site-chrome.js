@@ -48,10 +48,12 @@
   }
 
   // Navigation order:
-  // Home Inventory Coterie Pickers Sensory FAQ About Comments
+  // Home Flight Inventory Coterie Pickers Sensory FAQ About Comments
   const navHtml = `
     <nav class="skin2-nav-row hb-nav-row" aria-label="Primary navigation">
       ${navLink("Home", "index.html", "home")}
+      ${navDivider()}
+      ${navLink("Flight", "flight/index.html", "flight")}
       ${navDivider()}
       ${navLink("Inventory", "inventory/index.html", "inventory")}
       ${navDivider()}
