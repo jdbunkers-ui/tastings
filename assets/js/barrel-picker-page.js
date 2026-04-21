@@ -1,6 +1,7 @@
 /* =========================================================
    Honey Barrel Hunter — Skin2 Barrel Picker Page
    File: assets/js/barrel-picker-page.js
+   GA4 single_barrel_id + bottle name tracking added
    ========================================================= */
 
 import { supabase } from "./supabaseClient.js";
@@ -18,9 +19,8 @@ const elTable    = document.getElementById("bp-table");
 const elFilter   = document.getElementById("filter");
 const elToggle   = document.getElementById("barrelPickerNewOnlyToggle");
 
-// Optional UI slots that exist in your barrel_pickers/index.html
-const elHint     = document.getElementById("bp-table-hint");   // status line like “Loaded 104 rows”
-const elStarSlot = document.getElementById("bp-star-slot");    // star placeholder inside the button
+const elHint     = document.getElementById("bp-table-hint");
+const elStarSlot = document.getElementById("bp-star-slot");
 
 /* ---------------- State ---------------- */
 let ALL_ROWS = [];
@@ -61,20 +61,36 @@ function imgUrl(f) {
 }
 
 /* ---------------- Links ---------------- */
+
+/* GA tracked bottle hyperlink */
 function barrelLink(id, label) {
-  if (!id) return escapeHtml(label);
-  return `<a class="skin2-link"
-    href="../bottles/index.html?single_barrel_id=${encodeURIComponent(id)}">
-    ${escapeHtml(label)}
-  </a>`;
+  const sbid = (id ?? "").toString().trim();
+  const text = (label ?? "").toString().trim();
+
+  if (!sbid) return escapeHtml(text);
+
+  return `
+    <a
+      class="skin2-link"
+      href="../bottles/index.html?single_barrel_id=${encodeURIComponent(sbid)}"
+      data-analytics="single-barrel-click"
+      data-single-barrel-id="${escapeHtml(sbid)}"
+      data-bottle-name="${escapeHtml(text || sbid)}"
+    >
+      ${escapeHtml(text || sbid)}
+    </a>
+  `;
 }
 
 function distilleryLink(id, label) {
   if (!id) return escapeHtml(label);
-  return `<a class="skin2-link"
-    href="../distilleries/index.html?distillery_id=${encodeURIComponent(id)}">
-    ${escapeHtml(label)}
-  </a>`;
+
+  return `
+    <a class="skin2-link"
+       href="../distilleries/index.html?distillery_id=${encodeURIComponent(id)}">
+      ${escapeHtml(label)}
+    </a>
+  `;
 }
 
 /* ---------------- Status helpers ---------------- */
@@ -84,7 +100,9 @@ function setHint(text) {
 
 function setTogglePressed(pressed) {
   if (!elToggle) return;
+
   elToggle.setAttribute("aria-pressed", pressed ? "true" : "false");
+
   elToggle.title = pressed
     ? "Showing only bottles with recently updated tastings (click to show all)"
     : "Filter bottles to only those with recently updated tastings";
@@ -94,7 +112,9 @@ function setTogglePressed(pressed) {
 function renderHero(rows) {
   const r = rows[0] || {};
 
-  if (elTitle) elTitle.textContent = r.barrel_picker_name || "Barrel Picker";
+  if (elTitle) {
+    elTitle.textContent = r.barrel_picker_name || "Barrel Picker";
+  }
 
   if (elPhoto) {
     elPhoto.innerHTML = r.barrel_picker_photo_filename
@@ -108,11 +128,26 @@ function renderHero(rows) {
     ${r.barrel_picker_type ? `<p><b>${escapeHtml(r.barrel_picker_type)}</b></p>` : ""}
     ${r.full_address ? `<p>${escapeHtml(r.full_address)}</p>` : ""}
     ${r.phone_number ? `<p>${escapeHtml(r.phone_number)}</p>` : ""}
+
     <p>
-      ${r.google_maps_url ? `<a href="${escapeHtml(r.google_maps_url)}" target="_blank" rel="noreferrer">Google Maps</a>` : ""}
-      ${r.website_url ? ` · <a href="${escapeHtml(r.website_url)}" target="_blank" rel="noreferrer">Website</a>` : ""}
+      ${
+        r.google_maps_url
+          ? `<a href="${escapeHtml(r.google_maps_url)}" target="_blank" rel="noreferrer">Google Maps</a>`
+          : ""
+      }
+
+      ${
+        r.website_url
+          ? ` · <a href="${escapeHtml(r.website_url)}" target="_blank" rel="noreferrer">Website</a>`
+          : ""
+      }
     </p>
-    ${r.barrel_picker_description ? `<p>${escapeHtml(r.barrel_picker_description)}</p>` : ""}
+
+    ${
+      r.barrel_picker_description
+        ? `<p>${escapeHtml(r.barrel_picker_description)}</p>`
+        : ""
+    }
   `;
 }
 
@@ -144,6 +179,7 @@ function renderCell(col, row) {
     const star = row.new_update
       ? rotatingStarSVG({ size: 16, style: "margin-right:6px;" })
       : "";
+
     return `${star}${barrelLink(row.single_barrel_id, row.bottle_expression)}`;
   }
 
@@ -151,10 +187,21 @@ function renderCell(col, row) {
     return distilleryLink(row.distillery_id, row.distillery_name);
   }
 
-  if (col === "msrp")  return fmtUsd(row.msrp);
-  if (col === "score") return fmt1(row.score ?? row.avg_score ?? row.composite_score);
-  if (col === "proof") return fmt1(row.proof);
-  if (col === "age")   return fmtAge(row.age);
+  if (col === "msrp") {
+    return fmtUsd(row.msrp);
+  }
+
+  if (col === "score") {
+    return fmt1(row.score ?? row.avg_score ?? row.composite_score);
+  }
+
+  if (col === "proof") {
+    return fmt1(row.proof);
+  }
+
+  if (col === "age") {
+    return fmtAge(row.age);
+  }
 
   return escapeHtml(row[col]);
 }
@@ -187,7 +234,6 @@ function applyFilters() {
 
 /* ---------------- Table render ---------------- */
 function renderTable(rows) {
-  // Visible status line like Inventory
   setHint(`Loaded ${rows.length} rows`);
 
   if (!elTable) return;
@@ -197,7 +243,14 @@ function renderTable(rows) {
     return;
   }
 
-  const cols = ["score", "msrp", "proof", "age", "bottle_expression", "distillery_name"];
+  const cols = [
+    "score",
+    "msrp",
+    "proof",
+    "age",
+    "bottle_expression",
+    "distillery_name"
+  ];
 
   const thead = cols
     .map((c) => `<th class="${invColClass(c)}">${headerLabel(c)}</th>`)
@@ -208,6 +261,7 @@ function renderTable(rows) {
       const tds = cols
         .map((c) => `<td class="${invColClass(c)}">${renderCell(c, r)}</td>`)
         .join("");
+
       return `<tr>${tds}</tr>`;
     })
     .join("");
@@ -222,24 +276,28 @@ function renderTable(rows) {
 
 /* ---------------- Toggle wiring ---------------- */
 (function initToggle() {
-  // Star inside the button (your HTML uses <span id="bp-star-slot"></span>)
   if (elStarSlot) {
     elStarSlot.innerHTML = rotatingStarSVG({ size: 16 });
   } else if (elToggle && !elToggle.querySelector("svg")) {
-    // Fallback: if no slot exists, still show a star
-    elToggle.insertAdjacentHTML("afterbegin", rotatingStarSVG({ size: 16, style: "margin-right:6px;" }));
+    elToggle.insertAdjacentHTML(
+      "afterbegin",
+      rotatingStarSVG({ size: 16, style: "margin-right:6px;" })
+    );
   }
 
   if (!elToggle) return;
 
   const initial = localStorage.getItem(KEY_ONLY_NEW) === "1";
+
   ONLY_NEW = initial;
   setTogglePressed(initial);
 
   elToggle.addEventListener("click", () => {
     ONLY_NEW = !ONLY_NEW;
     setTogglePressed(ONLY_NEW);
+
     localStorage.setItem(KEY_ONLY_NEW, ONLY_NEW ? "1" : "0");
+
     applyFilters();
   });
 })();
@@ -255,6 +313,7 @@ if (elFilter) {
 /* ---------------- Load ---------------- */
 async function load() {
   const id = getId();
+
   if (!id) {
     setHint("Missing barrel_picker_id");
     return;
@@ -291,6 +350,7 @@ async function load() {
 
     ALL_ROWS = data || [];
     applyFilters();
+
   } catch (err) {
     console.error("Barrel picker page load failed:", err);
     setHint("Error loading rows");
