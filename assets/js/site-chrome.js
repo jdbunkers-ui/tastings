@@ -1,10 +1,12 @@
 /* =========================================================
-   Site Chrome (Bulletproof Root-Based Navigation)
+   Site Chrome (Bulletproof Root-Based Navigation + GA4)
    Injects shared header and footer across all pages
    Page-aware via <body data-page="...">
    ========================================================= */
 
 (function () {
+  const GA_MEASUREMENT_ID = "G-WYKYH1KKXY";
+
   const headerHost = document.getElementById("site-header");
   const footerHost = document.getElementById("site-footer");
 
@@ -33,10 +35,62 @@
   const headerBgSrc = `${ROOT}assets/img/logo/barrel_stacks.png`;
   const barrelDividerSrc = `${ROOT}assets/img/logo/barrel_divider.png`;
 
+  // -------------------------------------------------------
+  // Analytics helper
+  // -------------------------------------------------------
+  function analyticsReady() {
+    return typeof window.gtag === "function";
+  }
+
+  function sanitizeValue(value) {
+    if (value === null || value === undefined) return "";
+    return String(value).trim();
+  }
+
+  window.HBHAnalytics = window.HBHAnalytics || {
+    measurementId: GA_MEASUREMENT_ID,
+
+    pageView(pageTitle, pagePath, pageLocation, extraParams = {}) {
+      if (!analyticsReady()) return;
+
+      window.gtag("event", "page_view", {
+        page_title: sanitizeValue(pageTitle || document.title),
+        page_path: sanitizeValue(pagePath || window.location.pathname),
+        page_location: sanitizeValue(pageLocation || window.location.href),
+        page_key: sanitizeValue(pageKey || "unknown"),
+        ...extraParams
+      });
+    },
+
+    event(eventName, params = {}) {
+      if (!analyticsReady() || !eventName) return;
+
+      window.gtag("event", sanitizeValue(eventName), {
+        page_key: sanitizeValue(pageKey || "unknown"),
+        page_title: sanitizeValue(document.title),
+        page_path: sanitizeValue(window.location.pathname),
+        ...params
+      });
+    }
+  };
+
   // ---------- Navigation ----------
   function navLink(label, target, key) {
     const active = pageKey === key ? "skin2-nav-active" : "";
-    return `<a href="${ROOT}${target}" class="skin2-nav ${active}">${label}</a>`;
+    const href = `${ROOT}${target}`;
+
+    return `
+      <a
+        href="${href}"
+        class="skin2-nav ${active}"
+        data-analytics="nav-link"
+        data-nav-label="${label}"
+        data-nav-key="${key}"
+        data-nav-target="${target}"
+      >
+        ${label}
+      </a>
+    `;
   }
 
   function navDivider() {
@@ -159,13 +213,21 @@
         width:100%;
       ">
         <div class="hb-brand">
-          <img src="${logoLeftSrc}" alt="Honey Barrel Hunter" loading="lazy"
-               style="height:125px; width:auto; display:block;" />
+          <img
+            src="${logoLeftSrc}"
+            alt="Honey Barrel Hunter"
+            loading="lazy"
+            style="height:125px; width:auto; display:block;"
+          />
           <div class="hb-tagline">Blind Bourbon Tasting</div>
         </div>
 
-        <img src="${logoRightSrc}" alt="Honey Barrel Hunter logo" loading="lazy"
-             style="height:85px; width:auto; display:block;" />
+        <img
+          src="${logoRightSrc}"
+          alt="Honey Barrel Hunter logo"
+          loading="lazy"
+          style="height:85px; width:auto; display:block;"
+        />
       </div>
     </header>
     ${navHtml}
@@ -187,8 +249,10 @@
           Designed & developed by <strong>White Blaze Analytics LLC</strong>
         </div>
         <div>
-          <a href="mailto:whiteblazeanalytics@gmail.com"
-             style="color:inherit; text-decoration:none;">
+          <a
+            href="mailto:whiteblazeanalytics@gmail.com"
+            style="color:inherit; text-decoration:none;"
+          >
             whiteblazeanalytics@gmail.com
           </a>
         </div>
@@ -198,4 +262,53 @@
 
   inject(headerHost, headerHtml);
   inject(footerHost, footerHtml);
+
+  // -------------------------------------------------------
+  // Automatic analytics
+  // -------------------------------------------------------
+
+  // Track initial page view after shared chrome is injected.
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", function () {
+      window.HBHAnalytics.pageView();
+    });
+  } else {
+    window.HBHAnalytics.pageView();
+  }
+
+  // Track clicks on top navigation.
+  document.addEventListener("click", function (e) {
+    const navEl = e.target.closest('[data-analytics="nav-link"]');
+    if (!navEl) return;
+
+    window.HBHAnalytics.event("navigation_click", {
+      nav_label: sanitizeValue(navEl.dataset.navLabel),
+      nav_key: sanitizeValue(navEl.dataset.navKey),
+      nav_target: sanitizeValue(navEl.dataset.navTarget),
+      destination_url: sanitizeValue(navEl.href)
+    });
+  });
+
+  // Optional helper for future custom link tracking anywhere on the site.
+  // Usage:
+  // <a
+  //   href="https://example.com"
+  //   data-analytics="custom-link"
+  //   data-event-name="distillery_click"
+  //   data-link-label="Milk Street Distillery"
+  // >
+  //   Visit Distillery
+  // </a>
+  document.addEventListener("click", function (e) {
+    const linkEl = e.target.closest('[data-analytics="custom-link"]');
+    if (!linkEl) return;
+
+    const eventName = sanitizeValue(linkEl.dataset.eventName || "custom_link_click");
+
+    window.HBHAnalytics.event(eventName, {
+      link_label: sanitizeValue(linkEl.dataset.linkLabel || linkEl.textContent),
+      destination_url: sanitizeValue(linkEl.href),
+      link_text: sanitizeValue(linkEl.textContent)
+    });
+  });
 })();
