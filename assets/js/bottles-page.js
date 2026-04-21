@@ -85,6 +85,15 @@ function selfUrlForId(singleBarrelId) {
   return `${window.location.pathname}?single_barrel_id=${id}`;
 }
 
+function bottleDisplayName(item) {
+  const brand = String(item?.brand_name ?? "").trim();
+  const expr = String(item?.expression_name ?? "").trim();
+  const pick = String(item?.pick_name ?? "").trim();
+
+  const base = [brand, expr].filter(Boolean).join(" - ");
+  return pick ? `${base} (${pick})` : base || String(item?.single_barrel_id ?? "").trim();
+}
+
 /**
  * ✅ Unwind [[...]] emphasis:
  * - remove the bracket tokens
@@ -512,6 +521,7 @@ function renderFoes({ foe_beat, foe_lost }) {
                   const brand = fmt(it.brand_name, "(unknown)");
                   const expr = fmt(it.expression_name, "");
                   const pick = fmt(it.pick_name, "");
+                  const bottleName = bottleDisplayName(it);
 
                   const date = fmt(it.flight_date, "");
                   const proof = it.proof ? `Proof ${it.proof}` : "";
@@ -519,11 +529,15 @@ function renderFoes({ foe_beat, foe_lost }) {
 
                   // hyperlink only on brand_name
                   const brandHtml = id
-                    ? `<a class="foe-link" href="${escapeHtml(
-                        href
-                      )}" data-barrel-link="1" data-barrel-id="${escapeHtml(
-                        id
-                      )}">${escapeHtml(brand)}</a>`
+                    ? `<a
+                        class="foe-link"
+                        href="${escapeHtml(href)}"
+                        data-barrel-link="1"
+                        data-barrel-id="${escapeHtml(id)}"
+                        data-analytics="single-barrel-click"
+                        data-single-barrel-id="${escapeHtml(id)}"
+                        data-bottle-name="${escapeHtml(bottleName)}"
+                      >${escapeHtml(brand)}</a>`
                     : `<span>${escapeHtml(brand)}</span>`;
 
                   const rest = [expr, pick].filter(Boolean).join(" • ");
