@@ -187,9 +187,9 @@
           Designed & developed by <strong>White Blaze Analytics LLC</strong>
         </div>
         <div>
-          <a href="mailto:SummitryTechnology@gmail.com"
+          <a href="mailto:whiteblazeanalytics@gmail.com"
              style="color:inherit; text-decoration:none;">
-            SummitryTechnology@gmail.com
+            whiteblazeanalytics@gmail.com
           </a>
         </div>
       </div>
