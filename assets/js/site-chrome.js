@@ -182,7 +182,7 @@
         text-align:center;
       ">
         <div>
-          Designed & developed by <strong>Summitry Technology</strong>
+          Designed & developed by <strong>White Blaze Analytics LLC</strong>
         </div>
         <div>
           <a href="mailto:SummitryTechnology@gmail.com"
