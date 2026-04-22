@@ -946,12 +946,6 @@ function renderValueChart() {
   });
 }
 
-async function loadResultsOnly() {
-  const [voteTotals, trendRows] = await Promise.all([
-    fetchVoteTotals(state.flightId),
-    fetchTrendRows(state.flightId),
-  ]);
-
   state.voteTotals = voteTotals;
   state.trendRows = trendRows;
 }
