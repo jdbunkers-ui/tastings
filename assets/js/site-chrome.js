@@ -289,6 +289,31 @@
     });
   });
 
+  // Track single barrel / bottle clicks across pages.
+  document.addEventListener("click", function (e) {
+    const bottleEl = e.target.closest('[data-analytics="single-barrel-click"]');
+    if (!bottleEl) return;
+
+    window.HBHAnalytics.event("single_barrel_click", {
+      single_barrel_id: sanitizeValue(bottleEl.dataset.singleBarrelId),
+      bottle_name: sanitizeValue(bottleEl.dataset.bottleName),
+      destination_url: sanitizeValue(bottleEl.href)
+    });
+  });
+
+  // Track barrel picker clicks across pages.
+  document.addEventListener("click", function (e) {
+    const pickerEl = e.target.closest('[data-analytics="barrel-picker-click"]');
+    if (!pickerEl) return;
+
+    window.HBHAnalytics.event("barrel_picker_click", {
+      barrel_picker_id: sanitizeValue(pickerEl.dataset.barrelPickerId),
+      barrel_picker_name: sanitizeValue(pickerEl.dataset.barrelPickerName),
+      source_bottle_id: sanitizeValue(pickerEl.dataset.sourceBottleId),
+      destination_url: sanitizeValue(pickerEl.href)
+    });
+  });
+
   // Optional helper for future custom link tracking anywhere on the site.
   // Usage:
   // <a
