@@ -3,18 +3,6 @@ import { supabase } from "../assets/js/supabaseClient.js";
 const VIEW_PREVIEW = "v_flight_preview";
 const VIEW_VOTE_TOTALS = "v_flight_vote_totals";
 const VIEW_COMMENTS = "v_flight_comments_approved";
-
-/*
-  Optional trend source for the cumulative line chart.
-  Expected shape per row:
-  {
-    flight_id,
-    flight_detail_id,
-    bottle_name,
-    vote_day,           // YYYY-MM-DD
-    cumulative_votes
-  }
-*/
 const VIEW_VOTE_TREND = "v_flight_vote_trend";
 
 const elContent = document.getElementById("flightContent");
@@ -156,6 +144,60 @@ function resolveBottleImage(row) {
   return `../assets/img/bottles/${raw}`;
 }
 
+function barrelLink(singleBarrelId, label) {
+  const id = (singleBarrelId ?? "").toString().trim();
+  const text = (label ?? "").toString().trim();
+  if (!id) return escapeHtml(text);
+
+  const href = `../bottles/index.html?single_barrel_id=${encodeURIComponent(id)}`;
+
+  return `
+    <a
+      class="skin2-link"
+      href="${href}"
+      data-analytics="single-barrel-click"
+      data-single-barrel-id="${escapeHtml(id)}"
+      data-bottle-name="${escapeHtml(text || id)}"
+    >${escapeHtml(text || id)}</a>
+  `;
+}
+
+function distilleryLink(distilleryId, label) {
+  const id = (distilleryId ?? "").toString().trim();
+  const text = (label ?? "").toString().trim();
+  if (!id) return escapeHtml(text);
+
+  const href = `../distilleries/index.html?distillery_id=${encodeURIComponent(id)}`;
+
+  return `
+    <a
+      class="skin2-link"
+      href="${href}"
+      data-analytics="distillery-click"
+      data-distillery-id="${escapeHtml(id)}"
+      data-distillery-name="${escapeHtml(text || id)}"
+    >${escapeHtml(text || id)}</a>
+  `;
+}
+
+function barrelPickerLink(barrelPickerId, label) {
+  const id = (barrelPickerId ?? "").toString().trim();
+  const text = (label ?? "").toString().trim();
+  if (!id) return escapeHtml(text);
+
+  const href = `../pickers/index.html?barrel_picker_id=${encodeURIComponent(id)}`;
+
+  return `
+    <a
+      class="skin2-link"
+      href="${href}"
+      data-analytics="barrel-picker-click"
+      data-barrel-picker-id="${escapeHtml(id)}"
+      data-barrel-picker-name="${escapeHtml(text || id)}"
+    >${escapeHtml(text || id)}</a>
+  `;
+}
+
 function currentFlightStatusLabel(status) {
   const s = String(status || "").toLowerCase();
   if (s === "published") return "Voting Open";
@@ -191,7 +233,9 @@ function render() {
 
   const cardsHtml = state.flightRows
     .map((row) => {
-      const isPicked = state.votedDetailId && String(state.votedDetailId) === String(row.flight_detail_id);
+      const isPicked =
+        state.votedDetailId &&
+        String(state.votedDetailId) === String(row.flight_detail_id);
 
       return `
         <article class="flight-card">
@@ -256,13 +300,13 @@ function render() {
     .map(
       (row) => `
         <tr>
-          <td>${escapeHtml(row.position)}</td>
-          <td>${escapeHtml(row.bottle_expression || row.bottle_name || "—")}</td>
-          <td>${escapeHtml(row.distillery_name || "—")}</td>
-          <td>${fmt1(row.proof)}</td>
-          <td>${fmtAge(row.age)}</td>
-          <td>${fmt2(row.score)}</td>
-          <td>${fmtMoney(row.msrp)}</td>
+          <td class="col-score">${fmt1(row.score)}</td>
+          <td class="col-msrp">${fmtMoney(row.msrp)}</td>
+          <td class="col-proof">${fmt1(row.proof)}</td>
+          <td class="col-age">${fmtAge(row.age)}</td>
+          <td class="col-expression">${barrelLink(row.single_barrel_id, row.bottle_expression || row.bottle_name || "—")}</td>
+          <td class="col-distillery">${distilleryLink(row.distillery_id, row.distillery_name || "—")}</td>
+          <td class="col-picker">${barrelPickerLink(row.barrel_picker_id, row.barrel_picker_name || "—")}</td>
         </tr>
       `
     )
@@ -281,8 +325,9 @@ function render() {
         .join("")
     : `<div class="flight-empty">No approved comments yet.</div>`;
 
-  const resultsSectionHtml = state.hasVoted || String(state.status || "").toLowerCase() === "closed"
-    ? `
+  const resultsSectionHtml =
+    state.hasVoted || String(state.status || "").toLowerCase() === "closed"
+      ? `
       <section class="skin2-card flight-results-wrap">
         <h2 class="flight-section-title">Vote Results</h2>
 
@@ -297,7 +342,7 @@ function render() {
         </div>
       </section>
     `
-    : "";
+      : "";
 
   elContent.innerHTML = `
     <section class="skin2-card">
@@ -312,13 +357,13 @@ function render() {
         <table class="skin2-table" aria-label="Flight tale of the tape">
           <thead>
             <tr>
-              <th>Pos</th>
-              <th>Bottle</th>
-              <th>Distillery</th>
-              <th>Proof</th>
-              <th>Age</th>
-              <th>Prior Score</th>
-              <th>MSRP</th>
+              <th class="col-score">Composite Score</th>
+              <th class="col-msrp">MSRP</th>
+              <th class="col-proof">Proof</th>
+              <th class="col-age">Age</th>
+              <th class="col-expression">Bottle Expression</th>
+              <th class="col-distillery">Distillery Name</th>
+              <th class="col-picker">Barrel Picker</th>
             </tr>
           </thead>
           <tbody>
@@ -385,12 +430,16 @@ function wireVoteButtons() {
       const flightDetailId = btn.getAttribute("data-flight-detail-id");
       if (!flightDetailId) return;
 
-      buttons.forEach((b) => { b.disabled = true; });
+      buttons.forEach((b) => {
+        b.disabled = true;
+      });
 
       try {
         await submitVote(flightDetailId);
       } catch (e) {
-        buttons.forEach((b) => { b.disabled = false; });
+        buttons.forEach((b) => {
+          b.disabled = false;
+        });
         showError("Failed to submit vote.", e);
       }
     });
@@ -403,12 +452,6 @@ async function submitVote(flightDetailId) {
 
   const sessionId = getSessionId();
 
-  /*
-    Adjust RPC argument names below to match your function exactly.
-    Current placeholders:
-    - p_flight_detail_id
-    - p_session_id
-  */
   const { error } = await supabase.rpc("f_submit_flight_vote", {
     p_flight_detail_id: flightDetailId,
     p_session_id: sessionId,
@@ -448,12 +491,6 @@ async function loadResultsOnly() {
 
 async function fetchPreviewRows() {
   let query = supabase.from(VIEW_PREVIEW).select("*");
-
-  /*
-    Assumes v_flight_preview includes one of:
-    - is_current = true
-    - or a current published flight only
-  */
   query = query.eq("is_current", true);
 
   const { data, error } = await query.order("position", { ascending: true });
