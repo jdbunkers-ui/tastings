@@ -1,7 +1,11 @@
 /* =========================================================
    Honey Barrel Hunter — Skin2 Pickers List Page
    File: assets/js/pickers-page.js
-   Adds: text search + persistent “only new updates” toggle + status line
+   Adds:
+   - text search
+   - persistent “only new updates” toggle
+   - status line
+   - GA4 barrel_picker_click tracking
    ========================================================= */
 
 import { supabase } from "./supabaseClient.js";
@@ -15,8 +19,6 @@ const $ = (id) => document.getElementById(id);
 
 const elPickerMount = $("pickerMount");
 const elToggle = $("pickerNewOnlyToggle");
-
-// NEW: search + status (must exist in pickers/index.html)
 const elFilter = $("filter");
 const elStatus = $("status");
 
@@ -25,14 +27,17 @@ let ALL_ROWS = [];
 let pickerOnlyNew = false;
 let QUERY = "";
 
-// Persist like Inventory
 const KEY_ONLY_NEW = "hbh_pickers_new_only";
 
-// ---------- Root helper (matches site-chrome.js ROOT logic) ----------
+// ---------- Root helper ----------
 function getRootPrefix() {
   const seg1 = (window.location.pathname.split("/")[1] || "").trim();
-  return window.location.hostname.endsWith("github.io") && seg1 ? `/${seg1}/` : "/";
+
+  return window.location.hostname.endsWith("github.io") && seg1
+    ? `/${seg1}/`
+    : "/";
 }
+
 const ROOT = getRootPrefix();
 
 // ---------- Helpers ----------
@@ -62,6 +67,7 @@ function buildPickerHref(barrelPickerId) {
 
 function renderErrorInto(el, message) {
   if (!el) return;
+
   el.innerHTML = `
     <div class="muted-card error">
       <b>Error:</b> ${escapeHtml(message)}
@@ -87,45 +93,81 @@ function renderPickerTable(rows) {
               <th class="col-picks" style="width:90px;">Picks</th>
             </tr>
           </thead>
+
           <tbody>
             ${
               rows.length
-                ? rows
-                    .map((r) => {
-                      const name = r.barrel_picker_name || "Unknown store";
-                      const state = (r.state || "—").trim() || "—";
-                      const city = r.city || "—";
-                      const id = r.barrel_picker_id || "";
-                      const href = id ? buildPickerHref(id) : "#";
+                ? rows.map((r) => {
+                    const name =
+                      (r.barrel_picker_name || "Unknown store")
+                        .toString()
+                        .trim();
 
-                      const barrels = toInt(r.barrel_pick_count);
-                      const tastings = toInt(r.total_tastings);
+                    const state =
+                      (r.state || "—")
+                        .toString()
+                        .trim() || "—";
 
-                      const star = r.new_update
-                        ? rotatingStarSVG({ size: 18, style: "margin-left:6px;" })
-                        : "";
+                    const city =
+                      (r.city || "—")
+                        .toString()
+                        .trim();
 
-                      return `
-                        <tr>
-                          <td class="mono col-state">${escapeHtml(state)}</td>
-                          <td class="mono">${escapeHtml(city)}</td>
-                          <td>
-                            <div style="font-weight:800;">
-                              <a class="skin2-link" href="${escapeHtml(href)}">
-                                ${escapeHtml(name)}
-                              </a>
-                            </div>
-                          </td>
-                          <td class="mono col-tastings">
-                            ${star}${escapeHtml(String(tastings))}
-                          </td>
-                          <td class="mono col-picks">
-                            ${escapeHtml(String(barrels))}
-                          </td>
-                        </tr>
-                      `;
-                    })
-                    .join("")
+                    const id =
+                      (r.barrel_picker_id || "")
+                        .toString()
+                        .trim();
+
+                    const href =
+                      id ? buildPickerHref(id) : "#";
+
+                    const barrels =
+                      toInt(r.barrel_pick_count);
+
+                    const tastings =
+                      toInt(r.total_tastings);
+
+                    const star = r.new_update
+                      ? rotatingStarSVG({
+                          size: 18,
+                          style: "margin-left:6px;"
+                        })
+                      : "";
+
+                    return `
+                      <tr>
+                        <td class="mono col-state">
+                          ${escapeHtml(state)}
+                        </td>
+
+                        <td class="mono">
+                          ${escapeHtml(city)}
+                        </td>
+
+                        <td>
+                          <div style="font-weight:800;">
+                            <a
+                              class="skin2-link"
+                              href="${escapeHtml(href)}"
+                              data-analytics="barrel-picker-click"
+                              data-barrel-picker-id="${escapeHtml(id)}"
+                              data-barrel-picker-name="${escapeHtml(name)}"
+                            >
+                              ${escapeHtml(name)}
+                            </a>
+                          </div>
+                        </td>
+
+                        <td class="mono col-tastings">
+                          ${star}${escapeHtml(String(tastings))}
+                        </td>
+
+                        <td class="mono col-picks">
+                          ${escapeHtml(String(barrels))}
+                        </td>
+                      </tr>
+                    `;
+                  }).join("")
                 : `
                   <tr>
                     <td colspan="5" style="padding:12px 10px;">
@@ -142,7 +184,7 @@ function renderPickerTable(rows) {
 }
 
 // =========================================================
-// Filtering (client-side)
+// Filtering
 // =========================================================
 
 function applyFilters() {
@@ -158,7 +200,7 @@ function applyFilters() {
         r.barrel_picker_name,
         r.city,
         r.state,
-        r.barrel_picker_id,
+        r.barrel_picker_id
       ]
         .filter(Boolean)
         .join(" ")
@@ -168,18 +210,24 @@ function applyFilters() {
   }
 
   setStatus(`Loaded ${rows.length} rows`);
-  if (elPickerMount) elPickerMount.innerHTML = renderPickerTable(rows);
+
+  if (elPickerMount) {
+    elPickerMount.innerHTML =
+      renderPickerTable(rows);
+  }
 }
 
 // =========================================================
-// Load (single query, then filter locally)
+// Load
 // =========================================================
 
 async function loadPickers() {
   if (!elPickerMount) return;
 
   setStatus("Loading…");
-  elPickerMount.innerHTML = `<div class="muted-card">Loading barrel pickers…</div>`;
+
+  elPickerMount.innerHTML =
+    `<div class="muted-card">Loading barrel pickers…</div>`;
 
   const { data, error } = await supabase
     .from(VIEW_PICKERS)
@@ -192,7 +240,10 @@ async function loadPickers() {
 
   if (error) {
     setStatus("Error");
-    renderErrorInto(elPickerMount, error.message || String(error));
+    renderErrorInto(
+      elPickerMount,
+      error.message || String(error)
+    );
     return;
   }
 
@@ -201,12 +252,17 @@ async function loadPickers() {
 }
 
 // =========================================================
-// Toggle wiring (persistent like Inventory)
+// Toggle
 // =========================================================
 
 function setToggleUI(isOn) {
   if (!elToggle) return;
-  elToggle.setAttribute("aria-pressed", isOn ? "true" : "false");
+
+  elToggle.setAttribute(
+    "aria-pressed",
+    isOn ? "true" : "false"
+  );
+
   elToggle.title = isOn
     ? "Showing only pickers with recently updated tastings (click to show all)"
     : "Filter pickers to only those with recently updated tastings";
@@ -215,28 +271,38 @@ function setToggleUI(isOn) {
 function wireToggle() {
   if (!elToggle) return;
 
-  // restore state
-  const initial = localStorage.getItem(KEY_ONLY_NEW) === "1";
+  const initial =
+    localStorage.getItem(KEY_ONLY_NEW) === "1";
+
   pickerOnlyNew = initial;
   setToggleUI(initial);
 
   elToggle.addEventListener("click", () => {
     pickerOnlyNew = !pickerOnlyNew;
+
     setToggleUI(pickerOnlyNew);
-    localStorage.setItem(KEY_ONLY_NEW, pickerOnlyNew ? "1" : "0");
+
+    localStorage.setItem(
+      KEY_ONLY_NEW,
+      pickerOnlyNew ? "1" : "0"
+    );
+
     applyFilters();
   });
 }
 
 // =========================================================
-// Search wiring
+// Search
 // =========================================================
 
 function wireSearch() {
   if (!elFilter) return;
 
   elFilter.addEventListener("input", (e) => {
-    QUERY = String(e.target.value || "").toLowerCase().trim();
+    QUERY = String(e.target.value || "")
+      .toLowerCase()
+      .trim();
+
     applyFilters();
   });
 }
