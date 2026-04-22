@@ -2,11 +2,14 @@
    Site Chrome (Bulletproof Root-Based Navigation + GA4)
    Injects shared header and footer across all pages
    Page-aware via <body data-page="...">
+   GA4 is initialized here centrally so individual page HTML
+   files do not need to include the Google tag snippet.
    ========================================================= */
 
 (function () {
   const GA_MEASUREMENT_ID = "G-WYKYH1KKXY";
   const TRACKED_NAV_DELAY_MS = 180;
+  const ENABLE_DEBUG_MODE = false; // set true temporarily when using GA4 DebugView
 
   const headerHost = document.getElementById("site-header");
   const footerHost = document.getElementById("site-footer");
@@ -37,21 +40,126 @@
   const barrelDividerSrc = `${ROOT}assets/img/logo/barrel_divider.png`;
 
   // -------------------------------------------------------
-  // Analytics helper
+  // Analytics bootstrap
   // -------------------------------------------------------
-  function analyticsReady() {
-    return typeof window.gtag === "function";
-  }
+  let gaInitialized = false;
+  let gaScriptLoading = false;
+  const gaReadyCallbacks = [];
 
   function sanitizeValue(value) {
     if (value === null || value === undefined) return "";
     return String(value).trim();
   }
 
+  function analyticsReady() {
+    return typeof window.gtag === "function";
+  }
+
+  function onAnalyticsReady(callback) {
+    if (analyticsReady()) {
+      callback();
+      return;
+    }
+    gaReadyCallbacks.push(callback);
+  }
+
+  function flushAnalyticsReadyCallbacks() {
+    while (gaReadyCallbacks.length) {
+      const cb = gaReadyCallbacks.shift();
+      try {
+        cb();
+      } catch (err) {
+        console.error("GA ready callback failed:", err);
+      }
+    }
+  }
+
+  function initGtagGlobals() {
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      window.dataLayer.push(arguments);
+    }
+    window.gtag = window.gtag || gtag;
+  }
+
+  function configureGA() {
+    if (gaInitialized || !analyticsReady()) return;
+
+    window.gtag("js", new Date());
+
+    const config = {};
+    if (ENABLE_DEBUG_MODE) {
+      config.debug_mode = true;
+    }
+
+    window.gtag("config", GA_MEASUREMENT_ID, config);
+
+    gaInitialized = true;
+    flushAnalyticsReadyCallbacks();
+  }
+
+  function ensureAnalyticsLoaded() {
+    if (analyticsReady()) {
+      initGtagGlobals();
+      configureGA();
+      return;
+    }
+
+    initGtagGlobals();
+
+    if (gaScriptLoading) return;
+    gaScriptLoading = true;
+
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(
+      GA_MEASUREMENT_ID
+    )}`;
+
+    script.onload = function () {
+      configureGA();
+    };
+
+    script.onerror = function () {
+      console.error("Failed to load Google tag script.");
+    };
+
+    document.head.appendChild(script);
+  }
+
+  window.HBHAnalytics = window.HBHAnalytics || {
+    measurementId: GA_MEASUREMENT_ID,
+
+    pageView(pageTitle, pagePath, pageLocation, extraParams = {}) {
+      onAnalyticsReady(function () {
+        window.gtag("event", "page_view", {
+          page_title: sanitizeValue(pageTitle || document.title),
+          page_path: sanitizeValue(pagePath || window.location.pathname),
+          page_location: sanitizeValue(pageLocation || window.location.href),
+          page_key: sanitizeValue(pageKey || "unknown"),
+          ...extraParams
+        });
+      });
+    },
+
+    event(eventName, params = {}) {
+      if (!eventName) return;
+
+      onAnalyticsReady(function () {
+        window.gtag("event", sanitizeValue(eventName), {
+          page_key: sanitizeValue(pageKey || "unknown"),
+          page_title: sanitizeValue(document.title),
+          page_path: sanitizeValue(window.location.pathname),
+          ...params
+        });
+      });
+    }
+  };
+
   function shouldBypassIntercept(event, el) {
     if (!el) return true;
     if (event.defaultPrevented) return true;
-    if (event.button !== 0) return true; // only normal left click
+    if (event.button !== 0) return true;
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return true;
     if (el.target && el.target.toLowerCase() === "_blank") return true;
     if (el.hasAttribute("download")) return true;
@@ -66,8 +174,8 @@
 
   function trackThenNavigate(event, el, eventName, params = {}) {
     if (!el) return;
-    const href = sanitizeValue(el.href);
 
+    const href = sanitizeValue(el.href);
     if (!href) return;
 
     if (shouldBypassIntercept(event, el)) {
@@ -87,33 +195,6 @@
 
     navigateAfterDelay(href);
   }
-
-  window.HBHAnalytics = window.HBHAnalytics || {
-    measurementId: GA_MEASUREMENT_ID,
-
-    pageView(pageTitle, pagePath, pageLocation, extraParams = {}) {
-      if (!analyticsReady()) return;
-
-      window.gtag("event", "page_view", {
-        page_title: sanitizeValue(pageTitle || document.title),
-        page_path: sanitizeValue(pagePath || window.location.pathname),
-        page_location: sanitizeValue(pageLocation || window.location.href),
-        page_key: sanitizeValue(pageKey || "unknown"),
-        ...extraParams
-      });
-    },
-
-    event(eventName, params = {}) {
-      if (!analyticsReady() || !eventName) return;
-
-      window.gtag("event", sanitizeValue(eventName), {
-        page_key: sanitizeValue(pageKey || "unknown"),
-        page_title: sanitizeValue(document.title),
-        page_path: sanitizeValue(window.location.pathname),
-        ...params
-      });
-    }
-  };
 
   // ---------- Navigation ----------
   function navLink(label, target, key) {
@@ -142,8 +223,6 @@
     `;
   }
 
-  // Navigation order:
-  // Home Flight Inventory Coterie Pickers Sensory FAQ About Comments
   const navHtml = `
     <nav class="skin2-nav-row hb-nav-row" aria-label="Primary navigation">
       ${navLink("Home", "index.html", "home")}
@@ -305,10 +384,13 @@
   inject(footerHost, footerHtml);
 
   // -------------------------------------------------------
+  // Boot analytics centrally
+  // -------------------------------------------------------
+  ensureAnalyticsLoaded();
+
+  // -------------------------------------------------------
   // Automatic analytics
   // -------------------------------------------------------
-
-  // Track initial page view after shared chrome is injected.
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", function () {
       window.HBHAnalytics.pageView();
@@ -365,15 +447,6 @@
   });
 
   // Optional helper for future custom link tracking anywhere on the site.
-  // Usage:
-  // <a
-  //   href="https://example.com"
-  //   data-analytics="custom-link"
-  //   data-event-name="distillery_click"
-  //   data-link-label="Milk Street Distillery"
-  // >
-  //   Visit Distillery
-  // </a>
   document.addEventListener("click", function (e) {
     const linkEl = e.target.closest('[data-analytics="custom-link"]');
     if (!linkEl) return;
