@@ -247,69 +247,70 @@ function render() {
             />
           </div>
 
-<div class="flight-card-body">
+          <div class="flight-card-body">
 
-  <div class="flight-position">
-    Position ${escapeHtml(row.position)}
-  </div>
+            <div class="flight-position">
+              Position ${escapeHtml(row.position)}
+            </div>
 
-  <h3 class="flight-bottle-name">
-    ${escapeHtml(row.bottle_expression || row.bottle_name || "Unknown Bottle")}
-  </h3>
+            <h3 class="flight-bottle-name">
+              ${escapeHtml(row.bottle_expression || row.bottle_name || "Unknown Bottle")}
+            </h3>
 
-  ${
-    canVote()
-      ? `
-        <button
-          class="flight-vote-btn"
-          type="button"
-          data-flight-detail-id="${escapeHtml(row.flight_detail_id)}"
-        >
-          Vote for this bottle
-        </button>
-      `
-      : isPicked
-        ? `<div class="flight-voted-badge">Your Pick</div>`
-        : `<div class="flight-voted-badge">Bottle Revealed</div>`
-  }
+            ${
+              canVote()
+                ? `
+                  <button
+                    class="flight-vote-btn"
+                    type="button"
+                    data-flight-detail-id="${escapeHtml(row.flight_detail_id)}"
+                  >
+                    Vote for this bottle
+                  </button>
+                `
+                : isPicked
+                  ? `<div class="flight-voted-badge">Your Pick</div>`
+                  : `<div class="flight-voted-badge">Bottle Revealed</div>`
+            }
 
-  <div class="flight-meta">
+            <div class="flight-meta">
 
-    <div class="flight-meta-item">
-      <span class="flight-meta-label">Proof</span>
-      <span class="flight-meta-value">
-        ${fmt1(row.proof)}
-      </span>
-    </div>
+              <div class="flight-meta-item">
+                <span class="flight-meta-label">Proof</span>
+                <span class="flight-meta-value">
+                  ${fmt1(row.proof)}
+                </span>
+              </div>
 
-    <div class="flight-meta-item">
-      <span class="flight-meta-label">Age</span>
-      <span class="flight-meta-value">
-        ${fmtAge(row.age)}
-      </span>
-    </div>
+              <div class="flight-meta-item">
+                <span class="flight-meta-label">Age</span>
+                <span class="flight-meta-value">
+                  ${fmtAge(row.age)}
+                </span>
+              </div>
 
-    <div class="flight-meta-item">
-      <span class="flight-meta-label">Distillery</span>
-      <span class="flight-meta-value">
-        ${escapeHtml(row.distillery_name || "—")}
-      </span>
-    </div>
+              <div class="flight-meta-item">
+                <span class="flight-meta-label">Distillery</span>
+                <span class="flight-meta-value">
+                  ${escapeHtml(row.distillery_name || "—")}
+                </span>
+              </div>
 
-    <div class="flight-meta-item">
-      <span class="flight-meta-label">Prior Score</span>
-      <span class="flight-meta-value">
-        ${fmt2(row.score)}
-      </span>
-    </div>
+              <div class="flight-meta-item">
+                <span class="flight-meta-label">Prior Score</span>
+                <span class="flight-meta-value">
+                  ${fmt2(row.score)}
+                </span>
+              </div>
 
-  </div>
+            </div>
 
-  <div class="flight-bottle-desc">
-    ${escapeHtml(row.single_barrel_description || "")}
-  </div>
+            <div class="flight-bottle-desc">
+              ${escapeHtml(row.single_barrel_description || "")}
+            </div>
 
-</div>        </article>
+          </div>
+        </article>
       `;
     })
     .join("");
@@ -472,9 +473,13 @@ async function submitVote(flightDetailId) {
 
   const sessionId = getSessionId();
 
-  const { error } = await supabase.rpc("f_submit_flight_vote", {
+  const { data, error } = await supabase.rpc("f_submit_flight_vote", {
+    p_flight_id: state.flightId,
     p_flight_detail_id: flightDetailId,
     p_session_id: sessionId,
+    p_created_ip_hash: null,
+    p_voter_name: null,
+    p_ig_account: null
   });
 
   if (error) {
