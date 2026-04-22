@@ -273,10 +273,20 @@ function renderHero(barrel) {
       const href = `../barrel_pickers/index.html?barrel_picker_id=${encodeURIComponent(
         pickerId
       )}`;
+
       pickerLineEl.innerHTML = `
         <div style="${rowStyle}">
           <span style="${labelStyle}">Barrel Picker:</span>
-          <a href="${escapeHtml(href)}">${escapeHtml(pickerDisplay)}</a>
+          <a
+            href="${escapeHtml(href)}"
+            class="skin2-link"
+            data-analytics="barrel-picker-click"
+            data-barrel-picker-id="${escapeHtml(pickerId)}"
+            data-barrel-picker-name="${escapeHtml(pickerDisplay)}"
+            data-source-bottle-id="${escapeHtml(fmt(barrel?.single_barrel_id, ""))}"
+          >
+            ${escapeHtml(pickerDisplay)}
+          </a>
         </div>
       `;
     } else {
