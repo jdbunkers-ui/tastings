@@ -255,7 +255,13 @@ function renderHero(barrel) {
       subtitleEl.innerHTML = `
         <div style="${rowStyle}">
           <span style="${labelStyle}">Distillery:</span>
-          <a href="${escapeHtml(href)}">${escapeHtml(dist)}</a>
+          <a
+            href="${escapeHtml(href)}"
+            class="skin2-link"
+            data-analytics="distillery-click"
+            data-distillery-id="${escapeHtml(distId)}"
+            data-distillery-name="${escapeHtml(dist)}"
+          >${escapeHtml(dist)}</a>
         </div>
       `;
     } else {
