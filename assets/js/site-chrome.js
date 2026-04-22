@@ -6,6 +6,7 @@
 
 (function () {
   const GA_MEASUREMENT_ID = "G-WYKYH1KKXY";
+  const TRACKED_NAV_DELAY_MS = 180;
 
   const headerHost = document.getElementById("site-header");
   const footerHost = document.getElementById("site-footer");
@@ -45,6 +46,46 @@
   function sanitizeValue(value) {
     if (value === null || value === undefined) return "";
     return String(value).trim();
+  }
+
+  function shouldBypassIntercept(event, el) {
+    if (!el) return true;
+    if (event.defaultPrevented) return true;
+    if (event.button !== 0) return true; // only normal left click
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return true;
+    if (el.target && el.target.toLowerCase() === "_blank") return true;
+    if (el.hasAttribute("download")) return true;
+    return false;
+  }
+
+  function navigateAfterDelay(href) {
+    window.setTimeout(function () {
+      window.location.href = href;
+    }, TRACKED_NAV_DELAY_MS);
+  }
+
+  function trackThenNavigate(event, el, eventName, params = {}) {
+    if (!el) return;
+    const href = sanitizeValue(el.href);
+
+    if (!href) return;
+
+    if (shouldBypassIntercept(event, el)) {
+      window.HBHAnalytics.event(eventName, {
+        ...params,
+        destination_url: href
+      });
+      return;
+    }
+
+    event.preventDefault();
+
+    window.HBHAnalytics.event(eventName, {
+      ...params,
+      destination_url: href
+    });
+
+    navigateAfterDelay(href);
   }
 
   window.HBHAnalytics = window.HBHAnalytics || {
@@ -289,40 +330,37 @@
     });
   });
 
-  // Track single barrel / bottle clicks across pages.
+  // Track single barrel / bottle clicks across pages and delay navigation.
   document.addEventListener("click", function (e) {
     const bottleEl = e.target.closest('[data-analytics="single-barrel-click"]');
     if (!bottleEl) return;
 
-    window.HBHAnalytics.event("single_barrel_click", {
+    trackThenNavigate(e, bottleEl, "single_barrel_click", {
       single_barrel_id: sanitizeValue(bottleEl.dataset.singleBarrelId),
-      bottle_name: sanitizeValue(bottleEl.dataset.bottleName),
-      destination_url: sanitizeValue(bottleEl.href)
+      bottle_name: sanitizeValue(bottleEl.dataset.bottleName)
     });
   });
 
-  // Track barrel picker clicks across pages.
+  // Track barrel picker clicks across pages and delay navigation.
   document.addEventListener("click", function (e) {
     const pickerEl = e.target.closest('[data-analytics="barrel-picker-click"]');
     if (!pickerEl) return;
 
-    window.HBHAnalytics.event("barrel_picker_click", {
+    trackThenNavigate(e, pickerEl, "barrel_picker_click", {
       barrel_picker_id: sanitizeValue(pickerEl.dataset.barrelPickerId),
       barrel_picker_name: sanitizeValue(pickerEl.dataset.barrelPickerName),
-      source_bottle_id: sanitizeValue(pickerEl.dataset.sourceBottleId),
-      destination_url: sanitizeValue(pickerEl.href)
+      source_bottle_id: sanitizeValue(pickerEl.dataset.sourceBottleId)
     });
   });
 
-  // Track distillery clicks across pages.
+  // Track distillery clicks across pages and delay navigation.
   document.addEventListener("click", function (e) {
     const distilleryEl = e.target.closest('[data-analytics="distillery-click"]');
     if (!distilleryEl) return;
 
-    window.HBHAnalytics.event("distillery_click", {
+    trackThenNavigate(e, distilleryEl, "distillery_click", {
       distillery_id: sanitizeValue(distilleryEl.dataset.distilleryId),
-      distillery_name: sanitizeValue(distilleryEl.dataset.distilleryName),
-      destination_url: sanitizeValue(distilleryEl.href)
+      distillery_name: sanitizeValue(distilleryEl.dataset.distilleryName)
     });
   });
 
@@ -342,9 +380,8 @@
 
     const eventName = sanitizeValue(linkEl.dataset.eventName || "custom_link_click");
 
-    window.HBHAnalytics.event(eventName, {
+    trackThenNavigate(e, linkEl, eventName, {
       link_label: sanitizeValue(linkEl.dataset.linkLabel || linkEl.textContent),
-      destination_url: sanitizeValue(linkEl.href),
       link_text: sanitizeValue(linkEl.textContent)
     });
   });
