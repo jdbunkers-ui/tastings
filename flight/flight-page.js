@@ -11,6 +11,13 @@ const elError = document.getElementById("error");
 const elStatusPill = document.getElementById("flightStatusPill");
 const elSubtitle = document.getElementById("flightSubtitle");
 
+const ANALYTICS_COLORS = [
+  "rgba(181, 122, 42, 0.95)",
+  "rgba(110, 78, 50, 0.95)",
+  "rgba(215, 162, 74, 0.95)",
+  "rgba(87, 58, 35, 0.95)",
+];
+
 let state = {
   flightId: null,
   flightRows: [],
@@ -128,6 +135,14 @@ function firstRow(rows) {
   return Array.isArray(rows) && rows.length ? rows[0] : null;
 }
 
+function bottleLabel(row) {
+  return row?.bottle_expression || row?.bottle_name || `Bottle ${row?.position ?? ""}`;
+}
+
+function voteRowLabel(row) {
+  return row?.bottle_name || row?.bottle_expression || `Bottle ${row?.position ?? ""}`;
+}
+
 function resolveBottleImage(row) {
   const raw = row.bottle_img_ref || row.img_ref || row.image_url || row.image_path || "";
   if (!raw) return "../assets/img/bottles/placeholder.png";
@@ -242,7 +257,7 @@ function render() {
           <div class="flight-card-media">
             <img
               src="${escapeHtml(resolveBottleImage(row))}"
-              alt="${escapeHtml(row.bottle_expression || row.bottle_name || `Bottle ${row.position}`)}"
+              alt="${escapeHtml(bottleLabel(row))}"
               loading="lazy"
             />
           </div>
@@ -254,7 +269,7 @@ function render() {
             </div>
 
             <h3 class="flight-bottle-name">
-              ${escapeHtml(row.bottle_expression || row.bottle_name || "Unknown Bottle")}
+              ${escapeHtml(bottleLabel(row))}
             </h3>
 
             ${
@@ -324,7 +339,7 @@ function render() {
           <td class="col-msrp">${fmtMoney(row.msrp)}</td>
           <td class="col-proof">${fmt1(row.proof)}</td>
           <td class="col-age">${fmtAge(row.age)}</td>
-          <td class="col-expression">${barrelLink(row.single_barrel_id, row.bottle_expression || row.bottle_name || "—")}</td>
+          <td class="col-expression">${barrelLink(row.single_barrel_id, bottleLabel(row))}</td>
           <td class="col-distillery">${distilleryLink(row.distillery_id, row.distillery_name || "—")}</td>
           <td class="col-picker">${barrelPickerLink(row.barrel_picker_id, row.barrel_picker_name || "—")}</td>
         </tr>
@@ -345,20 +360,42 @@ function render() {
         .join("")
     : `<div class="flight-empty">No approved comments yet.</div>`;
 
-  const resultsSectionHtml =
+  const analyticsSectionHtml =
     state.hasVoted || String(state.status || "").toLowerCase() === "closed"
       ? `
       <section class="skin2-card flight-results-wrap">
-        <h2 class="flight-section-title">Vote Results</h2>
+        <h2 class="flight-section-title">Flight Analytics</h2>
 
-        <div id="flightBarsWrap">
-          ${renderVoteBars()}
-        </div>
+        <div class="flight-analytics-grid">
 
-        <div id="flightTrendWrap" class="flight-chart-wrap" style="margin-top:16px;">
-          <h3 class="flight-section-title" style="margin-bottom:10px;">Vote Trend</h3>
-          <canvas id="flightTrendChart" width="1200" height="320" aria-label="Cumulative votes by day"></canvas>
-          <div id="flightTrendEmpty" class="flight-empty flight-hidden">Vote trend data is not available yet.</div>
+          <section class="flight-analytics-panel">
+            <h3 class="flight-section-title" style="margin-bottom:10px;">Current Standings</h3>
+            <div id="flightBarsWrap">
+              ${renderVoteBars()}
+            </div>
+          </section>
+
+          <section class="flight-analytics-panel">
+            <h3 class="flight-section-title" style="margin-bottom:10px;">Vote Race</h3>
+            <div id="flightTrendWrap" class="flight-chart-wrap">
+              <canvas id="flightTrendChart" width="1200" height="320" aria-label="Cumulative votes by day"></canvas>
+              <div id="flightTrendEmpty" class="flight-empty flight-hidden">Vote trend data is not available yet.</div>
+            </div>
+          </section>
+
+          <section class="flight-analytics-panel">
+            <h3 class="flight-section-title" style="margin-bottom:10px;">Value vs Quality</h3>
+            <div id="flightValueWrap" class="flight-chart-wrap">
+              <canvas id="flightValueChart" width="1200" height="320" aria-label="MSRP versus score"></canvas>
+              <div id="flightValueEmpty" class="flight-empty flight-hidden">Value chart data is not available yet.</div>
+            </div>
+          </section>
+
+          <section class="flight-analytics-panel">
+            <h3 class="flight-section-title" style="margin-bottom:10px;">Analyst vs Crowd</h3>
+            ${renderAnalystVsCrowd()}
+          </section>
+
         </div>
       </section>
     `
@@ -401,13 +438,14 @@ function render() {
       </div>
     </section>
 
-    ${resultsSectionHtml}
+    ${analyticsSectionHtml}
   `;
 
   wireVoteButtons();
 
   if (state.hasVoted || String(state.status || "").toLowerCase() === "closed") {
     renderTrendChart();
+    renderValueChart();
   }
 }
 
@@ -431,7 +469,7 @@ function renderVoteBars() {
 
           return `
             <div class="flight-bar-row">
-              <div class="flight-bar-label">${escapeHtml(row.bottle_name || row.bottle_expression || `Bottle ${row.position || ""}`)}</div>
+              <div class="flight-bar-label">${escapeHtml(voteRowLabel(row))}</div>
               <div class="flight-bar-track">
                 <div class="flight-bar-fill" style="width:${width.toFixed(2)}%;"></div>
               </div>
@@ -440,6 +478,67 @@ function renderVoteBars() {
           `;
         })
         .join("")}
+    </div>
+  `;
+}
+
+function renderAnalystVsCrowd() {
+  const topScoreRow = [...state.flightRows].sort((a, b) => Number(b.score || 0) - Number(a.score || 0))[0] || null;
+  const bestValueRow = [...state.flightRows]
+    .filter((r) => Number(r.msrp || 0) > 0)
+    .sort((a, b) => (Number(b.score || 0) / Number(b.msrp || 1)) - (Number(a.score || 0) / Number(a.msrp || 1)))[0] || null;
+  const crowdRow = [...state.voteTotals]
+    .sort((a, b) => Number(b.vote_total || b.total_votes || b.votes || 0) - Number(a.vote_total || a.total_votes || a.votes || 0))[0] || null;
+
+  const crowdName = crowdRow ? voteRowLabel(crowdRow) : "No vote leader yet";
+  const analystName = topScoreRow ? bottleLabel(topScoreRow) : "No analyst favorite yet";
+  const aligned = crowdRow && topScoreRow && crowdName === analystName;
+
+  const insightText = crowdRow && topScoreRow
+    ? aligned
+      ? "The crowd favorite is aligned with the top-rated bottle so far."
+      : "The crowd is leaning differently than the top-rated bottle."
+    : "Cast more votes to unlock stronger read-through on crowd behavior.";
+
+  return `
+    <div class="flight-insight-grid">
+      <div class="flight-insight-card">
+        <div class="flight-insight-label">Analyst Favorite</div>
+        <div class="flight-insight-title">${escapeHtml(analystName)}</div>
+        <div class="flight-insight-metric">Score: ${fmt1(topScoreRow?.score)}</div>
+      </div>
+
+      <div class="flight-insight-card">
+        <div class="flight-insight-label">Crowd Favorite</div>
+        <div class="flight-insight-title">${escapeHtml(crowdName)}</div>
+        <div class="flight-insight-metric">
+          Vote Share: ${fmtPct(crowdRow?.vote_pct || crowdRow?.vote_percentage)}
+        </div>
+      </div>
+
+      <div class="flight-insight-card">
+        <div class="flight-insight-label">Best Value</div>
+        <div class="flight-insight-title">${escapeHtml(bestValueRow ? bottleLabel(bestValueRow) : "—")}</div>
+        <div class="flight-insight-metric">
+          Score / MSRP: ${
+            bestValueRow && Number(bestValueRow.msrp || 0) > 0
+              ? (Number(bestValueRow.score || 0) / Number(bestValueRow.msrp || 1)).toFixed(3)
+              : "—"
+          }
+        </div>
+      </div>
+
+      <div class="flight-insight-card flight-insight-wide">
+        <div class="flight-insight-label">Read</div>
+        <div class="flight-insight-title">${escapeHtml(insightText)}</div>
+        <div class="flight-insight-metric">
+          ${
+            topScoreRow && crowdRow
+              ? `Analyst: ${escapeHtml(analystName)} • Crowd: ${escapeHtml(crowdName)}`
+              : "Waiting on more data."
+          }
+        </div>
+      </div>
     </div>
   `;
 }
@@ -589,9 +688,8 @@ function hydrateVoteState(flightId) {
 function renderTrendChart() {
   const canvas = document.getElementById("flightTrendChart");
   const empty = document.getElementById("flightTrendEmpty");
-  const wrap = document.getElementById("flightTrendWrap");
 
-  if (!canvas || !wrap || !empty) return;
+  if (!canvas || !empty) return;
 
   if (!Array.isArray(state.trendRows) || !state.trendRows.length) {
     canvas.classList.add("flight-hidden");
@@ -613,7 +711,6 @@ function renderTrendChart() {
 
   const width = cssWidth;
   const height = cssHeight;
-
   ctx.clearRect(0, 0, width, height);
 
   const padding = { top: 18, right: 22, bottom: 42, left: 46 };
@@ -674,16 +771,9 @@ function renderTrendChart() {
     ctx.fillText(label, x - 16, height - 14);
   });
 
-  const palette = [
-    "rgba(181, 122, 42, 0.95)",
-    "rgba(110, 78, 50, 0.95)",
-    "rgba(215, 162, 74, 0.95)",
-    "rgba(87, 58, 35, 0.95)",
-  ];
-
   Array.from(seriesMap.entries()).forEach(([label, points], idx) => {
     const pointByDay = new Map(points.map((p) => [p.day, p.value]));
-    const color = palette[idx % palette.length];
+    const color = ANALYTICS_COLORS[idx % ANALYTICS_COLORS.length];
 
     ctx.strokeStyle = color;
     ctx.lineWidth = 2.5;
@@ -718,6 +808,224 @@ function renderTrendChart() {
     ctx.fillStyle = "rgba(43, 29, 20, 0.82)";
     ctx.fillText(label, legendX + 18, legendY + 10);
   });
+}
+
+function renderValueChart() {
+  const canvas = document.getElementById("flightValueChart");
+  const empty = document.getElementById("flightValueEmpty");
+
+  if (!canvas || !empty) return;
+
+  const rows = state.flightRows.filter(
+    (r) => isNumberLike(r.msrp) && isNumberLike(r.score)
+  );
+
+  if (!rows.length) {
+    canvas.classList.add("flight-hidden");
+    empty.classList.remove("flight-hidden");
+    return;
+  }
+
+  canvas.classList.remove("flight-hidden");
+  empty.classList.add("flight-hidden");
+
+  const ctx = canvas.getContext("2d");
+  const dpr = window.devicePixelRatio || 1;
+  const cssWidth = canvas.clientWidth || 1200;
+  const cssHeight = 320;
+
+  canvas.width = Math.round(cssWidth * dpr);
+  canvas.height = Math.round(cssHeight * dpr);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  const width = cssWidth;
+  const height = cssHeight;
+  ctx.clearRect(0, 0, width, height);
+
+  const padding = { top: 20, right: 20, bottom: 42, left: 52 };
+  const plotW = width - padding.left - padding.right;
+  const plotH = height - padding.top - padding.bottom;
+
+  let minX = Math.min(...rows.map((r) => Number(r.msrp)));
+  let maxX = Math.max(...rows.map((r) => Number(r.msrp)));
+  let minY = Math.min(...rows.map((r) => Number(r.score)));
+  let maxY = Math.max(...rows.map((r) => Number(r.score)));
+
+  if (minX === maxX) {
+    minX -= 5;
+    maxX += 5;
+  } else {
+    const pad = (maxX - minX) * 0.1;
+    minX -= pad;
+    maxX += pad;
+  }
+
+  if (minY === maxY) {
+    minY -= 0.5;
+    maxY += 0.5;
+  } else {
+    const pad = (maxY - minY) * 0.1;
+    minY -= pad;
+    maxY += pad;
+  }
+
+  const xForValue = (v) => padding.left + ((Number(v) - minX) / (maxX - minX)) * plotW;
+  const yForValue = (v) => padding.top + plotH - ((Number(v) - minY) / (maxY - minY)) * plotH;
+
+  ctx.strokeStyle = "rgba(43, 29, 20, 0.16)";
+  ctx.lineWidth = 1;
+
+  for (let i = 0; i <= 4; i += 1) {
+    const y = padding.top + (i / 4) * plotH;
+    ctx.beginPath();
+    ctx.moveTo(padding.left, y);
+    ctx.lineTo(padding.left + plotW, y);
+    ctx.stroke();
+  }
+
+  for (let i = 0; i <= 4; i += 1) {
+    const x = padding.left + (i / 4) * plotW;
+    ctx.beginPath();
+    ctx.moveTo(x, padding.top);
+    ctx.lineTo(x, padding.top + plotH);
+    ctx.stroke();
+  }
+
+  ctx.beginPath();
+  ctx.moveTo(padding.left, padding.top);
+  ctx.lineTo(padding.left, padding.top + plotH);
+  ctx.lineTo(padding.left + plotW, padding.top + plotH);
+  ctx.strokeStyle = "rgba(43, 29, 20, 0.34)";
+  ctx.stroke();
+
+  ctx.fillStyle = "rgba(43, 29, 20, 0.72)";
+  ctx.font = "11px sans-serif";
+
+  for (let i = 0; i <= 4; i += 1) {
+    const valY = maxY - ((maxY - minY) * i / 4);
+    const y = padding.top + (i / 4) * plotH;
+    ctx.fillText(valY.toFixed(1), 10, y + 4);
+  }
+
+  for (let i = 0; i <= 4; i += 1) {
+    const valX = minX + ((maxX - minX) * i / 4);
+    const x = padding.left + (i / 4) * plotW;
+    ctx.fillText(`$${valX.toFixed(0)}`, x - 14, height - 14);
+  }
+
+  ctx.fillText("Score", 12, 14);
+  ctx.fillText("MSRP", width - 42, height - 14);
+
+  rows.forEach((row, idx) => {
+    const color = ANALYTICS_COLORS[idx % ANALYTICS_COLORS.length];
+    const x = xForValue(row.msrp);
+    const y = yForValue(row.score);
+    const radius = isNumberLike(row.proof)
+      ? Math.max(6, Math.min(12, Number(row.proof) / 12))
+      : 8;
+
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "rgba(43, 29, 20, 0.82)";
+    ctx.fillText(`P${row.position}`, x + radius + 4, y + 4);
+  });
+
+  rows.forEach((row, idx) => {
+    const color = ANALYTICS_COLORS[idx % ANALYTICS_COLORS.length];
+    const legendX = padding.left + (idx % 2) * 260;
+    const legendY = 8 + Math.floor(idx / 2) * 16;
+
+    ctx.fillStyle = color;
+    ctx.fillRect(legendX, legendY, 12, 12);
+
+    ctx.fillStyle = "rgba(43, 29, 20, 0.82)";
+    ctx.fillText(`P${row.position} • ${bottleLabel(row)}`, legendX + 18, legendY + 10);
+  });
+}
+
+async function loadResultsOnly() {
+  const [voteTotals, trendRows] = await Promise.all([
+    fetchVoteTotals(state.flightId),
+    fetchTrendRows(state.flightId),
+  ]);
+
+  state.voteTotals = voteTotals;
+  state.trendRows = trendRows;
+}
+
+async function fetchPreviewRows() {
+  let query = supabase.from(VIEW_PREVIEW).select("*");
+  query = query.eq("is_current", true);
+
+  const { data, error } = await query.order("position", { ascending: true });
+  if (error) throw error;
+
+  return data || [];
+}
+
+async function fetchVoteTotals(flightId) {
+  if (!flightId) return [];
+
+  const { data, error } = await supabase
+    .from(VIEW_VOTE_TOTALS)
+    .select("*")
+    .eq("flight_id", flightId)
+    .order("vote_total", { ascending: false });
+
+  if (error) {
+    console.warn("Vote totals load failed:", error);
+    return [];
+  }
+
+  return data || [];
+}
+
+async function fetchComments(flightId) {
+  if (!flightId) return [];
+
+  const { data, error } = await supabase
+    .from(VIEW_COMMENTS)
+    .select("*")
+    .eq("flight_id", flightId);
+
+  if (error) {
+    console.warn("Comments load failed:", error);
+    return [];
+  }
+
+  return data || [];
+}
+
+async function fetchTrendRows(flightId) {
+  if (!flightId) return [];
+
+  const { data, error } = await supabase
+    .from(VIEW_VOTE_TREND)
+    .select("*")
+    .eq("flight_id", flightId)
+    .order("vote_day", { ascending: true });
+
+  if (error) {
+    console.warn("Vote trend load failed:", error);
+    return [];
+  }
+
+  return data || [];
+}
+
+function hydrateVoteState(flightId) {
+  const stored = readStoredVote(flightId);
+  if (!stored) {
+    state.hasVoted = false;
+    state.votedDetailId = null;
+    return;
+  }
+
+  state.hasVoted = true;
+  state.votedDetailId = stored.flight_detail_id || null;
 }
 
 async function load() {
@@ -787,6 +1095,7 @@ async function load() {
 window.addEventListener("resize", () => {
   if (state.hasVoted || String(state.status || "").toLowerCase() === "closed") {
     renderTrendChart();
+    renderValueChart();
   }
 });
 
