@@ -314,6 +314,18 @@
     });
   });
 
+  // Track distillery clicks across pages.
+  document.addEventListener("click", function (e) {
+    const distilleryEl = e.target.closest('[data-analytics="distillery-click"]');
+    if (!distilleryEl) return;
+
+    window.HBHAnalytics.event("distillery_click", {
+      distillery_id: sanitizeValue(distilleryEl.dataset.distilleryId),
+      distillery_name: sanitizeValue(distilleryEl.dataset.distilleryName),
+      destination_url: sanitizeValue(distilleryEl.href)
+    });
+  });
+
   // Optional helper for future custom link tracking anywhere on the site.
   // Usage:
   // <a
