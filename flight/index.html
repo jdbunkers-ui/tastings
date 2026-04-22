@@ -73,7 +73,11 @@
 
       .flight-card-media {
         aspect-ratio: 4 / 3;
-        background: linear-gradient(180deg, rgba(64, 39, 21, 0.10), rgba(64, 39, 21, 0.04));
+        background: linear-gradient(
+          180deg,
+          rgba(64, 39, 21, 0.1),
+          rgba(64, 39, 21, 0.04)
+        );
         display: flex;
         align-items: center;
         justify-content: center;
@@ -100,9 +104,18 @@
       }
 
       .flight-bottle-name {
-        margin: 0 0 10px;
+        margin: 0 0 8px;
         font-size: 18px;
         line-height: 1.25;
+      }
+
+      .flight-bottle-desc {
+        margin: 0 0 12px;
+        font-size: 13px;
+        line-height: 1.35;
+        font-weight: 600;
+        color: rgba(43, 29, 20, 0.78);
+        min-height: 42px;
       }
 
       .flight-meta {
@@ -117,6 +130,14 @@
         border-radius: 12px;
         padding: 8px 10px;
         background: rgba(246, 241, 234, 0.62);
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        text-align: center;
+        min-height: 86px;
       }
 
       .flight-meta-label {
@@ -126,7 +147,8 @@
         text-transform: uppercase;
         letter-spacing: 0.6px;
         color: rgba(43, 29, 20, 0.58);
-        margin-bottom: 3px;
+        margin-bottom: 4px;
+        text-align: center;
       }
 
       .flight-meta-value {
@@ -134,6 +156,8 @@
         font-size: 14px;
         font-weight: 700;
         color: var(--s2-text);
+        text-align: center;
+        line-height: 1.25;
       }
 
       .flight-vote-btn,
@@ -154,7 +178,10 @@
         background: rgba(246, 241, 234, 0.92);
         color: var(--s2-text);
         cursor: pointer;
-        transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+        transition:
+          transform 120ms ease,
+          background 120ms ease,
+          border-color 120ms ease;
       }
 
       .flight-vote-btn:hover {
@@ -212,14 +239,18 @@
       .flight-bar-track {
         height: 14px;
         border-radius: 999px;
-        background: rgba(43, 29, 20, 0.10);
+        background: rgba(43, 29, 20, 0.1);
         overflow: hidden;
       }
 
       .flight-bar-fill {
         height: 100%;
         border-radius: 999px;
-        background: linear-gradient(90deg, rgba(181, 122, 42, 0.82), rgba(215, 162, 74, 0.95));
+        background: linear-gradient(
+          90deg,
+          rgba(181, 122, 42, 0.82),
+          rgba(215, 162, 74, 0.95)
+        );
       }
 
       .flight-bar-value {
@@ -249,7 +280,7 @@
       .flight-comment-meta {
         margin-top: 6px;
         font-size: 11px;
-        color: rgba(43, 29, 20, 0.60);
+        color: rgba(43, 29, 20, 0.6);
       }
 
       .flight-chart-wrap {
@@ -272,6 +303,10 @@
 
       .flight-hidden {
         display: none !important;
+      }
+
+      .col-picker {
+        white-space: nowrap;
       }
     </style>
   </head>
