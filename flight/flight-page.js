@@ -252,6 +252,9 @@ function render() {
             <h3 class="flight-bottle-name">
               ${escapeHtml(row.bottle_expression || row.bottle_name || "Unknown Bottle")}
             </h3>
+            <div class="flight-bottle-desc">
+              ${escapeHtml(row.single_barrel_description || "")}
+            </div>
 
             <div class="flight-meta">
               <div class="flight-meta-item">
