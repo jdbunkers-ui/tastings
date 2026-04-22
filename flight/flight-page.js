@@ -303,6 +303,7 @@ function render() {
     .map(
       (row) => `
         <tr>
+          <td class="col-position"><strong>Position ${escapeHtml(row.position)}</strong></td>
           <td class="col-score">${fmt1(row.score)}</td>
           <td class="col-msrp">${fmtMoney(row.msrp)}</td>
           <td class="col-proof">${fmt1(row.proof)}</td>
@@ -360,7 +361,8 @@ function render() {
         <table class="skin2-table" aria-label="Flight tale of the tape">
           <thead>
             <tr>
-              <th class="col-score">Composite Score</th>
+              <th class="col-position">Position</th>
+              <th class="col-score">Score</th>
               <th class="col-msrp">MSRP</th>
               <th class="col-proof">Proof</th>
               <th class="col-age">Age</th>
