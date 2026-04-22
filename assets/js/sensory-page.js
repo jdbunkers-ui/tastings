@@ -1,26 +1,23 @@
 /* =========================================================
    Honey Barrel Hunter — Skin2 Sensory Page
    File: assets/js/sensory-page.js
-   Depends on: assets/js/supabaseClient.js
-   Notes:
-   - Reuses inventory-filter.js (expects #filter + rows with data-search)
-   - Renders one row per tasting from public.v_sensory
-   - Adds a star BEFORE bottle when row.new_update = true
-   - Adds a toggle (from sensory/index.html) to filter rows where new_update = true
    ========================================================= */
 
 import { supabase } from "./supabaseClient.js";
 
 const VIEW_NAME = "v_sensory";
-const ROW_LIMIT = 500; // adjust if needed
+const ROW_LIMIT = 500;
 
 // DOM
 const elContent = document.getElementById("sensory-content");
 const elStatus = document.getElementById("status");
 const elError = document.getElementById("error");
 
-// Toggle state (set by sensory/index.html)
-let sensoryOnlyNew = !!(window.HBH_SensoryFilter && window.HBH_SensoryFilter.onlyNew);
+// Toggle state
+let sensoryOnlyNew = !!(
+  window.HBH_SensoryFilter &&
+  window.HBH_SensoryFilter.onlyNew
+);
 
 function show(el, isShown) {
   if (!el) return;
@@ -30,12 +27,14 @@ function show(el, isShown) {
 function showError(message, details) {
   if (!elError) return;
   show(elError, true);
+
   const extra =
     details && typeof details === "object"
       ? `\n\n${JSON.stringify(details, null, 2)}`
       : details
       ? `\n\n${String(details)}`
       : "";
+
   elError.textContent = `${message}${extra}`;
 }
 
@@ -65,47 +64,59 @@ function fmt(v, fallback = "—") {
 }
 
 function cleanNotes(v) {
-  // Preserve your [[emphasis]] tokens for later styling if you want.
-  // For now, just normalize whitespace.
-  return String(v ?? "").replace(/\s+/g, " ").trim();
+  return String(v ?? "")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
-/**
- * Link to bottle page
- * sensory/index.html -> ../bottles/index.html
- */
+/* =========================================================
+   Bottle hyperlink + GA tracking
+   ========================================================= */
 function barrelLink(singleBarrelId, label) {
   const id = (singleBarrelId ?? "").toString().trim();
-  const text = label ?? "";
+  const text = (label ?? "").toString().trim();
+
   if (!id) return escapeHtml(text);
 
-  const href = `../bottles/index.html?single_barrel_id=${encodeURIComponent(id)}`;
-  return `<a class="skin2-link" href="${href}">${escapeHtml(text)}</a>`;
+  const href =
+    `../bottles/index.html?single_barrel_id=${encodeURIComponent(id)}`;
+
+  return `
+    <a
+      class="skin2-link"
+      href="${href}"
+      data-analytics="single-barrel-click"
+      data-single-barrel-id="${escapeHtml(id)}"
+      data-bottle-name="${escapeHtml(text || id)}"
+    >
+      ${escapeHtml(text || id)}
+    </a>
+  `;
 }
 
 function headerLabel(col) {
-  const map = {
-    bottle_expression: "Bottle",
-    nose_notes: "Nose Notes",
-    palate_notes: "Palate Notes",
-    finish_notes: "Finish Notes",
-  };
-  return map[col] || col;
+  return (
+    {
+      bottle_expression: "Bottle",
+      nose_notes: "Nose Notes",
+      palate_notes: "Palate Notes",
+      finish_notes: "Finish Notes",
+    }[col] || col
+  );
 }
 
 function sensoryColClass(col) {
-  const map = {
-    bottle_expression: "col-sensory-bottle", // 👈 wraps
-    nose_notes: "col-notes",
-    palate_notes: "col-notes",
-    finish_notes: "col-notes",
-    score: "col-score",
-  };
-  return map[col] || "";
+  return (
+    {
+      bottle_expression: "col-sensory-bottle",
+      nose_notes: "col-notes",
+      palate_notes: "col-notes",
+      finish_notes: "col-notes",
+      score: "col-score",
+    }[col] || ""
+  );
 }
 
-
-/** Spinning star image (reuses your existing asset) */
 function newUpdateStarImg(altText = "New tasting") {
   return `
     <img
@@ -123,14 +134,21 @@ function renderCell(col, row) {
       fmt(row.bottle_expression, "(unknown bottle)")
     );
 
-    // ⭐ Star BEFORE bottle when this tasting row is marked new_update
-    const star = row.new_update ? newUpdateStarImg("New update") : "";
+    const star = row.new_update
+      ? newUpdateStarImg("New update")
+      : "";
+
     return `${star}${link}`;
   }
 
-  if (col === "nose_notes") return escapeHtml(fmt(cleanNotes(row.nose_notes)));
-  if (col === "palate_notes") return escapeHtml(fmt(cleanNotes(row.palate_notes)));
-  if (col === "finish_notes") return escapeHtml(fmt(cleanNotes(row.finish_notes)));
+  if (col === "nose_notes")
+    return escapeHtml(fmt(cleanNotes(row.nose_notes)));
+
+  if (col === "palate_notes")
+    return escapeHtml(fmt(cleanNotes(row.palate_notes)));
+
+  if (col === "finish_notes")
+    return escapeHtml(fmt(cleanNotes(row.finish_notes)));
 
   return escapeHtml(row[col]);
 }
@@ -139,24 +157,36 @@ function renderTable(rows) {
   if (!elContent) return;
 
   if (!rows || rows.length === 0) {
-    elContent.innerHTML = `<div style="padding:12px;">No sensory rows returned.</div>`;
-    window.dispatchEvent(new Event("skin2:inventoryRendered")); // reuse same hook name
+    elContent.innerHTML =
+      `<div style="padding:12px;">No sensory rows returned.</div>`;
+
+    window.dispatchEvent(
+      new Event("skin2:inventoryRendered")
+    );
+
     return;
   }
 
-  // Columns to display (keep ids for searching / linking but not displayed)
-  const displayCols = ["bottle_expression", "nose_notes", "palate_notes", "finish_notes"];
+  const displayCols = [
+    "bottle_expression",
+    "nose_notes",
+    "palate_notes",
+    "finish_notes",
+  ];
 
   const thead = displayCols
     .map((c) => {
       const cls = sensoryColClass(c);
-      return `<th class="${escapeHtml(cls)}" title="${escapeHtml(c)}">${escapeHtml(
-        headerLabel(c)
-      )}</th>`;
+
+      return `
+        <th class="${escapeHtml(cls)}"
+            title="${escapeHtml(c)}">
+          ${escapeHtml(headerLabel(c))}
+        </th>
+      `;
     })
     .join("");
 
-  // What should be searchable in the filter bar
   const searchableFields = [
     "bottle_expression",
     "nose_notes",
@@ -170,84 +200,118 @@ function renderTable(rows) {
     .map((r) => {
       const searchable = searchableFields
         .filter((c) => c in r)
-        .map((c) => (r[c] == null ? "" : String(r[c])))
+        .map((c) =>
+          r[c] == null ? "" : String(r[c])
+        )
         .join(" | ")
         .toLowerCase();
 
       const tds = displayCols
         .map((c) => {
           const cls = sensoryColClass(c);
-          return `<td class="${escapeHtml(cls)}">${renderCell(c, r)}</td>`;
+
+          return `
+            <td class="${escapeHtml(cls)}">
+              ${renderCell(c, r)}
+            </td>
+          `;
         })
         .join("");
 
-      return `<tr class="inv-row" data-search="${escapeHtml(searchable)}">${tds}</tr>`;
+      return `
+        <tr class="inv-row"
+            data-search="${escapeHtml(searchable)}">
+          ${tds}
+        </tr>
+      `;
     })
     .join("");
 
   elContent.innerHTML = `
-    <table class="skin2-table" aria-label="Sensory notes table">
+    <table class="skin2-table"
+           aria-label="Sensory notes table">
       <thead><tr>${thead}</tr></thead>
       <tbody>${tbody}</tbody>
     </table>
 
     <style>
-      /* Minor readability tweaks for long notes */
       td.col-notes{
-        white-space: normal;
-        line-height: 1.35;
-        max-width: 520px;
+        white-space:normal;
+        line-height:1.35;
+        max-width:520px;
       }
+
       td.col-expression{
-        white-space: nowrap;
+        white-space:nowrap;
       }
     </style>
   `;
 
-  // inventory-filter.js listens for this event name in your setup
-  window.dispatchEvent(new Event("skin2:inventoryRendered"));
+  window.dispatchEvent(
+    new Event("skin2:inventoryRendered")
+  );
 }
 
 async function loadSensory() {
   clearError();
-  setStatus(sensoryOnlyNew ? "Loading sensory notes (recent only)…" : "Loading sensory notes…");
+
+  setStatus(
+    sensoryOnlyNew
+      ? "Loading sensory notes (recent only)…"
+      : "Loading sensory notes…"
+  );
 
   try {
     let q = supabase.from(VIEW_NAME).select("*");
 
-    // ✅ Toggle-driven filter (boolean)
     if (sensoryOnlyNew) {
       q = q.eq("new_update", true);
     }
 
-   const { data, error } = await q
-     .limit(ROW_LIMIT);
+    const { data, error } =
+      await q.limit(ROW_LIMIT);
 
     if (error) throw error;
 
-    renderTable(data);
+    renderTable(data || []);
     setStatus(`Loaded ${data?.length ?? 0} rows`);
+
   } catch (e) {
     setStatus("Error loading sensory notes");
-    showError("Failed to load v_sensory from Supabase.", e);
+
+    showError(
+      "Failed to load v_sensory from Supabase.",
+      e
+    );
+
     if (elContent) elContent.innerHTML = "";
   }
 }
 
-// Listen for the star toggle event dispatched by sensory/index.html
 function wireSensoryToggle() {
-  window.addEventListener("hbh:sensoryFilterChanged", (e) => {
-    const onlyNew = !!(e && e.detail && e.detail.onlyNew);
-    if (onlyNew === sensoryOnlyNew) return;
-    sensoryOnlyNew = onlyNew;
-    loadSensory();
-  });
+  window.addEventListener(
+    "hbh:sensoryFilterChanged",
+    (e) => {
+      const onlyNew = !!(
+        e &&
+        e.detail &&
+        e.detail.onlyNew
+      );
+
+      if (onlyNew === sensoryOnlyNew) return;
+
+      sensoryOnlyNew = onlyNew;
+      loadSensory();
+    }
+  );
 }
 
 // Boot
 wireSensoryToggle();
 
-// Re-read once in case order of scripts differs
-sensoryOnlyNew = !!(window.HBH_SensoryFilter && window.HBH_SensoryFilter.onlyNew);
+sensoryOnlyNew = !!(
+  window.HBH_SensoryFilter &&
+  window.HBH_SensoryFilter.onlyNew
+);
 
 loadSensory();

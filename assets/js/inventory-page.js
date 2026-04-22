@@ -82,26 +82,46 @@ function fmtAge(v) {
 
 /**
  * Bottle Expression hyperlink
+ * Adds GA tracking metadata dynamically from row values.
  */
 function barrelLink(singleBarrelId, label) {
   const id = (singleBarrelId ?? "").toString().trim();
-  const text = label ?? "";
+  const text = (label ?? "").toString().trim();
   if (!id) return escapeHtml(text);
 
   const href = `../bottles/index.html?single_barrel_id=${encodeURIComponent(id)}`;
-  return `<a class="skin2-link" href="${href}">${escapeHtml(text)}</a>`;
+
+  return `
+    <a
+      class="skin2-link"
+      href="${href}"
+      data-analytics="single-barrel-click"
+      data-single-barrel-id="${escapeHtml(id)}"
+      data-bottle-name="${escapeHtml(text || id)}"
+    >${escapeHtml(text || id)}</a>
+  `;
 }
 
 /**
  * Distillery Name hyperlink
+ * Adds GA tracking metadata dynamically from row values.
  */
 function distilleryLink(distilleryId, label) {
   const id = (distilleryId ?? "").toString().trim();
-  const text = label ?? "";
+  const text = (label ?? "").toString().trim();
   if (!id) return escapeHtml(text);
 
   const href = `../distilleries/index.html?distillery_id=${encodeURIComponent(id)}`;
-  return `<a class="skin2-link" href="${href}">${escapeHtml(text)}</a>`;
+
+  return `
+    <a
+      class="skin2-link"
+      href="${href}"
+      data-analytics="distillery-click"
+      data-distillery-id="${escapeHtml(id)}"
+      data-distillery-name="${escapeHtml(text || id)}"
+    >${escapeHtml(text || id)}</a>
+  `;
 }
 
 function headerLabel(col) {

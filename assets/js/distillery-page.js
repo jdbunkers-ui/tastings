@@ -84,19 +84,37 @@ function fmtAge(v) {
 
 /* ---------- Links ---------- */
 function barrelLink(id, label) {
-  const text = label ?? "";
-  if (!id) return escapeHtml(text);
-  return `<a class="skin2-link" href="../bottles/index.html?single_barrel_id=${encodeURIComponent(
-    id
-  )}">${escapeHtml(text)}</a>`;
+  const barrelId = (id ?? "").toString().trim();
+  const text = (label ?? "").toString().trim();
+
+  if (!barrelId) return escapeHtml(text);
+
+  return `
+    <a
+      class="skin2-link"
+      href="../bottles/index.html?single_barrel_id=${encodeURIComponent(barrelId)}"
+      data-analytics="single-barrel-click"
+      data-single-barrel-id="${escapeHtml(barrelId)}"
+      data-bottle-name="${escapeHtml(text || barrelId)}"
+    >${escapeHtml(text || barrelId)}</a>
+  `;
 }
 
 function barrelPickerLink(id, label) {
-  const text = label ?? "";
-  if (!id) return escapeHtml(text);
-  return `<a class="skin2-link" href="../barrel_pickers/index.html?barrel_picker_id=${encodeURIComponent(
-    id
-  )}">${escapeHtml(text)}</a>`;
+  const pickerId = (id ?? "").toString().trim();
+  const text = (label ?? "").toString().trim();
+
+  if (!pickerId) return escapeHtml(text);
+
+  return `
+    <a
+      class="skin2-link"
+      href="../barrel_pickers/index.html?barrel_picker_id=${encodeURIComponent(pickerId)}"
+      data-analytics="barrel-picker-click"
+      data-barrel-picker-id="${escapeHtml(pickerId)}"
+      data-barrel-picker-name="${escapeHtml(text || pickerId)}"
+    >${escapeHtml(text || pickerId)}</a>
+  `;
 }
 
 /* ---------- Table config ---------- */

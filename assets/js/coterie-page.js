@@ -142,7 +142,8 @@ function renderTable(rows) {
 
   const tbody = rows
     .map((r) => {
-      const singleBarrelId = (r.single_barrel_id ?? "").toString();
+      const singleBarrelId = (r.single_barrel_id ?? "").toString().trim();
+      const bottleName = (r.bottle_expression ?? singleBarrelId).toString().trim();
       const encId = encodeURIComponent(singleBarrelId);
 
       const star = r.new_update
@@ -150,7 +151,13 @@ function renderTable(rows) {
         : "";
 
       const bottleLink = `
-        <a class="skin2-link" href="../bottles/index.html?single_barrel_id=${encId}">
+        <a
+          class="skin2-link"
+          href="../bottles/index.html?single_barrel_id=${encId}"
+          data-analytics="single-barrel-click"
+          data-single-barrel-id="${escapeHtml(singleBarrelId)}"
+          data-bottle-name="${escapeHtml(bottleName)}"
+        >
           ${escapeHtml(r.bottle_expression)}
         </a>
       `;
@@ -202,7 +209,7 @@ async function load() {
   try {
     let q = supabase.from(VIEW_NAME).select("*");
 
-    // ✅ Toggle-driven filter (boolean)
+    // Toggle-driven filter (boolean)
     if (coterieOnlyNew) {
       q = q.eq("new_update", true);
     }
