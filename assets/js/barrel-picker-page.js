@@ -2,6 +2,7 @@
    Honey Barrel Hunter — Skin2 Barrel Picker Page
    File: assets/js/barrel-picker-page.js
    GA4 single_barrel_id + bottle name tracking added
+   GA4 distillery_id + distillery_name tracking added
    ========================================================= */
 
 import { supabase } from "./supabaseClient.js";
@@ -82,13 +83,22 @@ function barrelLink(id, label) {
   `;
 }
 
+/* GA tracked distillery hyperlink */
 function distilleryLink(id, label) {
-  if (!id) return escapeHtml(label);
+  const distId = (id ?? "").toString().trim();
+  const text = (label ?? "").toString().trim();
+
+  if (!distId) return escapeHtml(text);
 
   return `
-    <a class="skin2-link"
-       href="../distilleries/index.html?distillery_id=${encodeURIComponent(id)}">
-      ${escapeHtml(label)}
+    <a
+      class="skin2-link"
+      href="../distilleries/index.html?distillery_id=${encodeURIComponent(distId)}"
+      data-analytics="distillery-click"
+      data-distillery-id="${escapeHtml(distId)}"
+      data-distillery-name="${escapeHtml(text || distId)}"
+    >
+      ${escapeHtml(text || distId)}
     </a>
   `;
 }
@@ -187,21 +197,10 @@ function renderCell(col, row) {
     return distilleryLink(row.distillery_id, row.distillery_name);
   }
 
-  if (col === "msrp") {
-    return fmtUsd(row.msrp);
-  }
-
-  if (col === "score") {
-    return fmt1(row.score ?? row.avg_score ?? row.composite_score);
-  }
-
-  if (col === "proof") {
-    return fmt1(row.proof);
-  }
-
-  if (col === "age") {
-    return fmtAge(row.age);
-  }
+  if (col === "msrp") return fmtUsd(row.msrp);
+  if (col === "score") return fmt1(row.score ?? row.avg_score ?? row.composite_score);
+  if (col === "proof") return fmt1(row.proof);
+  if (col === "age") return fmtAge(row.age);
 
   return escapeHtml(row[col]);
 }
