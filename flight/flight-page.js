@@ -397,8 +397,10 @@ function render() {
           </section>
 
           <section class="flight-analytics-panel">
-            <h3 class="flight-section-title" style="margin-bottom:10px;">Analyst vs Crowd</h3>
-            ${renderAnalystVsCrowd()}
+            <h3 class="flight-section-title" style="margin-bottom:14px;">Analyst vs Crowd</h3>
+            <div class="flight-analyst-wrap">
+              ${renderAnalystVsCrowd()}
+            </div>
           </section>
 
         </div>
@@ -495,8 +497,14 @@ function renderAnalystVsCrowd() {
   const crowdRow = [...state.voteTotals]
     .sort((a, b) => Number(b.vote_total || b.total_votes || b.votes || 0) - Number(a.vote_total || a.total_votes || a.votes || 0))[0] || null;
 
-  const crowdName = crowdRow ? voteRowLabel(crowdRow) : "No vote leader yet";
-  const analystName = topScoreRow ? bottleLabel(topScoreRow) : "No analyst favorite yet";
+  const crowdName = crowdRow
+    ? voteRowLabel(crowdRow)
+    : "No vote leader yet";
+  
+  const analystName = topScoreRow
+    ? bottleLabel(topScoreRow)
+    : "No analyst favorite yet";
+    
   const aligned = crowdRow && topScoreRow && crowdName === analystName;
 
   const insightText = crowdRow && topScoreRow
