@@ -468,7 +468,9 @@ function renderVoteBars() {
             <div class="flight-bar-row">
               <div class="flight-bar-label">${escapeHtml(voteRowLabel(row))}</div>
               <div class="flight-bar-track">
-                <div class="flight-bar-fill" style="width:${width.toFixed(2)}%;"></div>
+                <div class="flight-bar-fill"
+                 style="width:${width.toFixed(2)}%; background:${getPositionColor(row.position)};">
+                </div>
               </div>
               <div class="flight-bar-value">${fmtInt(total)} votes • ${fmtPct(pct)}</div>
             </div>
@@ -726,9 +728,11 @@ function renderTrendChart() {
     seriesMap.get(key).push({
       day: String(row.vote_day),
       value: Number(row.cumulative_votes || 0),
+      position: Number(row.position),
     });
   });
 
+  
   const allValues = state.trendRows.map((r) => Number(r.cumulative_votes || 0));
   const maxY = Math.max(...allValues, 1);
 
@@ -772,32 +776,44 @@ function renderTrendChart() {
   });
 
   Array.from(seriesMap.entries()).forEach(([label, points], idx) => {
-    const pointByDay = new Map(points.map((p) => [p.day, p.value]));
-    const color = getPositionColor(points[0]?.position || idx + 1);
+const pointByDay = new Map(points.map((p) => [p.day, p.value]));
+const color = getPositionColor(points[0]?.position || idx + 1);
 
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 2.5;
-    ctx.beginPath();
+ctx.strokeStyle = color;
+ctx.lineWidth = 2.5;
+ctx.beginPath();
 
-    days.forEach((day, dayIdx) => {
-      const x = xForIndex(dayIdx);
-      const y = yForValue(pointByDay.get(day) || 0);
+let runningValue = 0;
 
-      if (dayIdx === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    });
+days.forEach((day, dayIdx) => {
+  if (pointByDay.has(day)) {
+    runningValue = pointByDay.get(day);
+  }
 
-    ctx.stroke();
+  const x = xForIndex(dayIdx);
+  const y = yForValue(runningValue);
 
-    days.forEach((day, dayIdx) => {
-      const x = xForIndex(dayIdx);
-      const y = yForValue(pointByDay.get(day) || 0);
+  if (dayIdx === 0) ctx.moveTo(x, y);
+  else ctx.lineTo(x, y);
+});
 
-      ctx.fillStyle = color;
-      ctx.beginPath();
-      ctx.arc(x, y, 3, 0, Math.PI * 2);
-      ctx.fill();
-    });
+ctx.stroke();
+
+runningValue = 0;
+
+days.forEach((day, dayIdx) => {
+  if (pointByDay.has(day)) {
+    runningValue = pointByDay.get(day);
+  }
+
+  const x = xForIndex(dayIdx);
+  const y = yForValue(runningValue);
+
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.arc(x, y, 3, 0, Math.PI * 2);
+  ctx.fill();
+});
 
     const legendX = padding.left + (idx % 2) * 260;
     const legendY = 10 + Math.floor(idx / 2) * 16;
