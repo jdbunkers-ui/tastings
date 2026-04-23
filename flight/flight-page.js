@@ -623,15 +623,18 @@ async function fetchVoteTotals(flightId) {
   const { data, error } = await supabase
     .from(VIEW_VOTE_TOTALS)
     .select("*")
-    .eq("flight_id", flightId)
-    .order("vote_total", { ascending: false });
+    .eq("flight_id", flightId);
 
   if (error) {
     console.warn("Vote totals load failed:", error);
     return [];
   }
 
-  return data || [];
+  return (data || []).sort(
+    (a, b) =>
+      Number(b.vote_total || b.total_votes || b.votes || 0) -
+      Number(a.vote_total || a.total_votes || a.votes || 0)
+  );
 }
 
 async function fetchComments(flightId) {
