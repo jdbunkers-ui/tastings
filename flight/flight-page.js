@@ -139,9 +139,20 @@ function bottleLabel(row) {
   return row?.bottle_expression || row?.bottle_name || `Bottle ${row?.position ?? ""}`;
 }
 
-function voteRowLabel(row) {
-  return row?.bottle_name || row?.bottle_expression || `Bottle ${row?.position ?? ""}`;
-}
+  function voteRowLabel(row) {
+    if (row?.bottle_expression) return row.bottle_expression;
+    if (row?.bottle_name) return row.bottle_name;
+  
+    const match = state.flightRows.find(
+      (r) =>
+        String(r.flight_detail_id || "") === String(row?.flight_detail_id || "") ||
+        String(r.single_barrel_id || "") === String(row?.single_barrel_id || "")
+    );
+  
+    if (match) return bottleLabel(match);
+  
+    return `Bottle ${row?.position ?? ""}`.trim();
+  }
 
 function resolveBottleImage(row) {
   const raw = row.bottle_img_ref || row.img_ref || row.image_url || row.image_path || "";
@@ -386,8 +397,10 @@ function render() {
           </section>
 
           <section class="flight-analytics-panel">
-            <h3 class="flight-section-title" style="margin-bottom:10px;">Analyst vs Crowd</h3>
-            ${renderAnalystVsCrowd()}
+            <h3 class="flight-section-title" style="margin-bottom:14px;">Analyst vs Crowd</h3>
+            <div class="flight-analyst-wrap">
+              ${renderAnalystVsCrowd()}
+            </div>
           </section>
 
         </div>
@@ -484,8 +497,14 @@ function renderAnalystVsCrowd() {
   const crowdRow = [...state.voteTotals]
     .sort((a, b) => Number(b.vote_total || b.total_votes || b.votes || 0) - Number(a.vote_total || a.total_votes || a.votes || 0))[0] || null;
 
-  const crowdName = crowdRow ? voteRowLabel(crowdRow) : "No vote leader yet";
-  const analystName = topScoreRow ? bottleLabel(topScoreRow) : "No analyst favorite yet";
+  const crowdName = crowdRow
+    ? voteRowLabel(crowdRow)
+    : "No vote leader yet";
+  
+  const analystName = topScoreRow
+    ? bottleLabel(topScoreRow)
+    : "No analyst favorite yet";
+    
   const aligned = crowdRow && topScoreRow && crowdName === analystName;
 
   const insightText = crowdRow && topScoreRow
