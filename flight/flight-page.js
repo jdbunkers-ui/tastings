@@ -948,7 +948,6 @@ function renderValueChart() {
 
   state.voteTotals = voteTotals;
   state.trendRows = trendRows;
-}
 
 async function fetchPreviewRows() {
   let query = supabase.from(VIEW_PREVIEW).select("*");
