@@ -795,19 +795,33 @@ function renderTrendChart() {
     ctx.lineWidth = 2.5;
     ctx.beginPath();
 
+let runningValue = 0;
+
     days.forEach((day, dayIdx) => {
       const x = xForIndex(dayIdx);
-      const y = yForValue(pointByDay.get(day) || 0);
-
+    
+      if (pointByDay.has(day)) {
+        runningValue = Number(pointByDay.get(day) || 0);
+      }
+    
+      const y = yForValue(runningValue);
+    
       if (dayIdx === 0) ctx.moveTo(x, y);
       else ctx.lineTo(x, y);
     });
 
     ctx.stroke();
 
+    runningValue = 0;
+    
     days.forEach((day, dayIdx) => {
       const x = xForIndex(dayIdx);
-      const y = yForValue(pointByDay.get(day) || 0);
+    
+      if (pointByDay.has(day)) {
+        runningValue = Number(pointByDay.get(day) || 0);
+      }
+    
+      const y = yForValue(runningValue);
 
       ctx.fillStyle = color;
       ctx.beginPath();
