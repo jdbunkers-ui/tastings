@@ -248,10 +248,6 @@ function render() {
 
   const cardsHtml = state.flightRows
     .map((row) => {
-      const isPicked =
-        state.votedDetailId &&
-        String(state.votedDetailId) === String(row.flight_detail_id);
-
       return `
         <article class="flight-card">
           <div class="flight-card-media">
@@ -283,9 +279,7 @@ function render() {
                     Vote for this bottle
                   </button>
                 `
-                : isPicked
-                  ? `<div class="flight-voted-badge">Your Pick</div>`
-                  : `<div class="flight-voted-badge">Bottle Revealed</div>`
+                : ``
             }
 
             <div class="flight-meta">
@@ -572,7 +566,7 @@ async function submitVote(flightDetailId) {
 
   const sessionId = getSessionId();
 
-  const { data, error } = await supabase.rpc("f_submit_flight_vote", {
+  const { error } = await supabase.rpc("f_submit_flight_vote", {
     p_flight_id: state.flightId,
     p_flight_detail_id: flightDetailId,
     p_session_id: sessionId,
@@ -944,81 +938,6 @@ function renderValueChart() {
     ctx.fillStyle = "rgba(43, 29, 20, 0.82)";
     ctx.fillText(`P${row.position} • ${bottleLabel(row)}`, legendX + 18, legendY + 10);
   });
-}
-
-  state.voteTotals = voteTotals;
-  state.trendRows = trendRows;
-
-async function fetchPreviewRows() {
-  let query = supabase.from(VIEW_PREVIEW).select("*");
-  query = query.eq("is_current", true);
-
-  const { data, error } = await query.order("position", { ascending: true });
-  if (error) throw error;
-
-  return data || [];
-}
-
-async function fetchVoteTotals(flightId) {
-  if (!flightId) return [];
-
-  const { data, error } = await supabase
-    .from(VIEW_VOTE_TOTALS)
-    .select("*")
-    .eq("flight_id", flightId)
-    .order("vote_total", { ascending: false });
-
-  if (error) {
-    console.warn("Vote totals load failed:", error);
-    return [];
-  }
-
-  return data || [];
-}
-
-async function fetchComments(flightId) {
-  if (!flightId) return [];
-
-  const { data, error } = await supabase
-    .from(VIEW_COMMENTS)
-    .select("*")
-    .eq("flight_id", flightId);
-
-  if (error) {
-    console.warn("Comments load failed:", error);
-    return [];
-  }
-
-  return data || [];
-}
-
-async function fetchTrendRows(flightId) {
-  if (!flightId) return [];
-
-  const { data, error } = await supabase
-    .from(VIEW_VOTE_TREND)
-    .select("*")
-    .eq("flight_id", flightId)
-    .order("vote_day", { ascending: true });
-
-  if (error) {
-    console.warn("Vote trend load failed:", error);
-    return [];
-  }
-
-  return data || [];
-}
-
-function hydrateVoteState(flightId) {
-  const stored = readStoredVote(flightId);
-  if (!stored) {
-    state.hasVoted = false;
-    state.votedDetailId = null;
-    return;
-  }
-
-  state.hasVoted = true;
-  state.votedDetailId = stored.flight_detail_id || null;
 }
 
 async function load() {
