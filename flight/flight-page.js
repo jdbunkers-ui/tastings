@@ -385,19 +385,22 @@ function render() {
             </div>
           </section>
 
-          <section class="flight-analytics-panel">
-            <h3 class="flight-section-title" style="margin-bottom:10px;">Vote Share</h3>
-            <div id="flightShareWrap" class="flight-chart-wrap">
-              <canvas id="flightShareChart" width="1200" height="320" aria-label="Vote share pie chart"></canvas>
-              <div id="flightShareEmpty" class="flight-empty flight-hidden">Vote share data is not available yet.</div>
-            </div>
-          </section>
-
-          <section class="flight-analytics-panel">
-            <h3 class="flight-section-title" style="margin-bottom:10px;">Honey Barrel Hunter vs Coterie</h3>
-            ${renderAnalystVsCrowd()}
-          </section>
-
+          <div class="flight-analytics-split">
+          
+            <section class="flight-analytics-panel">
+              <h3 class="flight-section-title" style="margin-bottom:10px;">Vote Share</h3>
+              <div id="flightShareWrap" class="flight-chart-wrap">
+                <canvas id="flightShareChart" width="1200" height="320" aria-label="Vote share pie chart"></canvas>
+                <div id="flightShareEmpty" class="flight-empty flight-hidden">Vote share data is not available yet.</div>
+              </div>
+            </section>
+          
+            <section class="flight-analytics-panel">
+              <h3 class="flight-section-title" style="margin-bottom:10px;">Honey Barrel Hunter vs Coterie</h3>
+              ${renderAnalystVsCrowd()}
+            </section>
+          
+          </div>
         </div>
       </section>
     `
@@ -498,11 +501,12 @@ function renderAnalystVsCrowd() {
 const crowdMatch = crowdRow
   ? state.flightRows.find(
       (r) =>
-        String(r.flight_detail_id) === String(crowdRow.flight_detail_id) ||
+        String(r.flight_detail_id || "") === String(crowdRow.flight_detail_id || "") ||
+        String(r.single_barrel_id || "") === String(crowdRow.single_barrel_id || "") ||
         Number(r.position) === Number(crowdRow.position)
     )
   : null;
-
+  
 const crowdName = crowdMatch
   ? bottleLabel(crowdMatch)
   : crowdRow
