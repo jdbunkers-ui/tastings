@@ -834,7 +834,30 @@ function renderVoteShareChart() {
 
   if (!canvas || !empty) return;
 
-  if (!Array.isArray(state.voteTotals) || !state.voteTotals.length) {
+  const rows = state.flightRows
+    .map((row) => {
+      const voteRow = state.voteTotals.find(
+        (v) =>
+          String(v.flight_detail_id || "") === String(row.flight_detail_id || "") ||
+          String(v.single_barrel_id || "") === String(row.single_barrel_id || "") ||
+          Number(v.position) === Number(row.position)
+      );
+
+      return {
+        ...row,
+        total_votes: Number(
+          voteRow?.vote_total ||
+          voteRow?.total_votes ||
+          voteRow?.votes ||
+          0
+        ),
+      };
+    })
+    .filter((row) => row.total_votes > 0);
+
+  const totalVotes = rows.reduce((sum, row) => sum + row.total_votes, 0);
+
+  if (!rows.length || totalVotes <= 0) {
     canvas.classList.add("flight-hidden");
     empty.classList.remove("flight-hidden");
     return;
@@ -856,24 +879,9 @@ function renderVoteShareChart() {
   const height = cssHeight;
   ctx.clearRect(0, 0, width, height);
 
-  const rows = state.voteTotals
-    .map((row) => ({
-      ...row,
-      total_votes: Number(row.vote_total || row.total_votes || row.votes || 0),
-    }))
-    .filter((row) => row.total_votes > 0);
-
-  const totalVotes = rows.reduce((sum, row) => sum + row.total_votes, 0);
-
-  if (!rows.length || totalVotes <= 0) {
-    canvas.classList.add("flight-hidden");
-    empty.classList.remove("flight-hidden");
-    return;
-  }
-
-  const centerX = Math.min(width * 0.36, 360);
+  const centerX = Math.min(width * 0.34, 360);
   const centerY = height / 2 + 8;
-  const radius = Math.min(110, height * 0.34);
+  const radius = Math.min(112, height * 0.35);
   const innerRadius = radius * 0.58;
 
   let startAngle = -Math.PI / 2;
@@ -890,6 +898,10 @@ function renderVoteShareChart() {
     ctx.fillStyle = color;
     ctx.fill();
 
+    ctx.strokeStyle = "rgba(255, 250, 243, 0.85)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
     startAngle = endAngle;
   });
 
@@ -898,39 +910,46 @@ function renderVoteShareChart() {
   ctx.fillStyle = "#fffaf3";
   ctx.fill();
 
-  ctx.fillStyle = "rgba(43, 29, 20, 0.90)";
-  ctx.font = "700 20px sans-serif";
+  ctx.fillStyle = "rgba(43, 29, 20, 0.92)";
+  ctx.font = "700 22px sans-serif";
   ctx.textAlign = "center";
-  ctx.fillText(String(totalVotes), centerX, centerY - 4);
+  ctx.fillText(String(totalVotes), centerX, centerY - 5);
 
   ctx.font = "700 11px sans-serif";
-  ctx.fillStyle = "rgba(43, 29, 20, 0.65)";
-  ctx.fillText("Total Votes", centerX, centerY + 16);
-
-  ctx.textAlign = "left";
-  ctx.font = "12px sans-serif";
+  ctx.fillStyle = "rgba(43, 29, 20, 0.62)";
+  ctx.fillText("Total Votes", centerX, centerY + 17);
 
   const legendX = centerX + radius + 70;
-  let legendY = 72;
+  let legendY = 66;
 
-  rows.forEach((row) => {
-    const color = getPositionColor(row.position);
-    const pct = totalVotes > 0 ? (row.total_votes / totalVotes) * 100 : 0;
-    const label = voteRowLabel(row);
+  ctx.textAlign = "left";
 
-    ctx.fillStyle = color;
-    ctx.fillRect(legendX, legendY - 10, 12, 12);
+  rows
+    .sort((a, b) => Number(a.position) - Number(b.position))
+    .forEach((row) => {
+      const color = getPositionColor(row.position);
+      const pct = totalVotes > 0 ? (row.total_votes / totalVotes) * 100 : 0;
+      const label = bottleLabel(row);
 
-    ctx.fillStyle = "rgba(43, 29, 20, 0.86)";
-    ctx.font = "700 12px sans-serif";
-    ctx.fillText(`P${row.position} • ${row.total_votes} votes • ${pct.toFixed(1)}%`, legendX + 20, legendY);
+      ctx.fillStyle = color;
+      ctx.fillRect(legendX, legendY - 10, 12, 12);
 
-    ctx.font = "11px sans-serif";
-    ctx.fillStyle = "rgba(43, 29, 20, 0.70)";
-    ctx.fillText(label, legendX + 20, legendY + 16);
+      ctx.fillStyle = "rgba(43, 29, 20, 0.88)";
+      ctx.font = "700 12px sans-serif";
+      ctx.fillText(
+        `P${row.position} • ${row.total_votes} votes • ${pct.toFixed(1)}%`,
+        legendX + 20,
+        legendY
+      );
 
-    legendY += 44;
-  });
+      ctx.font = "11px sans-serif";
+      ctx.fillStyle = "rgba(43, 29, 20, 0.70)";
+      ctx.fillText(label, legendX + 20, legendY + 16);
+
+      legendY += 44;
+    });
+
+  ctx.textAlign = "start";
 }
 
 function renderValueChart() {
