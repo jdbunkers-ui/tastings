@@ -498,11 +498,12 @@ function renderAnalystVsCrowd() {
 const crowdMatch = crowdRow
   ? state.flightRows.find(
       (r) =>
-        String(r.flight_detail_id) === String(crowdRow.flight_detail_id) ||
+        String(r.flight_detail_id || "") === String(crowdRow.flight_detail_id || "") ||
+        String(r.single_barrel_id || "") === String(crowdRow.single_barrel_id || "") ||
         Number(r.position) === Number(crowdRow.position)
     )
   : null;
-
+  
 const crowdName = crowdMatch
   ? bottleLabel(crowdMatch)
   : crowdRow
