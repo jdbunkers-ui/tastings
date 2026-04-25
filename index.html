@@ -56,6 +56,14 @@
         padding: 22px;
         margin: 14px 0 18px;
         color: var(--s2-text);
+        overflow: hidden;
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 22px;
+        align-items: center;
       }
 
       .hero-title {
@@ -85,6 +93,38 @@
       .hero-bullets strong {
         color: rgba(43, 29, 20, 0.94);
       }
+
+      .hero-image-wrap {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .hero-image {
+        width: 100%;
+        max-width: 430px;
+        height: auto;
+        border-radius: 18px;
+        border: 1px solid rgba(181, 122, 42, 0.24);
+        box-shadow:
+          0 14px 30px rgba(43, 29, 20, 0.12),
+          0 4px 10px rgba(43, 29, 20, 0.08);
+        object-fit: cover;
+      }
+
+      @media (max-width: 860px) {
+        .hero-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .hero-image-wrap {
+          order: -1;
+        }
+
+        .hero-image {
+          max-width: 100%;
+        }
+      }
     </style>
   </head>
 
@@ -95,19 +135,34 @@
 
       <!-- Hero Section -->
       <section class="hero-card">
-        <h1 class="hero-title">Honey Barrel Hunter</h1>
+        <div class="hero-grid">
 
-        <p class="hero-subtitle">
-          <strong>Here, whiskey and analytics collide.</strong><br />
-          Honey Barrel Hunter is an independent whiskey evaluation project focused on blind tasting and disciplined scoring of single-barrel and store picks.
-        </p>
+          <div>
+            <h1 class="hero-title">Honey Barrel Hunter</h1>
 
-        <ul class="hero-bullets">
-          <li><strong>Blind flights</strong> reduce label and price bias.</li>
-          <li><strong>Repeat tastings</strong> prevent one-pour distortion.</li>
-          <li><strong>Transparent scoring</strong> across nose, palate, and finish.</li>
-          <li><strong>Independent methodology</strong> — no paid placements.</li>
-        </ul>
+            <p class="hero-subtitle">
+              <strong>Here, whiskey and analytics collide.</strong><br />
+              Honey Barrel Hunter is an independent whiskey evaluation project focused on blind tasting and disciplined scoring of single-barrel and store picks.
+            </p>
+
+            <ul class="hero-bullets">
+              <li><strong>Blind flights</strong> reduce label and price bias.</li>
+              <li><strong>Repeat tastings</strong> prevent one-pour distortion.</li>
+              <li><strong>Transparent scoring</strong> across nose, palate, and finish.</li>
+              <li><strong>Independent methodology</strong> — no paid placements.</li>
+            </ul>
+          </div>
+
+          <div class="hero-image-wrap">
+            <img
+              class="hero-image"
+              src="./assets/img/about/20260418_154736.jpg"
+              alt="Honey Barrel Hunter tasting setup"
+              loading="lazy"
+            />
+          </div>
+
+        </div>
       </section>
 
       <!-- Latest Updates -->
