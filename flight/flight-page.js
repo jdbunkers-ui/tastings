@@ -718,7 +718,10 @@ function renderTrendChart() {
   const height = cssHeight;
   ctx.clearRect(0, 0, width, height);
 
-  const padding = { top: 18, right: 22, bottom: 42, left: 46 };
+  const padding = isMobile
+  ? { top: 18, right: 14, bottom: 38, left: 36 }
+  : { top: 18, right: 22, bottom: 42, left: 46 };
+  
   const plotW = width - padding.left - padding.right;
   const plotH = height - padding.top - padding.bottom;
 
@@ -818,14 +821,16 @@ days.forEach((day, dayIdx) => {
   ctx.fill();
 });
 
+  if (!isMobile) {
     const legendX = padding.left + (idx % 2) * 260;
     const legendY = 10 + Math.floor(idx / 2) * 16;
-
+  
     ctx.fillStyle = color;
     ctx.fillRect(legendX, legendY, 12, 12);
-
+  
     ctx.fillStyle = "rgba(43, 29, 20, 0.82)";
     ctx.fillText(label, legendX + 18, legendY + 10);
+  }
   });
 }
 
