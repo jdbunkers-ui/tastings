@@ -497,14 +497,6 @@ function renderAnalystVsCrowd() {
 
 const crowdMatch = crowdRow
   ? state.flightRows.find(
-      r =>
-        String(r.flight_detail_id) === String(crowdRow.flight_detail_id) ||
-        Number(r.position) === Number(crowdRow.position)
-    )
-  : null;
-
-const crowdMatch = crowdRow
-  ? state.flightRows.find(
       (r) =>
         String(r.flight_detail_id) === String(crowdRow.flight_detail_id) ||
         Number(r.position) === Number(crowdRow.position)
