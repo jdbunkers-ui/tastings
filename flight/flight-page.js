@@ -917,39 +917,8 @@ function renderVoteShareChart() {
 
   ctx.font = "700 11px sans-serif";
   ctx.fillStyle = "rgba(43, 29, 20, 0.62)";
+
   ctx.fillText("Total Votes", centerX, centerY + 17);
-
-  const legendX = centerX + radius + 70;
-  let legendY = 66;
-
-  ctx.textAlign = "left";
-
-  rows
-    .sort((a, b) => Number(a.position) - Number(b.position))
-    .forEach((row) => {
-      const color = getPositionColor(row.position);
-      const pct = totalVotes > 0 ? (row.total_votes / totalVotes) * 100 : 0;
-      const label = bottleLabel(row);
-
-      ctx.fillStyle = color;
-      ctx.fillRect(legendX, legendY - 10, 12, 12);
-
-      ctx.fillStyle = "rgba(43, 29, 20, 0.88)";
-      ctx.font = "700 12px sans-serif";
-      ctx.fillText(
-        `P${row.position} • ${row.total_votes} votes • ${pct.toFixed(1)}%`,
-        legendX + 20,
-        legendY
-      );
-
-      ctx.font = "11px sans-serif";
-      ctx.fillStyle = "rgba(43, 29, 20, 0.70)";
-      ctx.fillText(label, legendX + 20, legendY + 16);
-
-      legendY += 44;
-    });
-
-  ctx.textAlign = "start";
 }
 
 function renderValueChart() {
@@ -1080,18 +1049,6 @@ function renderValueChart() {
 
     ctx.fillStyle = "rgba(43, 29, 20, 0.82)";
     ctx.fillText(`P${row.position}`, x + 10, y + 4);
-  });
-
-  rows.forEach((row, idx) => {
-    const color = getPositionColor(row.position);
-    const legendX = padding.left + (idx % 2) * 260;
-    const legendY = 8 + Math.floor(idx / 2) * 16;
-
-    ctx.fillStyle = color;
-    ctx.fillRect(legendX, legendY, 12, 12);
-
-    ctx.fillStyle = "rgba(43, 29, 20, 0.82)";
-    ctx.fillText(`P${row.position} • ${bottleLabel(row)}`, legendX + 18, legendY + 10);
   });
 }
 
