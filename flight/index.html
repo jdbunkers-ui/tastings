@@ -376,6 +376,38 @@
         line-height: 1.35;
       }
 
+      .flight-analytics-grid {
+        ...
+      }
+      
+      /* ADD NEW BLOCK HERE */
+      .flight-analytics-split {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 18px;
+        align-items: stretch;
+      }
+      
+      .flight-analytics-split .flight-analytics-panel {
+        margin: 0;
+      }
+      
+      .flight-analytics-split .flight-chart-wrap {
+        min-height: 320px;
+      }
+      
+      /* existing responsive block */
+      @media (max-width: 860px) {
+        .flight-analytics-grid {
+          ...
+        }
+      
+        .flight-analytics-split {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      
       @media (max-width: 520px) {
         .skin2-controls {
           padding: 12px;
