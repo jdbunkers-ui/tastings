@@ -331,7 +331,11 @@ function render() {
     .map(
       (row) => `
         <tr>
-          <td class="col-position"><strong>Position ${escapeHtml(row.position)}</strong></td>
+          <td class="col-position">
+            <strong style="color:${getPositionColor(row.position)};">
+              Position ${escapeHtml(row.position)}
+            </strong>
+          </td>
           <td class="col-score">${fmt1(row.score)}</td>
           <td class="col-msrp">${fmtMoney(row.msrp)}</td>
           <td class="col-proof">${fmt1(row.proof)}</td>
@@ -821,16 +825,6 @@ days.forEach((day, dayIdx) => {
   ctx.fill();
 });
 
-  if (!isMobile) {
-    const legendX = padding.left + (idx % 2) * 260;
-    const legendY = 10 + Math.floor(idx / 2) * 16;
-  
-    ctx.fillStyle = color;
-    ctx.fillRect(legendX, legendY, 12, 12);
-  
-    ctx.fillStyle = "rgba(43, 29, 20, 0.82)";
-    ctx.fillText(label, legendX + 18, legendY + 10);
-  }
   });
 }
 
@@ -1043,7 +1037,6 @@ function renderValueChart() {
   }
 
   ctx.fillText("Votes", 12, 14);
-  ctx.fillText("MSRP", width - 38, height - 16);
 
   rows.forEach((row) => {
     const color = getPositionColor(row.position);
