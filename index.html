@@ -4,7 +4,14 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Honey Barrel Hunter Portal</title>
+
     <link rel="stylesheet" href="./assets/css/skin2.css" />
+
+    <!-- Font Awesome Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
 
     <style>
       html, body { height: 100%; }
@@ -48,14 +55,13 @@
         color: var(--s2-text-muted);
       }
 
-      /* ---------- Hero Section ---------- */
+      /* ---------- Hero ---------- */
       .hero-card {
         border: 1px solid var(--s2-border);
         background: rgba(255, 255, 255, 0.86);
         border-radius: 16px;
         padding: 22px;
         margin: 14px 0 14px;
-        color: var(--s2-text);
         overflow: hidden;
       }
 
@@ -69,7 +75,6 @@
       .hero-title {
         margin: 0 0 8px;
         font-size: 22px;
-        letter-spacing: 0.3px;
         color: rgba(43, 29, 20, 0.94);
       }
 
@@ -78,7 +83,6 @@
         font-size: 14px;
         line-height: 1.6;
         color: rgba(43, 29, 20, 0.88);
-        max-width: 78ch;
       }
 
       .hero-bullets {
@@ -90,41 +94,29 @@
         line-height: 1.55;
       }
 
-      .hero-bullets strong {
-        color: rgba(43, 29, 20, 0.94);
-      }
-
-      .hero-image-wrap {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-
       .hero-image {
         width: 100%;
         max-width: 430px;
-        height: auto;
         border-radius: 18px;
         border: 1px solid rgba(181, 122, 42, 0.24);
         box-shadow:
           0 14px 30px rgba(43, 29, 20, 0.12),
           0 4px 10px rgba(43, 29, 20, 0.08);
-        object-fit: cover;
       }
 
-      /* ---------- Contact Strip ---------- */
+      /* ---------- Contact + Merch ---------- */
       .contact-strip,
       .merch-strip {
         border: 1px solid var(--s2-border);
         background: rgba(255,255,255,0.78);
         border-radius: 16px;
-        padding: 16px 18px;
-        margin: 0 0 18px;
+        padding: 18px;
+        margin-bottom: 18px;
       }
 
       .contact-strip-title,
       .merch-title {
-        margin: 0 0 10px;
+        margin: 0 0 14px;
         font-size: 15px;
         font-weight: 800;
         color: rgba(43,29,20,0.92);
@@ -133,30 +125,53 @@
       .contact-links {
         display: grid;
         grid-template-columns: repeat(4, minmax(0,1fr));
-        gap: 10px 18px;
+        gap: 18px 22px;
       }
 
       .contact-link {
-        font-size: 13px;
-        line-height: 1.35;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
       }
 
-      .contact-link strong {
+      .contact-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 19px;
+        color: #fff;
+        flex-shrink: 0;
+        box-shadow: 0 6px 14px rgba(0,0,0,.12);
+      }
+
+      .email   { background:#8a5b2d; }
+      .ig      { background:linear-gradient(135deg,#f9ce34,#ee2a7b,#6228d7); }
+      .x       { background:#111; }
+      .yt      { background:#ff0000; }
+      .fb      { background:#1877f2; }
+      .reddit  { background:#ff5700; }
+      .tiktok  { background:#111; }
+
+      .contact-meta strong {
         display: block;
         font-size: 11px;
         text-transform: uppercase;
-        letter-spacing: 0.8px;
+        letter-spacing: .8px;
         color: rgba(43,29,20,0.55);
-        margin-bottom: 2px;
+        margin-bottom: 3px;
       }
 
-      .contact-link a {
+      .contact-meta a {
         color: var(--s2-amber);
         text-decoration: none;
         font-weight: 700;
+        font-size: 14px;
       }
 
-      .contact-link a:hover {
+      .contact-meta a:hover {
         text-decoration: underline;
       }
 
@@ -169,34 +184,25 @@
       }
 
       .merch-copy p {
-        margin: 0 0 10px;
-        font-size: 14px;
+        margin: 0 0 12px;
         line-height: 1.55;
-        color: rgba(43,29,20,0.88);
       }
 
       .merch-status {
         display: inline-block;
+        padding: 8px 14px;
+        border-radius: 999px;
         font-size: 12px;
         font-weight: 800;
-        letter-spacing: 0.7px;
+        letter-spacing: .8px;
         text-transform: uppercase;
-        padding: 7px 10px;
-        border-radius: 999px;
         background: rgba(181,122,42,0.12);
-        color: rgba(43,29,20,0.88);
         border: 1px solid rgba(181,122,42,0.22);
-      }
-
-      .merch-image-wrap {
-        display: flex;
-        justify-content: center;
       }
 
       .merch-image {
         width: 100%;
         max-width: 300px;
-        height: auto;
         border-radius: 18px;
         border: 1px solid rgba(181,122,42,0.24);
         box-shadow:
@@ -205,9 +211,7 @@
       }
 
       @media (max-width: 980px) {
-        .contact-links {
-          grid-template-columns: repeat(2, minmax(0,1fr));
-        }
+        .contact-links { grid-template-columns: repeat(2,1fr); }
       }
 
       @media (max-width: 860px) {
@@ -215,22 +219,10 @@
         .merch-grid {
           grid-template-columns: 1fr;
         }
-
-        .hero-image-wrap,
-        .merch-image-wrap {
-          order: -1;
-        }
-
-        .hero-image,
-        .merch-image {
-          max-width: 100%;
-        }
       }
 
       @media (max-width: 640px) {
-        .contact-links {
-          grid-template-columns: 1fr;
-        }
+        .contact-links { grid-template-columns: 1fr; }
       }
     </style>
   </head>
@@ -240,7 +232,7 @@
 
       <div id="site-header"></div>
 
-      <!-- Hero Section -->
+      <!-- Hero -->
       <section class="hero-card">
         <div class="hero-grid">
 
@@ -248,7 +240,7 @@
             <h1 class="hero-title">Honey Barrel Hunter</h1>
 
             <p class="hero-subtitle">
-              <strong>Here, whiskey and analytics collide.</strong><br />
+              <strong>Here, whiskey and analytics collide.</strong><br>
               Honey Barrel Hunter is an independent whiskey evaluation project focused on blind tasting and disciplined scoring of single-barrel and store picks.
             </p>
 
@@ -260,12 +252,11 @@
             </ul>
           </div>
 
-          <div class="hero-image-wrap">
+          <div>
             <img
               class="hero-image"
               src="./assets/img/about/20260418_154736.jpg"
               alt="Honey Barrel Hunter tasting setup"
-              loading="lazy"
             />
           </div>
 
@@ -279,38 +270,59 @@
         <div class="contact-links">
 
           <div class="contact-link">
-            <strong>Email</strong>
-            <a href="mailto:HoneyBarrelHunter@gmail.com">HoneyBarrelHunter@gmail.com</a>
+            <div class="contact-icon email"><i class="fa-regular fa-envelope"></i></div>
+            <div class="contact-meta">
+              <strong>Email</strong>
+              <a href="mailto:HoneyBarrelHunter@gmail.com">HoneyBarrelHunter@gmail.com</a>
+            </div>
           </div>
 
           <div class="contact-link">
-            <strong>Instagram</strong>
-            <a href="https://www.instagram.com/honeybarrelhunter" target="_blank" rel="noopener">honeybarrelhunter</a>
+            <div class="contact-icon ig"><i class="fa-brands fa-instagram"></i></div>
+            <div class="contact-meta">
+              <strong>Instagram</strong>
+              <a href="https://instagram.com/honeybarrelhunter" target="_blank">honeybarrelhunter</a>
+            </div>
           </div>
 
           <div class="contact-link">
-            <strong>Twitter / X</strong>
-            <a href="https://x.com/HoneyBarrelHntr" target="_blank" rel="noopener">@HoneyBarrelHntr</a>
+            <div class="contact-icon x"><i class="fa-brands fa-x-twitter"></i></div>
+            <div class="contact-meta">
+              <strong>Twitter / X</strong>
+              <a href="https://x.com/HoneyBarrelHntr" target="_blank">@HoneyBarrelHntr</a>
+            </div>
           </div>
 
           <div class="contact-link">
-            <strong>YouTube</strong>
-            <a href="https://www.youtube.com/@honeybarrelhunter" target="_blank" rel="noopener">honeybarrelhunter</a>
+            <div class="contact-icon yt"><i class="fa-brands fa-youtube"></i></div>
+            <div class="contact-meta">
+              <strong>YouTube</strong>
+              <a href="https://youtube.com/@honeybarrelhunter" target="_blank">honeybarrelhunter</a>
+            </div>
           </div>
 
           <div class="contact-link">
-            <strong>Facebook</strong>
-            <a href="https://www.facebook.com/honeybarrelhunter" target="_blank" rel="noopener">honeybarrelhunter</a>
+            <div class="contact-icon fb"><i class="fa-brands fa-facebook-f"></i></div>
+            <div class="contact-meta">
+              <strong>Facebook</strong>
+              <a href="https://facebook.com/honeybarrelhunter" target="_blank">honeybarrelhunter</a>
+            </div>
           </div>
 
           <div class="contact-link">
-            <strong>Reddit</strong>
-            <a href="https://www.reddit.com/user/honeybarrelhunter" target="_blank" rel="noopener">u/honeybarrelhunter</a>
+            <div class="contact-icon reddit"><i class="fa-brands fa-reddit-alien"></i></div>
+            <div class="contact-meta">
+              <strong>Reddit</strong>
+              <a href="https://reddit.com/user/honeybarrelhunter" target="_blank">u/honeybarrelhunter</a>
+            </div>
           </div>
 
           <div class="contact-link">
-            <strong>TikTok</strong>
-            <a href="https://www.tiktok.com/@honeybarrelhunter" target="_blank" rel="noopener">@honeybarrelhunter</a>
+            <div class="contact-icon tiktok"><i class="fa-brands fa-tiktok"></i></div>
+            <div class="contact-meta">
+              <strong>TikTok</strong>
+              <a href="https://tiktok.com/@honeybarrelhunter" target="_blank">@honeybarrelhunter</a>
+            </div>
           </div>
 
         </div>
@@ -328,19 +340,16 @@
               Apparel, glassware, tasting gear and more are planned.
             </p>
 
-            <p>
-              The store is currently closed, but opening soon.
-            </p>
+            <p>The store is currently closed, but opening soon.</p>
 
             <span class="merch-status">Store Opening Soon</span>
           </div>
 
-          <div class="merch-image-wrap">
+          <div>
             <img
               class="merch-image"
               src="./assets/img/logo/glencairn.jpg"
-              alt="Honey Barrel Hunter merchandise preview"
-              loading="lazy"
+              alt="HBH merchandise preview"
             />
           </div>
 
