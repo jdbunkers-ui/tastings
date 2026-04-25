@@ -121,6 +121,84 @@
         display: inline-block;
         margin-top: 4px;
       }
+
+      @media (max-width: 520px) {
+  .skin2-controls {
+    padding: 12px;
+  }
+
+  .hbh-filter-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .hbh-proof-wrap {
+    grid-column: 1 / 2;
+    width: 100%;
+    display: flex;
+  }
+
+  .hbh-proof-wrap input {
+    width: 100%;
+  }
+
+  .hbh-filter-row #filter {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .hbh-add-bottle-btn {
+    grid-column: 1 / 2;
+    width: 100%;
+  }
+
+  .hbh-toggle-wrap {
+    grid-column: 2 / 3;
+    justify-self: end;
+  }
+
+  .hbh-toggle-label {
+    display: none;
+  }
+
+  .skin2-status {
+    grid-column: 1 / -1;
+    width: 100%;
+    font-size: 12px;
+  }
+
+  .skin2-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .skin2-table {
+    min-width: 760px;
+  }
+
+  .skin2-table th,
+  .skin2-table td {
+    white-space: normal;
+    vertical-align: top;
+  }
+
+  .skin2-table .col-expression,
+  .skin2-table .col-distillery,
+  .skin2-table .col-picker {
+    min-width: 190px;
+  }
+
+  .skin2-table .col-msrp,
+  .skin2-table .col-proof,
+  .skin2-table .col-age,
+  .skin2-table .col-score {
+    min-width: 90px;
+    text-align: center;
+  }
+}
     </style>
   </head>
 
