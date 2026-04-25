@@ -374,18 +374,18 @@ function render() {
           </section>
 
           <section class="flight-analytics-panel">
-            <h3 class="flight-section-title" style="margin-bottom:10px;">Vote Share</h3>
-            <div id="flightShareWrap" class="flight-chart-wrap">
-              <canvas id="flightShareChart" width="1200" height="320" aria-label="Vote share pie chart"></canvas>
-              <div id="flightShareEmpty" class="flight-empty flight-hidden">Vote share data is not available yet.</div>
-            </div>
-          </section>
-          
-          <section class="flight-analytics-panel">
             <h3 class="flight-section-title" style="margin-bottom:10px;">Value vs Quality</h3>
             <div id="flightValueWrap" class="flight-chart-wrap">
               <canvas id="flightValueChart" width="1200" height="320" aria-label="MSRP versus score"></canvas>
               <div id="flightValueEmpty" class="flight-empty flight-hidden">Value chart data is not available yet.</div>
+            </div>
+          </section>
+
+          <section class="flight-analytics-panel">
+            <h3 class="flight-section-title" style="margin-bottom:10px;">Vote Share</h3>
+            <div id="flightShareWrap" class="flight-chart-wrap">
+              <canvas id="flightShareChart" width="1200" height="320" aria-label="Vote share pie chart"></canvas>
+              <div id="flightShareEmpty" class="flight-empty flight-hidden">Vote share data is not available yet.</div>
             </div>
           </section>
 
