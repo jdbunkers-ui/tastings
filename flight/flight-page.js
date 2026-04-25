@@ -394,7 +394,7 @@ function render() {
           </section>
 
           <section class="flight-analytics-panel">
-            <h3 class="flight-section-title" style="margin-bottom:10px;">Analyst vs Crowd</h3>
+            <h3 class="flight-section-title" style="margin-bottom:10px;">Honey Barrel Hunter vs Coterie</h3>
             ${renderAnalystVsCrowd()}
           </section>
 
@@ -495,26 +495,39 @@ function renderAnalystVsCrowd() {
   const crowdRow = [...state.voteTotals]
     .sort((a, b) => Number(b.vote_total || b.total_votes || b.votes || 0) - Number(a.vote_total || a.total_votes || a.votes || 0))[0] || null;
 
-  const crowdName = crowdRow ? voteRowLabel(crowdRow) : "No vote leader yet";
-  const analystName = topScoreRow ? bottleLabel(topScoreRow) : "No analyst favorite yet";
+const crowdMatch = crowdRow
+  ? state.flightRows.find(
+      (r) =>
+        String(r.flight_detail_id) === String(crowdRow.flight_detail_id) ||
+        Number(r.position) === Number(crowdRow.position)
+    )
+  : null;
+
+const crowdName = crowdMatch
+  ? bottleLabel(crowdMatch)
+  : crowdRow
+    ? voteRowLabel(crowdRow)
+    : "No vote leader yet";
+  
+  const analystName = topScoreRow ? bottleLabel(topScoreRow) : "No Honey Barrel Hunter favorite yet";
   const aligned = crowdRow && topScoreRow && crowdName === analystName;
 
   const insightText = crowdRow && topScoreRow
     ? aligned
-      ? "The crowd favorite is aligned with the top-rated bottle so far."
-      : "The crowd is leaning differently than the top-rated bottle."
-    : "Cast more votes to unlock stronger read-through on crowd behavior.";
+      ? "The Coterie favorite is aligned with the top-rated bottle so far."
+      : "The Coterie is leaning differently than the top-rated bottle."
+    : "Cast more votes to unlock stronger read-through on Coterie behavior.";
 
   return `
     <div class="flight-insight-grid">
       <div class="flight-insight-card">
-        <div class="flight-insight-label">Analyst Favorite</div>
+        <div class="flight-insight-label">Honey Barrel Hunter Favorite</div>
         <div class="flight-insight-title">${escapeHtml(analystName)}</div>
         <div class="flight-insight-metric">Score: ${fmt1(topScoreRow?.score)}</div>
       </div>
 
       <div class="flight-insight-card">
-        <div class="flight-insight-label">Crowd Favorite</div>
+        <div class="flight-insight-label">Coterie Favorite</div>
         <div class="flight-insight-title">${escapeHtml(crowdName)}</div>
         <div class="flight-insight-metric">
           Vote Share: ${fmtPct(crowdRow?.vote_pct || crowdRow?.vote_percentage)}
@@ -539,7 +552,7 @@ function renderAnalystVsCrowd() {
         <div class="flight-insight-metric">
           ${
             topScoreRow && crowdRow
-              ? `Analyst: ${escapeHtml(analystName)} • Crowd: ${escapeHtml(crowdName)}`
+              ? `Honey Barrel Hunter: ${escapeHtml(analystName)} • Coterie: ${escapeHtml(crowdName)}`
               : "Waiting on more data."
           }
         </div>
