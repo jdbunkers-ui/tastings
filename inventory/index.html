@@ -91,6 +91,50 @@
           display: none;
         }
       }
+
+      @media (max-width: 520px) {
+  .skin2-controls {
+    padding: 12px;
+  }
+
+  .hbh-filter-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .hbh-proof-wrap {
+    grid-column: 1 / 2;
+    width: 100%;
+  }
+
+  .hbh-proof-wrap input {
+    width: 100%;
+  }
+
+  .hbh-filter-row #filter {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-width: 0;
+    order: 3;
+  }
+
+  .hbh-toggle-wrap {
+    grid-column: 2 / 3;
+    justify-self: end;
+  }
+
+  .hbh-toggle-label {
+    display: none;
+  }
+
+  .skin2-status {
+    grid-column: 1 / -1;
+    width: 100%;
+    font-size: 12px;
+  }
+}
     </style>
   </head>
 
