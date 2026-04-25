@@ -374,14 +374,6 @@ function render() {
           </section>
 
           <section class="flight-analytics-panel">
-            <h3 class="flight-section-title" style="margin-bottom:10px;">Vote Share</h3>
-            <div id="flightShareWrap" class="flight-chart-wrap">
-              <canvas id="flightShareChart" width="1200" height="320" aria-label="Vote share pie chart"></canvas>
-              <div id="flightShareEmpty" class="flight-empty flight-hidden">Vote share data is not available yet.</div>
-            </div>
-          </section>
-          
-          <section class="flight-analytics-panel">
             <h3 class="flight-section-title" style="margin-bottom:10px;">Value vs Quality</h3>
             <div id="flightValueWrap" class="flight-chart-wrap">
               <canvas id="flightValueChart" width="1200" height="320" aria-label="MSRP versus score"></canvas>
@@ -390,8 +382,16 @@ function render() {
           </section>
 
           <section class="flight-analytics-panel">
+            <h3 class="flight-section-title" style="margin-bottom:10px;">Vote Share</h3>
+            <div id="flightShareWrap" class="flight-chart-wrap">
+              <canvas id="flightShareChart" width="1200" height="320" aria-label="Vote share pie chart"></canvas>
+              <div id="flightShareEmpty" class="flight-empty flight-hidden">Vote share data is not available yet.</div>
+            </div>
+          </section>
+
+          <section class="flight-analytics-panel">
             <h3 class="flight-section-title" style="margin-bottom:10px;">Analyst vs Crowd</h3>
-            ${renderAnalystVsCrowd()}
+            ${()}
           </section>
 
         </div>
@@ -491,8 +491,21 @@ function renderAnalystVsCrowd() {
   const crowdRow = [...state.voteTotals]
     .sort((a, b) => Number(b.vote_total || b.total_votes || b.votes || 0) - Number(a.vote_total || a.total_votes || a.votes || 0))[0] || null;
 
-  const crowdName = crowdRow ? voteRowLabel(crowdRow) : "No vote leader yet";
-  const analystName = topScoreRow ? bottleLabel(topScoreRow) : "No analyst favorite yet";
+  const crowdMatch = crowdRow
+    ? state.flightRows.find(
+        (r) =>
+          String(r.flight_detail_id) === String(crowdRow.flight_detail_id) ||
+          Number(r.position) === Number(crowdRow.position)
+      )
+    : null;
+  
+  const crowdName = crowdMatch
+    ? bottleLabel(crowdMatch)
+    : crowdRow
+      ? voteRowLabel(crowdRow)
+      : "No vote leader yet";
+  
+  const analystName = topScoreRow ? bottleLabel(topScoreRow) : "No HBH favorite yet";
   const aligned = crowdRow && topScoreRow && crowdName === analystName;
 
   const insightText = crowdRow && topScoreRow
@@ -1035,7 +1048,6 @@ function renderValueChart() {
   }
 
   ctx.fillText("Votes", 12, 14);
-  ctx.fillText("MSRP", width - 38, height - 16);
 
   rows.forEach((row) => {
     const color = getPositionColor(row.position);
