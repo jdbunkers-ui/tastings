@@ -707,7 +707,7 @@ function renderTrendChart() {
   const ctx = canvas.getContext("2d");
   const dpr = window.devicePixelRatio || 1;
   const cssWidth = canvas.clientWidth || 1200;
-  const cssHeight = 320;
+  const cssHeight = window.innerWidth <= 520 ? 240 : 320;
 
   canvas.width = Math.round(cssWidth * dpr);
   canvas.height = Math.round(cssHeight * dpr);
@@ -869,7 +869,7 @@ function renderVoteShareChart() {
   const ctx = canvas.getContext("2d");
   const dpr = window.devicePixelRatio || 1;
   const cssWidth = canvas.clientWidth || 1200;
-  const cssHeight = 320;
+  const cssHeight = window.innerWidth <= 520 ? 240 : 320;
 
   canvas.width = Math.round(cssWidth * dpr);
   canvas.height = Math.round(cssHeight * dpr);
@@ -960,7 +960,7 @@ function renderValueChart() {
   const ctx = canvas.getContext("2d");
   const dpr = window.devicePixelRatio || 1;
   const cssWidth = canvas.clientWidth || 1200;
-  const cssHeight = 320;
+  const cssHeight = window.innerWidth <= 520 ? 240 : 320;
 
   canvas.width = Math.round(cssWidth * dpr);
   canvas.height = Math.round(cssHeight * dpr);
