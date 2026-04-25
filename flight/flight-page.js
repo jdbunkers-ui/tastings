@@ -707,7 +707,8 @@ function renderTrendChart() {
   const ctx = canvas.getContext("2d");
   const dpr = window.devicePixelRatio || 1;
   const cssWidth = canvas.clientWidth || 1200;
-  const cssHeight = window.innerWidth <= 520 ? 240 : 320;
+  const isMobile = window.innerWidth <= 520;
+  const cssHeight = isMobile ? 220 : 320;
 
   canvas.width = Math.round(cssWidth * dpr);
   canvas.height = Math.round(cssHeight * dpr);
@@ -869,7 +870,8 @@ function renderVoteShareChart() {
   const ctx = canvas.getContext("2d");
   const dpr = window.devicePixelRatio || 1;
   const cssWidth = canvas.clientWidth || 1200;
-  const cssHeight = window.innerWidth <= 520 ? 240 : 320;
+  const isMobile = window.innerWidth <= 520;
+  const cssHeight = isMobile ? 220 : 320;
 
   canvas.width = Math.round(cssWidth * dpr);
   canvas.height = Math.round(cssHeight * dpr);
@@ -879,7 +881,7 @@ function renderVoteShareChart() {
   const height = cssHeight;
   ctx.clearRect(0, 0, width, height);
 
-  const centerX = Math.min(width * 0.34, 360);
+  const centerX = isMobile ? width / 2 : Math.min(width * 0.34, 360);
   const centerY = height / 2 + 8;
   const radius = Math.min(112, height * 0.35);
   const innerRadius = radius * 0.58;
@@ -960,8 +962,9 @@ function renderValueChart() {
   const ctx = canvas.getContext("2d");
   const dpr = window.devicePixelRatio || 1;
   const cssWidth = canvas.clientWidth || 1200;
-  const cssHeight = window.innerWidth <= 520 ? 240 : 320;
-
+  const isMobile = window.innerWidth <= 520;
+  const cssHeight = isMobile ? 220 : 320;
+  
   canvas.width = Math.round(cssWidth * dpr);
   canvas.height = Math.round(cssHeight * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
