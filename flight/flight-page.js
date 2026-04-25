@@ -1037,7 +1037,6 @@ function renderValueChart() {
   }
 
   ctx.fillText("Votes", 12, 14);
-  ctx.fillText("MSRP", width - 38, height - 16);
 
   rows.forEach((row) => {
     const color = getPositionColor(row.position);
