@@ -503,18 +503,27 @@ const crowdMatch = crowdRow
     )
   : null;
 
+const crowdMatch = crowdRow
+  ? state.flightRows.find(
+      (r) =>
+        String(r.flight_detail_id) === String(crowdRow.flight_detail_id) ||
+        Number(r.position) === Number(crowdRow.position)
+    )
+  : null;
+
 const crowdName = crowdMatch
   ? bottleLabel(crowdMatch)
   : crowdRow
     ? voteRowLabel(crowdRow)
     : "No vote leader yet";
+  
   const analystName = topScoreRow ? bottleLabel(topScoreRow) : "No Honey Barrel Hunter favorite yet";
   const aligned = crowdRow && topScoreRow && crowdName === analystName;
 
   const insightText = crowdRow && topScoreRow
     ? aligned
-      ? "The crowd favorite is aligned with the top-rated bottle so far."
-      : "The crowd is leaning differently than the top-rated bottle."
+      ? "The Coterie favorite is aligned with the top-rated bottle so far."
+      : "The Coterie is leaning differently than the top-rated bottle."
     : "Cast more votes to unlock stronger read-through on Coterie behavior.";
 
   return `
@@ -551,7 +560,7 @@ const crowdName = crowdMatch
         <div class="flight-insight-metric">
           ${
             topScoreRow && crowdRow
-              ? `Analyst: ${escapeHtml(analystName)} • Crowd: ${escapeHtml(crowdName)}`
+              ? `Honey Barrel Hunter: ${escapeHtml(analystName)} • Coterie: ${escapeHtml(crowdName)}`
               : "Waiting on more data."
           }
         </div>
