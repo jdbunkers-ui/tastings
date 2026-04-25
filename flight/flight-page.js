@@ -366,13 +366,6 @@ function render() {
         <div class="flight-analytics-grid">
 
           <section class="flight-analytics-panel">
-            <h3 class="flight-section-title" style="margin-bottom:10px;">Current Standings</h3>
-            <div id="flightBarsWrap">
-              ${renderVoteBars()}
-            </div>
-          </section>
-
-          <section class="flight-analytics-panel">
             <h3 class="flight-section-title" style="margin-bottom:10px;">Vote Race</h3>
             <div id="flightTrendWrap" class="flight-chart-wrap">
               <canvas id="flightTrendChart" width="1200" height="320" aria-label="Cumulative votes by day"></canvas>
@@ -380,6 +373,14 @@ function render() {
             </div>
           </section>
 
+          <section class="flight-analytics-panel">
+            <h3 class="flight-section-title" style="margin-bottom:10px;">Vote Share</h3>
+            <div id="flightShareWrap" class="flight-chart-wrap">
+              <canvas id="flightShareChart" width="1200" height="320" aria-label="Vote share pie chart"></canvas>
+              <div id="flightShareEmpty" class="flight-empty flight-hidden">Vote share data is not available yet.</div>
+            </div>
+          </section>
+          
           <section class="flight-analytics-panel">
             <h3 class="flight-section-title" style="margin-bottom:10px;">Value vs Quality</h3>
             <div id="flightValueWrap" class="flight-chart-wrap">
@@ -442,6 +443,7 @@ function render() {
 
   if (state.hasVoted || String(state.status || "").toLowerCase() === "closed") {
     renderTrendChart();
+    renderVoteShareChart();
     renderValueChart();
   }
 }
@@ -826,15 +828,137 @@ days.forEach((day, dayIdx) => {
   });
 }
 
+function renderVoteShareChart() {
+  const canvas = document.getElementById("flightShareChart");
+  const empty = document.getElementById("flightShareEmpty");
+
+  if (!canvas || !empty) return;
+
+  if (!Array.isArray(state.voteTotals) || !state.voteTotals.length) {
+    canvas.classList.add("flight-hidden");
+    empty.classList.remove("flight-hidden");
+    return;
+  }
+
+  canvas.classList.remove("flight-hidden");
+  empty.classList.add("flight-hidden");
+
+  const ctx = canvas.getContext("2d");
+  const dpr = window.devicePixelRatio || 1;
+  const cssWidth = canvas.clientWidth || 1200;
+  const cssHeight = 320;
+
+  canvas.width = Math.round(cssWidth * dpr);
+  canvas.height = Math.round(cssHeight * dpr);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  const width = cssWidth;
+  const height = cssHeight;
+  ctx.clearRect(0, 0, width, height);
+
+  const rows = state.voteTotals
+    .map((row) => ({
+      ...row,
+      total_votes: Number(row.vote_total || row.total_votes || row.votes || 0),
+    }))
+    .filter((row) => row.total_votes > 0);
+
+  const totalVotes = rows.reduce((sum, row) => sum + row.total_votes, 0);
+
+  if (!rows.length || totalVotes <= 0) {
+    canvas.classList.add("flight-hidden");
+    empty.classList.remove("flight-hidden");
+    return;
+  }
+
+  const centerX = Math.min(width * 0.36, 360);
+  const centerY = height / 2 + 8;
+  const radius = Math.min(110, height * 0.34);
+  const innerRadius = radius * 0.58;
+
+  let startAngle = -Math.PI / 2;
+
+  rows.forEach((row) => {
+    const slice = (row.total_votes / totalVotes) * Math.PI * 2;
+    const endAngle = startAngle + slice;
+    const color = getPositionColor(row.position);
+
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY);
+    ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.fill();
+
+    startAngle = endAngle;
+  });
+
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, innerRadius, 0, Math.PI * 2);
+  ctx.fillStyle = "#fffaf3";
+  ctx.fill();
+
+  ctx.fillStyle = "rgba(43, 29, 20, 0.90)";
+  ctx.font = "700 20px sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText(String(totalVotes), centerX, centerY - 4);
+
+  ctx.font = "700 11px sans-serif";
+  ctx.fillStyle = "rgba(43, 29, 20, 0.65)";
+  ctx.fillText("Total Votes", centerX, centerY + 16);
+
+  ctx.textAlign = "left";
+  ctx.font = "12px sans-serif";
+
+  const legendX = centerX + radius + 70;
+  let legendY = 72;
+
+  rows.forEach((row) => {
+    const color = getPositionColor(row.position);
+    const pct = totalVotes > 0 ? (row.total_votes / totalVotes) * 100 : 0;
+    const label = voteRowLabel(row);
+
+    ctx.fillStyle = color;
+    ctx.fillRect(legendX, legendY - 10, 12, 12);
+
+    ctx.fillStyle = "rgba(43, 29, 20, 0.86)";
+    ctx.font = "700 12px sans-serif";
+    ctx.fillText(`P${row.position} • ${row.total_votes} votes • ${pct.toFixed(1)}%`, legendX + 20, legendY);
+
+    ctx.font = "11px sans-serif";
+    ctx.fillStyle = "rgba(43, 29, 20, 0.70)";
+    ctx.fillText(label, legendX + 20, legendY + 16);
+
+    legendY += 44;
+  });
+}
+
 function renderValueChart() {
   const canvas = document.getElementById("flightValueChart");
   const empty = document.getElementById("flightValueEmpty");
 
   if (!canvas || !empty) return;
 
-  const rows = state.flightRows.filter(
-    (r) => isNumberLike(r.msrp) && isNumberLike(r.score)
-  );
+  const rows = state.flightRows
+    .map((row) => {
+      const voteRow = state.voteTotals.find(
+        (v) =>
+          String(v.flight_detail_id || "") === String(row.flight_detail_id || "") ||
+          String(v.single_barrel_id || "") === String(row.single_barrel_id || "") ||
+          Number(v.position) === Number(row.position)
+      );
+
+      return {
+        ...row,
+        total_votes: Number(
+          voteRow?.vote_total ||
+          voteRow?.total_votes ||
+          voteRow?.votes ||
+          0
+        ),
+      };
+    })
+    .filter((r) => isNumberLike(r.msrp));
 
   if (!rows.length) {
     canvas.classList.add("flight-hidden");
@@ -858,14 +982,14 @@ function renderValueChart() {
   const height = cssHeight;
   ctx.clearRect(0, 0, width, height);
 
-  const padding = { top: 20, right: 20, bottom: 42, left: 52 };
+  const padding = { top: 24, right: 46, bottom: 48, left: 52 };
   const plotW = width - padding.left - padding.right;
   const plotH = height - padding.top - padding.bottom;
 
   let minX = Math.min(...rows.map((r) => Number(r.msrp)));
   let maxX = Math.max(...rows.map((r) => Number(r.msrp)));
-  let minY = Math.min(...rows.map((r) => Number(r.score)));
-  let maxY = Math.max(...rows.map((r) => Number(r.score)));
+  let minY = 0;
+  let maxY = Math.max(...rows.map((r) => Number(r.total_votes)), 1);
 
   if (minX === maxX) {
     minX -= 5;
@@ -876,17 +1000,10 @@ function renderValueChart() {
     maxX += pad;
   }
 
-  if (minY === maxY) {
-    minY -= 0.5;
-    maxY += 0.5;
-  } else {
-    const pad = (maxY - minY) * 0.1;
-    minY -= pad;
-    maxY += pad;
-  }
+  maxY = Math.ceil(maxY * 1.15);
 
   const xForValue = (v) => padding.left + ((Number(v) - minX) / (maxX - minX)) * plotW;
-  const yForValue = (v) => padding.top + plotH - ((Number(v) - minY) / (maxY - minY)) * plotH;
+  const yForValue = (v) => padding.top + plotH - ((Number(v) - minY) / (maxY - minY || 1)) * plotH;
 
   ctx.strokeStyle = "rgba(43, 29, 20, 0.16)";
   ctx.lineWidth = 1;
@@ -920,33 +1037,30 @@ function renderValueChart() {
   for (let i = 0; i <= 4; i += 1) {
     const valY = maxY - ((maxY - minY) * i / 4);
     const y = padding.top + (i / 4) * plotH;
-    ctx.fillText(valY.toFixed(1), 10, y + 4);
+    ctx.fillText(String(Math.round(valY)), 10, y + 4);
   }
 
   for (let i = 0; i <= 4; i += 1) {
     const valX = minX + ((maxX - minX) * i / 4);
     const x = padding.left + (i / 4) * plotW;
-    ctx.fillText(`$${valX.toFixed(0)}`, x - 14, height - 14);
+    ctx.fillText(`$${valX.toFixed(0)}`, x - 14, height - 16);
   }
 
-  ctx.fillText("Score", 12, 14);
-  ctx.fillText("MSRP", width - 42, height - 14);
+  ctx.fillText("Votes", 12, 14);
+  ctx.fillText("MSRP", width - 38, height - 16);
 
-  rows.forEach((row, idx) => {
+  rows.forEach((row) => {
     const color = getPositionColor(row.position);
     const x = xForValue(row.msrp);
-    const y = yForValue(row.score);
-    const radius = isNumberLike(row.proof)
-      ? Math.max(6, Math.min(12, Number(row.proof) / 12))
-      : 8;
+    const y = yForValue(row.total_votes);
 
     ctx.fillStyle = color;
     ctx.beginPath();
-    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.arc(x, y, 8, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.fillStyle = "rgba(43, 29, 20, 0.82)";
-    ctx.fillText(`P${row.position}`, x + radius + 4, y + 4);
+    ctx.fillText(`P${row.position}`, x + 10, y + 4);
   });
 
   rows.forEach((row, idx) => {
@@ -1029,6 +1143,7 @@ async function load() {
 window.addEventListener("resize", () => {
   if (state.hasVoted || String(state.status || "").toLowerCase() === "closed") {
     renderTrendChart();
+    renderVoteShareChart();
     renderValueChart();
   }
 });
