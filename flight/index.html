@@ -20,7 +20,7 @@
       .flight-analyst-wrap {
         margin-top: 4px;
       }
-      
+
       .flight-title-wrap h1 {
         margin: 0;
         font-size: 28px;
@@ -107,14 +107,14 @@
         margin-bottom: 6px;
         text-align: center;
       }
-      
+
       .flight-bottle-name {
         margin: 0 0 8px;
         font-size: 18px;
         line-height: 1.25;
         text-align: center;
       }
-      
+
       .flight-bottle-desc {
         margin: 0 0 12px;
         font-size: 13px;
@@ -124,7 +124,7 @@
         min-height: 42px;
         text-align: center;
       }
-      
+
       .flight-meta {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -137,12 +137,10 @@
         border-radius: 12px;
         padding: 8px 10px;
         background: rgba(246, 241, 234, 0.62);
-
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-
         text-align: center;
         min-height: 86px;
       }
@@ -297,7 +295,8 @@
         padding: 12px;
       }
 
-      #flightTrendChart {
+      #flightTrendChart,
+      #flightValueChart {
         width: 100%;
         height: 320px;
         display: block;
@@ -317,69 +316,104 @@
       }
 
       .flight-analytics-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 18px;
-}
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
 
-.flight-analytics-panel {
-  border: 1px solid rgba(181, 122, 42, 0.18);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.45);
-  padding: 14px;
-}
+      .flight-analytics-panel {
+        border: 1px solid rgba(181, 122, 42, 0.18);
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.45);
+        padding: 14px;
+      }
 
-#flightValueChart {
-  width: 100%;
-  height: 320px;
-  display: block;
-}
+      .flight-insight-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
 
-.flight-insight-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
+      @media (max-width: 760px) {
+        .flight-insight-grid {
+          grid-template-columns: 1fr;
+        }
+      }
 
-@media (max-width: 760px) {
-  .flight-insight-grid {
-    grid-template-columns: 1fr;
-  }
-}
+      .flight-insight-card {
+        border: 1px solid rgba(181, 122, 42, 0.18);
+        border-radius: 14px;
+        background: rgba(246, 241, 234, 0.55);
+        padding: 12px 14px;
+      }
 
-.flight-insight-card {
-  border: 1px solid rgba(181, 122, 42, 0.18);
-  border-radius: 14px;
-  background: rgba(246, 241, 234, 0.55);
-  padding: 12px 14px;
-}
+      .flight-insight-wide {
+        grid-column: 1 / -1;
+      }
 
-.flight-insight-wide {
-  grid-column: 1 / -1;
-}
+      .flight-insight-label {
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: rgba(43, 29, 20, 0.58);
+        margin-bottom: 6px;
+      }
 
-.flight-insight-label {
-  font-size: 11px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: rgba(43, 29, 20, 0.58);
-  margin-bottom: 6px;
-}
+      .flight-insight-title {
+        font-size: 16px;
+        font-weight: 800;
+        line-height: 1.3;
+        color: var(--s2-text);
+        margin-bottom: 4px;
+      }
 
-.flight-insight-title {
-  font-size: 16px;
-  font-weight: 800;
-  line-height: 1.3;
-  color: var(--s2-text);
-  margin-bottom: 4px;
-}
+      .flight-insight-metric {
+        font-size: 13px;
+        color: rgba(43, 29, 20, 0.8);
+        line-height: 1.35;
+      }
 
-.flight-insight-metric {
-  font-size: 13px;
-  color: rgba(43, 29, 20, 0.8);
-  line-height: 1.35;
-}
+      @media (max-width: 520px) {
+        .skin2-controls {
+          padding: 12px;
+        }
+
+        .flight-hero {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 10px;
+          align-items: start;
+        }
+
+        .flight-title-wrap h1 {
+          font-size: 24px;
+        }
+
+        .flight-status-pill {
+          width: 100%;
+          justify-content: center;
+          white-space: normal;
+          text-align: center;
+        }
+
+        .flight-grid {
+          gap: 12px;
+        }
+
+        .flight-card-body {
+          padding: 12px;
+        }
+
+        .flight-meta {
+          gap: 8px;
+        }
+
+        #flightTrendChart,
+        #flightValueChart {
+          height: 260px;
+        }
+      }
     </style>
   </head>
 
