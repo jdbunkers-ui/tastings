@@ -495,7 +495,19 @@ function renderAnalystVsCrowd() {
   const crowdRow = [...state.voteTotals]
     .sort((a, b) => Number(b.vote_total || b.total_votes || b.votes || 0) - Number(a.vote_total || a.total_votes || a.votes || 0))[0] || null;
 
-  const crowdName = crowdRow ? voteRowLabel(crowdRow) : "No vote leader yet";
+const crowdMatch = crowdRow
+  ? state.flightRows.find(
+      r =>
+        String(r.flight_detail_id) === String(crowdRow.flight_detail_id) ||
+        Number(r.position) === Number(crowdRow.position)
+    )
+  : null;
+
+const crowdName = crowdMatch
+  ? bottleLabel(crowdMatch)
+  : crowdRow
+    ? voteRowLabel(crowdRow)
+    : "No vote leader yet";
   const analystName = topScoreRow ? bottleLabel(topScoreRow) : "No Honey Barrel Hunter favorite yet";
   const aligned = crowdRow && topScoreRow && crowdName === analystName;
 
