@@ -115,6 +115,36 @@
         text-align: center;
       }
 
+      .flight-add-review-btn {
+        width: 100%;
+        border-radius: 999px;
+        padding: 10px 12px;
+        font-size: 13px;
+        font-weight: 900;
+        letter-spacing: 0.3px;
+        text-align: center;
+        appearance: none;
+        -webkit-appearance: none;
+        border: 1px solid rgba(181, 122, 42, 0.55);
+        background: rgba(246, 241, 234, 0.92);
+        color: var(--s2-text);
+        cursor: pointer;
+        transition:
+          transform 120ms ease,
+          background 120ms ease,
+          border-color 120ms ease;
+        margin: 0 0 10px;
+      }
+
+      .flight-add-review-btn:hover {
+        background: rgba(255, 255, 255, 0.96);
+        border-color: rgba(181, 122, 42, 0.78);
+      }
+
+      .flight-add-review-btn:active {
+        transform: scale(0.985);
+      }
+
       .flight-bottle-desc {
         margin: 0 0 12px;
         font-size: 13px;
@@ -382,24 +412,21 @@
         gap: 18px;
         align-items: stretch;
       }
-      
+
       .flight-analytics-split .flight-analytics-panel {
         margin: 0;
       }
-      
+
       .flight-analytics-split .flight-chart-wrap {
         min-height: 320px;
       }
-      
-      /* existing responsive block */
+
       @media (max-width: 860px) {
-      
         .flight-analytics-split {
           grid-template-columns: 1fr;
         }
       }
 
-      
       @media (max-width: 520px) {
         .skin2-controls {
           padding: 12px;
@@ -505,6 +532,93 @@
     </main>
 
     <script src="../assets/js/site-chrome.js"></script>
+
+    <script>
+      (function () {
+        function openCoterieReviewPopup(singleBarrelId) {
+          const id = String(singleBarrelId || "").trim();
+
+          if (!id) {
+            alert("Missing single_barrel_id for this bottle.");
+            return;
+          }
+
+          const url =
+            "../coterie/add-bottle.html?single_barrel_id=" +
+            encodeURIComponent(id);
+
+          window.open(
+            url,
+            "_blank",
+            "width=720,height=520,resizable=yes,scrollbars=yes"
+          );
+        }
+
+        function addReviewButtons() {
+          const cards = document.querySelectorAll(".flight-card");
+
+          cards.forEach((card) => {
+            if (card.querySelector(".flight-add-review-btn")) return;
+
+            const nameEl = card.querySelector(".flight-bottle-name");
+            if (!nameEl) return;
+
+            const bottleName = nameEl.textContent.trim();
+
+            let singleBarrelId = "";
+
+            const rows = document.querySelectorAll(".skin2-table tbody tr");
+            rows.forEach((row) => {
+              const expressionLink = row.querySelector(
+                '.col-expression a[data-single-barrel-id]'
+              );
+
+              if (!expressionLink) return;
+
+              const tableBottleName = expressionLink.textContent.trim();
+
+              if (tableBottleName === bottleName) {
+                singleBarrelId =
+                  expressionLink.getAttribute("data-single-barrel-id") || "";
+              }
+            });
+
+            if (!singleBarrelId) return;
+
+            const btn = document.createElement("button");
+            btn.className = "flight-add-review-btn";
+            btn.type = "button";
+            btn.textContent = "Add Review";
+            btn.setAttribute("data-single-barrel-id", singleBarrelId);
+            btn.setAttribute("aria-label", "Add review for " + bottleName);
+
+            btn.addEventListener("click", function () {
+              openCoterieReviewPopup(singleBarrelId);
+            });
+
+            nameEl.insertAdjacentElement("afterend", btn);
+          });
+        }
+
+        const observer = new MutationObserver(() => {
+          addReviewButtons();
+        });
+
+        document.addEventListener("DOMContentLoaded", () => {
+          const flightContent = document.getElementById("flightContent");
+
+          if (flightContent) {
+            observer.observe(flightContent, {
+              childList: true,
+              subtree: true,
+            });
+          }
+
+          addReviewButtons();
+        });
+      })();
+    </script>
+
     <script type="module" src="./flight-page.js"></script>
   </body>
 </html>
