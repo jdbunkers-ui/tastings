@@ -647,7 +647,28 @@
         });
       })();
     </script>
-
+    <script>
+      document.addEventListener("click", function (e) {
+        const btn = e.target.closest(".flight-add-comment-btn");
+        if (!btn) return;
+    
+        const flightId = (btn.getAttribute("data-flight-id") || "").trim();
+    
+        if (!flightId) {
+          alert("Missing flight_id for this flight.");
+          return;
+        }
+    
+        const url =
+          "./add-comment.html?flight_id=" + encodeURIComponent(flightId);
+    
+        window.open(
+          url,
+          "_blank",
+          "width=720,height=520,resizable=yes,scrollbars=yes"
+        );
+      });
+    </script>
     <script type="module" src="./flight-page.js"></script>
   </body>
 </html>
