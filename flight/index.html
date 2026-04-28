@@ -496,6 +496,35 @@
           text-align: center;
         }
       }
+
+      .flight-comments-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+      }
+      
+      .flight-add-comment-btn {
+        appearance: none;
+        -webkit-appearance: none;
+        border: 1px solid rgba(181, 122, 42, 0.55);
+        background: rgba(246, 241, 234, 0.92);
+        color: var(--s2-text);
+        border-radius: 999px;
+        padding: 10px 14px;
+        font-size: 13px;
+        font-weight: 900;
+        letter-spacing: 0.3px;
+        cursor: pointer;
+      }
+      
+      .flight-add-comment-btn:hover {
+        background: rgba(255, 255, 255, 0.96);
+        border-color: rgba(181, 122, 42, 0.78);
+      }
+
     </style>
   </head>
 
@@ -568,7 +597,7 @@
             let singleBarrelId = "";
 
             const rows = document.querySelectorAll(".skin2-table tbody tr");
-            rows.forEach((row) => {
+            for (const row of rows) {
               const expressionLink = row.querySelector(
                 '.col-expression a[data-single-barrel-id]'
               );
@@ -580,6 +609,7 @@
               if (tableBottleName === bottleName) {
                 singleBarrelId =
                   expressionLink.getAttribute("data-single-barrel-id") || "";
+                break;
               }
             });
 
@@ -618,7 +648,28 @@
         });
       })();
     </script>
-
+    <script>
+      document.addEventListener("click", function (e) {
+        const btn = e.target.closest(".flight-add-comment-btn");
+        if (!btn) return;
+    
+        const flightId = (btn.getAttribute("data-flight-id") || "").trim();
+    
+        if (!flightId) {
+          alert("Missing flight_id for this flight.");
+          return;
+        }
+    
+        const url =
+          "./add-comment.html?flight_id=" + encodeURIComponent(flightId);
+    
+        window.open(
+          url,
+          "_blank",
+          "width=720,height=520,resizable=yes,scrollbars=yes"
+        );
+      });
+    </script>
     <script type="module" src="./flight-page.js"></script>
   </body>
 </html>
