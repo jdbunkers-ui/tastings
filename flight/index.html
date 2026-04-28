@@ -597,21 +597,22 @@
             let singleBarrelId = "";
 
             const rows = document.querySelectorAll(".skin2-table tbody tr");
+            
             for (const row of rows) {
               const expressionLink = row.querySelector(
                 '.col-expression a[data-single-barrel-id]'
               );
-
-              if (!expressionLink) return;
-
+            
+              if (!expressionLink) continue;
+            
               const tableBottleName = expressionLink.textContent.trim();
-
+            
               if (tableBottleName === bottleName) {
                 singleBarrelId =
                   expressionLink.getAttribute("data-single-barrel-id") || "";
                 break;
               }
-            });
+            }
 
             if (!singleBarrelId) return;
 
