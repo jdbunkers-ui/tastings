@@ -455,8 +455,6 @@ function render() {
         ${commentsHtml}
       </div>
     </section>
-    
-    ${analyticsSectionHtml}
   `;
 
   wireVoteButtons();
@@ -466,41 +464,6 @@ function render() {
     renderVoteShareChart();
     renderValueChart();
   }
-}
-
-function renderVoteBars() {
-  if (!state.voteTotals.length) {
-    return `<div class="flight-empty">No vote totals available yet.</div>`;
-  }
-
-  const maxPct = Math.max(
-    ...state.voteTotals.map((r) => Number(r.vote_pct || r.vote_percentage || 0)),
-    0
-  );
-
-  return `
-    <div class="flight-bars">
-      ${state.voteTotals
-        .map((row) => {
-          const pct = Number(row.vote_pct || row.vote_percentage || 0);
-          const total = Number(row.vote_total || row.total_votes || row.votes || 0);
-          const width = maxPct > 0 ? (pct / maxPct) * 100 : 0;
-
-          return `
-            <div class="flight-bar-row">
-              <div class="flight-bar-label">${escapeHtml(voteRowLabel(row))}</div>
-              <div class="flight-bar-track">
-                <div class="flight-bar-fill"
-                 style="width:${width.toFixed(2)}%; background:${getPositionColor(row.position)};">
-                </div>
-              </div>
-              <div class="flight-bar-value">${fmtInt(total)} votes • ${fmtPct(pct)}</div>
-            </div>
-          `;
-        })
-        .join("")}
-    </div>
-  `;
 }
 
 function renderAnalystVsCrowd() {
