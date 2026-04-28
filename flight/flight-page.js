@@ -436,13 +436,26 @@ function render() {
       </div>
     </section>
 
-    <section class="skin2-card" style="margin-top:18px;">
-      <h2 class="flight-section-title">Comments</h2>
+    ${analyticsSectionHtml}
+
+    <section class="skin2-card" style="margin-top:18px;" id="flightCommentsSection">
+      <div class="flight-comments-header">
+        <h2 class="flight-section-title">Comments</h2>
+
+        <button
+          class="flight-add-comment-btn"
+          type="button"
+          data-flight-id="${escapeHtml(state.flightId)}"
+        >
+          Add Comment
+        </button>
+      </div>
+
       <div class="flight-comments">
         ${commentsHtml}
       </div>
     </section>
-
+    
     ${analyticsSectionHtml}
   `;
 
