@@ -348,18 +348,43 @@ function render() {
     )
     .join("");
 
-  const commentsHtml = state.comments.length
-    ? state.comments
-        .map(
-          (row) => `
-            <div class="flight-comment">
-              <div class="flight-comment-text">${escapeHtml(row.comment_text || row.comment || "")}</div>
-              <div class="flight-comment-meta">${escapeHtml(row.display_name || row.author_name || "Approved comment")}</div>
-            </div>
-          `
-        )
-        .join("")
-    : `<div class="flight-empty">No approved comments yet.</div>`;
+    const commentsHtml = state.comments.length
+      ? state.comments
+          .map((row) => {
+            const commenter = row.commenter_name || "Anonymous";
+            const ig = (row.ig_account || "").trim();
+            const comment = row.comment_text || "";
+    
+            const igClean = ig.replace(/^@/, "");
+            const igHtml = igClean
+              ? `
+                <a
+                  class="skin2-link"
+                  href="https://instagram.com/${encodeURIComponent(igClean)}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  @${escapeHtml(igClean)}
+                </a>
+              `
+              : "";
+    
+            return `
+              <div class="flight-comment">
+                <div class="flight-comment-text">
+                  ${escapeHtml(comment)}
+                </div>
+    
+                <div class="flight-comment-meta">
+                  <strong>${escapeHtml(commenter)}</strong>
+                  ${igHtml ? ` • ${igHtml}` : ""}
+                </div>
+              </div>
+            `;
+          })
+          .join("")
+      : `<div class="flight-empty">No approved comments yet.</div>`;
+      
 
   const analyticsSectionHtml =
     state.hasVoted || String(state.status || "").toLowerCase() === "closed"
