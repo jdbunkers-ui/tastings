@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bottle Review Queue – Honey Barrel Hunter</title>
+
+  <link rel="stylesheet" href="../assets/css/skin2.css" />
+
+  <style>
+    .review-card {
+      border: 1px solid rgba(181, 122, 42, 0.25);
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 14px;
+      background: rgba(255, 255, 255, 0.62);
+    }
+
+    .review-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px 18px;
+    }
+
+    @media (max-width: 760px) {
+      .review-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .review-label {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: rgba(43, 29, 20, 0.58);
+      margin-bottom: 2px;
+    }
+
+    .review-value {
+      font-size: 14px;
+      font-weight: 650;
+      color: var(--s2-text);
+      word-break: break-word;
+    }
+
+    .review-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .review-btn {
+      border-radius: 999px;
+      padding: 10px 14px;
+      border: 1px solid rgba(181, 122, 42, 0.55);
+      background: rgba(246, 241, 234, 0.92);
+      color: var(--s2-text);
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .review-btn-danger {
+      border-color: rgba(176, 0, 32, 0.45);
+      color: #b00020;
+    }
+
+    .review-section-title {
+      margin: 14px 0 8px;
+      font-size: 16px;
+    }
+
+    .review-muted {
+      color: rgba(43, 29, 20, 0.64);
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="skin2-wrap">
+    <div id="site-header"></div>
+
+    <section class="skin2-card">
+      <h1>Bottle Review Queue</h1>
+      <p class="review-muted">
+        Secret admin queue for reviewing staged Coterie bottle submissions.
+      </p>
+
+      <div class="skin2-controls">
+        <span class="skin2-status" id="status">Loading…</span>
+      </div>
+
+      <div id="reviewQueue"></div>
+      <div id="error" class="skin2-error" style="display:none;"></div>
+    </section>
+
+    <div id="site-footer"></div>
+  </main>
+
+  <script src="../assets/js/site-chrome.js"></script>
+  <script type="module" src="./bottle-review.js"></script>
+</body>
+</html>
