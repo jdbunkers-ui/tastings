@@ -175,7 +175,12 @@ function validateBeforeSubmit() {
 
   const isNewDistillery = el("distilleryForm").style.display !== "none";
   const isNewBottle = el("bottleForm").style.display !== "none";
-
+  const isNewPicker = el("pickerForm").style.display !== "none";
+  
+  if (isNewPicker && !val("barrel_picker_name")) {
+    throw new Error("Barrel picker name is required when adding a new barrel picker.");
+  }
+  
   if (!email) throw new Error("Email is required.");
 
   if (!existingDistilleryId && !isNewDistillery) {
