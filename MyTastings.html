@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  />
+
+  <title>Personal Whiskey Tastings</title>
+
+  <style>
+    :root {
+      --bg: #f7f4ef;
+      --card: #ffffff;
+      --border: rgba(60, 40, 20, 0.12);
+      --text: #2d241d;
+      --muted: rgba(45, 36, 29, 0.68);
+      --accent: #b57a2a;
+      --score: #1f3d2f;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+
+      font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+      line-height: 1.45;
+    }
+
+    .page-wrap {
+      width: 100%;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 32px 18px 80px;
+    }
+
+    .reviewer-header {
+      margin-bottom: 28px;
+    }
+
+    .reviewer-name {
+      font-size: 42px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      margin: 0;
+      color: var(--text);
+    }
+
+    .reviewer-subtitle {
+      margin-top: 8px;
+      font-size: 14px;
+      color: var(--muted);
+      letter-spacing: 0.2px;
+    }
+
+    .review-count {
+      margin-top: 14px;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .tastings-grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .tasting-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow:
+        0 1px 2px rgba(0,0,0,0.04);
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .bottle-block {
+      flex: 1 1 auto;
+      min-width: 260px;
+    }
+
+    .bottle-name {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 1.2;
+      color: var(--text);
+    }
+
+    .distillery-line {
+      margin-top: 8px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .score-block {
+      flex: 0 0 auto;
+      text-align: right;
+    }
+
+    .score-value {
+      font-size: 42px;
+      line-height: 1;
+      font-weight: 900;
+      color: var(--score);
+    }
+
+    .score-label {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+
+    .meta-grid {
+      margin-top: 18px;
+
+      display: grid;
+      grid-template-columns:
+        repeat(auto-fit, minmax(120px, 1fr));
+
+      gap: 12px;
+    }
+
+    .meta-item {
+      background:
+        rgba(0,0,0,0.018);
+
+      border-radius: 10px;
+
+      padding: 10px 12px;
+    }
+
+    .meta-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      font-weight: 700;
+    }
+
+    .meta-value {
+      margin-top: 4px;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .notes-grid {
+      margin-top: 22px;
+
+      display: grid;
+      gap: 14px;
+    }
+
+    .note-block {
+      border-top:
+        1px solid rgba(0,0,0,0.06);
+
+      padding-top: 14px;
+    }
+
+    .note-title {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .note-text {
+      font-size: 15px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .empty-state {
+      margin-top: 40px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .loading-state {
+      margin-top: 40px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    @media (max-width: 720px) {
+
+      .page-wrap {
+        padding: 20px 14px 60px;
+      }
+
+      .reviewer-name {
+        font-size: 32px;
+      }
+
+      .score-block {
+        text-align: left;
+      }
+
+      .score-value {
+        font-size: 34px;
+      }
+
+      .bottle-name {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="page-wrap">
+
+    <header class="reviewer-header">
+
+      <h1
+        id="reviewerName"
+        class="reviewer-name"
+      >
+        Loading…
+      </h1>
+
+      <div class="reviewer-subtitle">
+        Personal Whiskey Tastings
+      </div>
+
+      <div
+        id="reviewCount"
+        class="review-count"
+      ></div>
+
+    </header>
+
+    <section
+      id="loadingState"
+      class="loading-state"
+    >
+      Loading tastings…
+    </section>
+
+    <section
+      id="emptyState"
+      class="empty-state"
+      style="display:none;"
+    >
+      No tastings found.
+    </section>
+
+    <section
+      id="tastingsGrid"
+      class="tastings-grid"
+    ></section>
+
+  </main>
+
+  <script type="module">
+
+    import { supabase }
+      from "./assets/js/supabaseClient.js";
+
+    const params =
+      new URLSearchParams(window.location.search);
+
+    const igAccount =
+      (
+        params.get("ig_account")
+        || ""
+      )
+      .trim()
+      .replace(/^@/, "")
+      .toLowerCase();
+
+    const reviewerNameEl =
+      document.getElementById("reviewerName");
+
+    const reviewCountEl =
+      document.getElementById("reviewCount");
+
+    const loadingStateEl =
+      document.getElementById("loadingState");
+
+    const emptyStateEl =
+      document.getElementById("emptyState");
+
+    const tastingsGridEl =
+      document.getElementById("tastingsGrid");
+
+    reviewerNameEl.textContent =
+      igAccount
+        ? `@${igAccount}`
+        : "Unknown Reviewer";
+
+    async function loadTastings() {
+
+      if (!igAccount) {
+
+        loadingStateEl.style.display = "none";
+
+        emptyStateEl.style.display = "block";
+
+        emptyStateEl.textContent =
+          "Missing ig_account parameter.";
+
+        return;
+      }
+
+      const { data, error } =
+        await supabase
+          .from("v_MyTastings")
+          .select("*")
+          .eq(
+            "ig_account_normalized",
+            igAccount
+          )
+          .order(
+            "composite_score",
+            { ascending: false }
+          );
+
+      loadingStateEl.style.display = "none";
+
+      if (error) {
+
+        console.error(error);
+
+        emptyStateEl.style.display = "block";
+
+        emptyStateEl.textContent =
+          "Failed to load tastings.";
+
+        return;
+      }
+
+      if (!data || data.length === 0) {
+
+        emptyStateEl.style.display = "block";
+
+        return;
+      }
+
+      reviewCountEl.textContent =
+        `${data.length} tasting`
+        + (data.length === 1 ? "" : "s");
+
+      tastingsGridEl.innerHTML =
+        data
+          .map(renderCard)
+          .join("");
+    }
+
+    function renderCard(row) {
+
+      const reviewedDate =
+        row.review_date
+          ? new Date(row.review_date)
+              .toLocaleDateString()
+          : "-";
+
+      return `
+        <article class="tasting-card">
+
+          <div class="card-top">
+
+            <div class="bottle-block">
+
+              <h2 class="bottle-name">
+                ${escapeHtml(
+                  row.bottle_expression || "-"
+                )}
+              </h2>
+
+              <div class="distillery-line">
+                ${escapeHtml(
+                  row.distillery_name || "-"
+                )}
+              </div>
+
+            </div>
+
+            <div class="score-block">
+
+              <div class="score-value">
+                ${formatScore(
+                  row.composite_score
+                )}
+              </div>
+
+              <div class="score-label">
+                Composite Score
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="meta-grid">
+
+            <div class="meta-item">
+              <div class="meta-label">
+                Proof
+              </div>
+
+              <div class="meta-value">
+                ${escapeHtml(
+                  row.proof ?? "-"
+                )}
+              </div>
+            </div>
+
+            <div class="meta-item">
+              <div class="meta-label">
+                Age
+              </div>
+
+              <div class="meta-value">
+                ${escapeHtml(
+                  row.age ?? "-"
+                )} yrs
+              </div>
+            </div>
+
+            <div class="meta-item">
+              <div class="meta-label">
+                MSRP
+              </div>
+
+              <div class="meta-value">
+                $${escapeHtml(
+                  row.msrp ?? "-"
+                )}
+              </div>
+            </div>
+
+            <div class="meta-item">
+              <div class="meta-label">
+                Barrel Picker
+              </div>
+
+              <div class="meta-value">
+                ${escapeHtml(
+                  row.barrel_picker_name || "-"
+                )}
+              </div>
+            </div>
+
+            <div class="meta-item">
+              <div class="meta-label">
+                Reviewed
+              </div>
+
+              <div class="meta-value">
+                ${reviewedDate}
+              </div>
+            </div>
+
+          </div>
+
+          <div class="notes-grid">
+
+            <div class="note-block">
+              <div class="note-title">
+                Nose
+              </div>
+
+              <div class="note-text">
+                ${escapeHtml(
+                  row.nose_notes || "-"
+                )}
+              </div>
+            </div>
+
+            <div class="note-block">
+              <div class="note-title">
+                Palate
+              </div>
+
+              <div class="note-text">
+                ${escapeHtml(
+                  row.palate_notes || "-"
+                )}
+              </div>
+            </div>
+
+            <div class="note-block">
+              <div class="note-title">
+                Finish
+              </div>
+
+              <div class="note-text">
+                ${escapeHtml(
+                  row.finish_notes || "-"
+                )}
+              </div>
+            </div>
+
+          </div>
+
+        </article>
+      `;
+    }
+
+    function formatScore(value) {
+
+      if (
+        value === null
+        || value === undefined
+      ) {
+        return "-";
+      }
+
+      return Number(value)
+        .toFixed(1);
+    }
+
+    function escapeHtml(value) {
+
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    loadTastings();
+
+  </script>
+
+</body>
+</html>
