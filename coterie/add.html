@@ -86,6 +86,14 @@
         </div>
 
         <div>
+          <label>Instagram Account</label>
+          <input
+            id="ig_account"
+            placeholder="@yourhandle"
+          />
+        </div>
+
+        <div>
           <label>Date of Review</label>
           <input id="review_date" type="date" required />
         </div>
@@ -164,6 +172,7 @@
           msg.textContent =
             "Missing single_barrel_id. Please close this window and click “Add Notes” from the Coterie table.";
         }
+
         form.addEventListener("submit", (e) => {
           e.preventDefault();
         });
@@ -171,6 +180,6 @@
     })();
   </script>
 
-  <script type="module" src="../assets/js/coterie-add.js"></script>
+  <script type="module" src="./coterie-add.js"></script>
 </body>
 </html>
