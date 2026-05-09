@@ -2,6 +2,8 @@ import { supabase } from "../assets/js/supabaseClient.js";
 
 const el = (id) => document.getElementById(id);
 
+let allBottles = [];
+
 function setStatus(msg) {
   el("status").textContent = msg;
 }
@@ -26,6 +28,17 @@ async function must(label, promise) {
   return data;
 }
 
+function renderBottleOptions(bottles) {
+  el("bottleSelect").innerHTML =
+    `<option value="">Select Bottle</option>` +
+    (bottles || [])
+      .map(
+        (b) =>
+          `<option value="${b.bottle_id}">${b.bottle_display_name || "Unnamed Bottle"}</option>`
+      )
+      .join("");
+}
+
 async function loadDropdowns() {
   const distilleries = await must(
     "Load distilleries",
@@ -38,16 +51,12 @@ async function loadDropdowns() {
       .map((d) => `<option value="${d.distillery_id}">${d.distillery_name}</option>`)
       .join("");
 
-  const bottles = await must(
+  allBottles = await must(
     "Load bottles",
     supabase.from("v_coterie_bottle_options").select("*")
   );
 
-  el("bottleSelect").innerHTML =
-    `<option value="">Select Bottle</option>` +
-    (bottles || [])
-      .map((b) => `<option value="${b.bottle_id}">${b.bottle_display_name}</option>`)
-      .join("");
+  renderBottleOptions(allBottles);
 
   const pickers = await must(
     "Load barrel pickers",
@@ -61,40 +70,149 @@ async function loadDropdowns() {
       .join("");
 }
 
+function show(id) {
+  el(id).style.display = "block";
+}
+
+function hide(id) {
+  el(id).style.display = "none";
+}
+
+function clearNewDistilleryFields() {
+  ["distillery_name", "country", "state", "address_line_1", "city", "postal_code"].forEach(
+    (id) => (el(id).value = "")
+  );
+}
+
+function clearNewBottleFields() {
+  ["brand_name", "expression_name", "spirit_category", "abv", "size_ml"].forEach(
+    (id) => (el(id).value = "")
+  );
+}
+
+function clearSingleBarrelFields() {
+  ["pick_name", "bottling_year", "batch_code"].forEach((id) => (el(id).value = ""));
+}
+
+function clearPickerFields() {
+  ["barrel_picker_name"].forEach((id) => (el(id).value = ""));
+}
+
+function resetFormAfterSuccess() {
+  el("distillerySelect").disabled = false;
+  el("bottleSelect").disabled = false;
+
+  el("distillerySelect").value = "";
+  el("bottleSelect").value = "";
+  el("pickerSelect").value = "";
+  el("barrelType").value = "";
+
+  clearNewDistilleryFields();
+  clearNewBottleFields();
+  clearSingleBarrelFields();
+  clearPickerFields();
+
+  hide("distilleryForm");
+  hide("bottleForm");
+  hide("singleBarrelForm");
+  hide("pickerForm");
+
+  renderBottleOptions(allBottles);
+}
+
 function wireUI() {
+  el("distillerySelect").onchange = () => {
+    const distilleryId = val("distillerySelect");
+
+    if (!distilleryId) {
+      renderBottleOptions(allBottles);
+      return;
+    }
+
+    const filtered = allBottles.filter(
+      (b) => String(b.distillery_id) === String(distilleryId)
+    );
+
+    renderBottleOptions(filtered);
+  };
+
   el("addDistilleryBtn").onclick = () => {
-    el("distilleryForm").style.display = "block";
+    show("distilleryForm");
+    show("bottleForm");
+
     el("distillerySelect").value = "";
+    el("bottleSelect").value = "";
+
+    el("bottleSelect").disabled = true;
+
+    clearNewBottleFields();
+
+    setStatus("New distillery selected. Please add a new bottle as well.");
   };
 
   el("addBottleBtn").onclick = () => {
-    el("bottleForm").style.display = "block";
+    show("bottleForm");
     el("bottleSelect").value = "";
   };
 
   el("addPickerBtn").onclick = () => {
-    el("pickerForm").style.display = "block";
+    show("pickerForm");
     el("pickerSelect").value = "";
   };
 
   el("barrelType").onchange = () => {
-    el("singleBarrelForm").style.display =
-      el("barrelType").value ? "block" : "none";
+    if (val("barrelType")) show("singleBarrelForm");
+    else hide("singleBarrelForm");
   };
 
   el("submitBtn").onclick = submit;
 }
 
+function validateBeforeSubmit() {
+  const email = val("email");
+  const existingDistilleryId = val("distillerySelect");
+  const existingBottleId = val("bottleSelect");
+
+  const isNewDistillery = el("distilleryForm").style.display !== "none";
+  const isNewBottle = el("bottleForm").style.display !== "none";
+
+  if (!email) throw new Error("Email is required.");
+
+  if (!existingDistilleryId && !isNewDistillery) {
+    throw new Error("Please select an existing distillery or add a new distillery.");
+  }
+
+  if (isNewDistillery && !isNewBottle) {
+    throw new Error("A new distillery requires a new bottle.");
+  }
+
+  if (!existingBottleId && !isNewBottle) {
+    throw new Error("Please select an existing bottle or add a new bottle.");
+  }
+
+  if (isNewBottle) {
+    if (!val("brand_name")) throw new Error("Brand name is required for a new bottle.");
+    if (!val("expression_name")) throw new Error("Expression name is required for a new bottle.");
+    if (!val("spirit_category")) throw new Error("Spirit category is required for a new bottle.");
+  }
+
+  if (isNewDistillery) {
+    if (!val("distillery_name")) throw new Error("Distillery name is required.");
+    if (!val("country")) throw new Error("Country is required.");
+    if (!val("state")) throw new Error("State is required.");
+    if (!val("address_line_1")) throw new Error("Address line 1 is required.");
+    if (!val("city")) throw new Error("City is required.");
+    if (!val("postal_code")) throw new Error("Postal code is required.");
+  }
+}
+
 async function submit() {
   try {
     setStatus("Submitting…");
+    validateBeforeSubmit();
 
     const email = val("email");
     const ig = val("ig") || null;
-
-    if (!email) {
-      throw new Error("Email is required.");
-    }
 
     const existingDistilleryId = val("distillerySelect") || null;
     const existingBottleId = val("bottleSelect") || null;
@@ -146,6 +264,9 @@ async function submit() {
         spirit_category: val("spirit_category") || null,
         abv: numOrNull("abv"),
         size_ml: numOrNull("size_ml"),
+        finished_ind: false,
+        chill_filtered_ind: false,
+        single_barrel_ind: barrelType === "SINGLE_BARREL",
         email_address: email,
         ig_account: ig
       })
@@ -183,6 +304,7 @@ async function submit() {
     }
 
     setStatus("Submission complete. Thank you!");
+    resetFormAfterSuccess();
   } catch (e) {
     console.error(e);
     setStatus(`Submission failed: ${e.message}`);
