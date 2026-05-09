@@ -6,6 +6,35 @@
   <title>Add Bottle – Honey Barrel Hunter</title>
 
   <link rel="stylesheet" href="../assets/css/skin2.css" />
+
+  <style>
+    .helper {
+      display: block;
+      margin: 4px 0 12px;
+      font-size: 12px;
+      color: rgba(43, 29, 20, 0.68);
+      line-height: 1.35;
+    }
+
+    .field-wrap {
+      margin-bottom: 12px;
+    }
+
+    .required {
+      color: #b00020;
+      font-weight: 700;
+      margin-left: 4px;
+    }
+
+    .helper-required {
+      color: #b00020;
+      font-size: 12px;
+      margin-top: -6px;
+      margin-bottom: 8px;
+      display: block;
+      font-weight: 600;
+    }
+  </style>
 </head>
 
 <body>
@@ -15,83 +44,196 @@
     <section class="skin2-card">
       <h1>Add a new bottle to the Coterie</h1>
 
-      <div class="skin2-controls">
-        <label>Email</label>
-        <input id="email" type="email" />
+      <p class="helper">
+        Submit a bottle for review. Your submission lands in staging first and will be reviewed before it appears publicly.
+      </p>
 
-        <label>Instagram (optional)</label>
-        <input id="ig" type="text" placeholder="@yourhandle" />
+      <p class="helper">
+        Fields marked with <span class="required">*</span> are required.
+      </p>
+
+      <div class="skin2-controls">
+        <div class="field-wrap">
+          <label>Email <span class="required">*</span></label>
+          <input id="email" type="email" placeholder="example@email.com" />
+          <span class="helper-required">Required</span>
+          <span class="helper">Used only if I need to follow up with a question about the submission.</span>
+        </div>
+
+        <div class="field-wrap">
+          <label>Instagram</label>
+          <input id="ig" type="text" placeholder="@honeybarrelhunter" />
+          <span class="helper">Optional. Helps attribute submissions or follow up socially later.</span>
+        </div>
       </div>
     </section>
 
-    <!-- DISTILLERY -->
     <section class="skin2-card">
-      <h2>Distillery</h2>
+      <h2>1. Distillery</h2>
+      <p class="helper">Select an existing distillery, or add a new one if it is not listed.</p>
 
-      <select id="distillerySelect"></select>
+      <div class="field-wrap">
+        <label>Existing Distillery</label>
+        <select id="distillerySelect"></select>
+        <span class="helper">Example: Wild Turkey, Ben Holladay, Rare Character, Woodford Reserve.</span>
+      </div>
 
-      <button id="addDistilleryBtn">Add Distillery</button>
+      <button id="addDistilleryBtn" type="button">Add Distillery</button>
 
       <div id="distilleryForm" style="display:none;">
-        <input id="distillery_name" placeholder="Distillery Name" />
-        <input id="country" placeholder="Country" />
-        <input id="state" placeholder="State" />
-        <input id="address_line_1" placeholder="Address Line 1" />
-        <input id="city" placeholder="City" />
-        <input id="postal_code" placeholder="Postal Code" />
+        <div class="field-wrap">
+          <label>Distillery Name <span class="required">*</span></label>
+          <input id="distillery_name" placeholder="Ben Holladay Distillery" />
+          <span class="helper-required">Required</span>
+          <span class="helper">Use the official distillery name when possible.</span>
+        </div>
+
+        <div class="field-wrap">
+          <label>Country <span class="required">*</span></label>
+          <input id="country" placeholder="United States" />
+          <span class="helper-required">Required</span>
+          <span class="helper">Use the full country name when known.</span>
+        </div>
+
+        <div class="field-wrap">
+          <label>State <span class="required">*</span></label>
+          <input id="state" placeholder="MO" />
+          <span class="helper-required">Required</span>
+          <span class="helper">Use the two-letter state code when applicable. Example: KY, MO, NJ.</span>
+        </div>
+
+        <div class="field-wrap">
+          <label>Address Line 1 <span class="required">*</span></label>
+          <input id="address_line_1" placeholder="1 McCormick Lane" />
+          <span class="helper-required">Required</span>
+          <span class="helper">Street address of the distillery or primary location.</span>
+        </div>
+
+        <div class="field-wrap">
+          <label>City <span class="required">*</span></label>
+          <input id="city" placeholder="Weston" />
+          <span class="helper-required">Required</span>
+        </div>
+
+        <div class="field-wrap">
+          <label>Postal Code <span class="required">*</span></label>
+          <input id="postal_code" placeholder="64098" />
+          <span class="helper-required">Required</span>
+        </div>
       </div>
     </section>
 
-    <!-- BOTTLE -->
     <section class="skin2-card">
-      <h2>Bottle</h2>
+      <h2>2. Bottle</h2>
+      <p class="helper">Select an existing bottle, or add a new bottle if it is not listed.</p>
 
-      <select id="bottleSelect"></select>
+      <div class="field-wrap">
+        <label>Existing Bottle</label>
+        <select id="bottleSelect"></select>
+        <span class="helper">If you selected a distillery above, this list will filter to bottles from that distillery.</span>
+      </div>
 
-      <button id="addBottleBtn">Add Bottle</button>
+      <button id="addBottleBtn" type="button">Add Bottle</button>
 
       <div id="bottleForm" style="display:none;">
-        <input id="brand_name" placeholder="Brand Name" />
-        <input id="expression_name" placeholder="Expression Name" />
-        <input id="spirit_category" placeholder="Spirit Category" />
-        <input id="abv" placeholder="ABV" />
-        <input id="size_ml" placeholder="Size (ml)" />
+        <div class="field-wrap">
+          <label>Brand Name <span class="required">*</span></label>
+          <input id="brand_name" placeholder="Wild Turkey" />
+          <span class="helper-required">Required</span>
+          <span class="helper">The main brand on the bottle. Example: Wild Turkey, Woodford Reserve, Ben Holladay.</span>
+        </div>
+
+        <div class="field-wrap">
+          <label>Expression Name <span class="required">*</span></label>
+          <input id="expression_name" placeholder="Rare Breed Barrel Proof" />
+          <span class="helper-required">Required</span>
+          <span class="helper">The specific bottle expression. Example: Rare Breed, Rickhouse Proof, Double Oaked.</span>
+        </div>
+
+        <div class="field-wrap">
+          <label>Spirit Category <span class="required">*</span></label>
+          <input id="spirit_category" placeholder="Bourbon" />
+          <span class="helper-required">Required</span>
+          <span class="helper">Examples: Bourbon, Rye, American Whiskey, Scotch, Irish Whiskey.</span>
+        </div>
+
+        <div class="field-wrap">
+          <label>ABV</label>
+          <input id="abv" placeholder="58.5" />
+          <span class="helper">Alcohol by volume, not proof. Example: 58.5 for 117 proof.</span>
+        </div>
+
+        <div class="field-wrap">
+          <label>Size ML</label>
+          <input id="size_ml" placeholder="750" />
+          <span class="helper">Bottle size in milliliters. Most common: 750.</span>
+        </div>
       </div>
     </section>
 
-    <!-- SINGLE BARREL -->
     <section class="skin2-card">
-      <h2>Single Barrel / Vintage</h2>
+      <h2>3. Single Barrel / Vintage</h2>
+      <p class="helper">
+        Use this only when submitting a specific single barrel, store pick, private pick, or vintage/batch detail.
+      </p>
 
-      <select id="barrelType">
-        <option value="">None</option>
-        <option value="SINGLE_BARREL">Single Barrel</option>
-        <option value="VINTAGE_BATCH">Vintage</option>
-      </select>
+      <div class="field-wrap">
+        <label>Bottle Detail Type</label>
+        <select id="barrelType">
+          <option value="">None — standard batched bottle</option>
+          <option value="SINGLE_BARREL">Single Barrel / Store Pick</option>
+          <option value="VINTAGE_BATCH">Vintage / Batch Detail</option>
+        </select>
+        <span class="helper">Choose “None” if this is a regular batched bottle.</span>
+      </div>
 
       <div id="singleBarrelForm" style="display:none;">
-        <input id="pick_name" placeholder="Pick Name" />
-        <input id="bottling_year" placeholder="Bottling Year" />
-        <input id="batch_code" placeholder="Batch Code" />
+        <div class="field-wrap">
+          <label>Pick Name</label>
+          <input id="pick_name" placeholder="Bottle King Wayne Pick" />
+          <span class="helper">Examples: Honey Barrel Hunter Pick, Bottle King Wayne Pick, Private Select.</span>
+        </div>
+
+        <div class="field-wrap">
+          <label>Bottling Year</label>
+          <input id="bottling_year" placeholder="2024" />
+          <span class="helper">Use a four-digit year if known.</span>
+        </div>
+
+        <div class="field-wrap">
+          <label>Batch Code</label>
+          <input id="batch_code" placeholder="Batch A124" />
+          <span class="helper">Use any label batch, lot, barrel, or release code printed on the bottle.</span>
+        </div>
       </div>
     </section>
 
-    <!-- BARREL PICKER -->
     <section class="skin2-card">
-      <h2>Barrel Picker</h2>
+      <h2>4. Barrel Picker</h2>
+      <p class="helper">
+        Optional. Add this when the bottle is associated with a store, club, reviewer, group, or private barrel pick.
+      </p>
 
-      <select id="pickerSelect"></select>
+      <div class="field-wrap">
+        <label>Existing Barrel Picker</label>
+        <select id="pickerSelect"></select>
+        <span class="helper">Example: Bottle King, Bourbon Street Wine & Spirits, Honey Barrel Hunter.</span>
+      </div>
 
-      <button id="addPickerBtn">Add Barrel Picker</button>
+      <button id="addPickerBtn" type="button">Add Barrel Picker</button>
 
       <div id="pickerForm" style="display:none;">
-        <input id="barrel_picker_name" placeholder="Picker Name" />
+        <div class="field-wrap">
+          <label>Barrel Picker Name</label>
+          <input id="barrel_picker_name" placeholder="Bottle King Wayne" />
+          <span class="helper">Use the public-facing name of the store, group, club, or reviewer.</span>
+        </div>
       </div>
     </section>
 
     <section class="skin2-card">
-      <button id="submitBtn">Submit</button>
-      <div id="status"></div>
+      <button id="submitBtn" type="button">Submit Bottle</button>
+      <div id="status" class="helper"></div>
     </section>
 
     <div id="site-footer"></div>
