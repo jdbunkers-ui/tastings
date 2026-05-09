@@ -43,30 +43,24 @@
         min-width: 220px;
       }
 
-      /* NEW: Add Bottle button */
-      .hbh-add-bottle-btn {
+      /* NEW: IG Account Dropdown */
+      .hbh-ig-select {
         appearance: none;
         -webkit-appearance: none;
         border: 1px solid rgba(181, 122, 42, 0.55);
         background: rgba(246, 241, 234, 0.92);
         color: var(--s2-text);
         border-radius: 999px;
-        padding: 8px 12px;
+        padding: 8px 14px;
         font-size: 12px;
-        font-weight: 800;
-        letter-spacing: 0.2px;
+        font-weight: 700;
+        min-width: 220px;
         cursor: pointer;
-        user-select: none;
-        transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
       }
 
-      .hbh-add-bottle-btn:hover {
-        background: rgba(255, 255, 255, 0.92);
-        border-color: rgba(181, 122, 42, 0.75);
-      }
-
-      .hbh-add-bottle-btn:active {
-        transform: scale(0.98);
+      .hbh-ig-select:focus {
+        outline: none;
+        border-color: rgba(181, 122, 42, 0.85);
       }
 
       /* RIGHT: Toggle */
@@ -113,92 +107,88 @@
       }
 
       @media (max-width: 760px) {
-        .hbh-toggle-label { display: none; }
-      }
-
-      .coterie-add-link {
-        font-size: 12px;
-        display: inline-block;
-        margin-top: 4px;
+        .hbh-toggle-label {
+          display: none;
+        }
       }
 
       @media (max-width: 520px) {
-  .skin2-controls {
-    padding: 12px;
-  }
+        .skin2-controls {
+          padding: 12px;
+        }
 
-  .hbh-filter-row {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 10px;
-    align-items: center;
-  }
+        .hbh-filter-row {
+          display: grid;
+          grid-template-columns: 1fr auto;
+          gap: 10px;
+          align-items: center;
+        }
 
-  .hbh-proof-wrap {
-    grid-column: 1 / 2;
-    width: 100%;
-    display: flex;
-  }
+        .hbh-proof-wrap {
+          grid-column: 1 / 2;
+          width: 100%;
+          display: flex;
+        }
 
-  .hbh-proof-wrap input {
-    width: 100%;
-  }
+        .hbh-proof-wrap input {
+          width: 100%;
+        }
 
-  .hbh-filter-row #filter {
-    grid-column: 1 / -1;
-    width: 100%;
-    min-width: 0;
-  }
+        .hbh-filter-row #filter {
+          grid-column: 1 / -1;
+          width: 100%;
+          min-width: 0;
+        }
 
-  .hbh-add-bottle-btn {
-    grid-column: 1 / 2;
-    width: 100%;
-  }
+        .hbh-ig-select {
+          grid-column: 1 / -1;
+          width: 100%;
+        }
 
-  .hbh-toggle-wrap {
-    grid-column: 2 / 3;
-    justify-self: end;
-  }
+        .hbh-toggle-wrap {
+          grid-column: 2 / 3;
+          justify-self: end;
+        }
 
-  .hbh-toggle-label {
-    display: none;
-  }
+        .hbh-toggle-label {
+          display: none;
+        }
 
-  .skin2-status {
-    grid-column: 1 / -1;
-    width: 100%;
-    font-size: 12px;
-  }
+        .skin2-status {
+          grid-column: 1 / -1;
+          width: 100%;
+          font-size: 12px;
+        }
 
-  .skin2-table-wrap {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
+        .skin2-table-wrap {
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+        }
 
-  .skin2-table {
-    min-width: 760px;
-  }
+        .skin2-table {
+          min-width: 760px;
+        }
 
-  .skin2-table th,
-  .skin2-table td {
-    white-space: normal;
-    vertical-align: top;
-  }
+        .skin2-table th,
+        .skin2-table td {
+          white-space: normal;
+          vertical-align: top;
+        }
 
-  .skin2-table .col-expression,
-  .skin2-table .col-distillery,
-  .skin2-table .col-picker {
-    min-width: 190px;
-  }
+        .skin2-table .col-expression,
+        .skin2-table .col-distillery,
+        .skin2-table .col-picker {
+          min-width: 190px;
+        }
 
-  .skin2-table .col-msrp,
-  .skin2-table .col-proof,
-  .skin2-table .col-age,
-  .skin2-table .col-score {
-    min-width: 90px;
-    text-align: center;
-  }
-}
+        .skin2-table .col-msrp,
+        .skin2-table .col-proof,
+        .skin2-table .col-age,
+        .skin2-table .col-score {
+          min-width: 90px;
+          text-align: center;
+        }
+      }
     </style>
   </head>
 
@@ -210,9 +200,13 @@
       <section class="skin2-card">
         <div class="skin2-controls">
           <div class="hbh-filter-row">
+
             <!-- LEFT: Proof Filter -->
             <div class="hbh-proof-wrap">
-              <label for="proofMax" class="hbh-proof-label">Proof ≤</label>
+              <label for="proofMax" class="hbh-proof-label">
+                Proof ≤
+              </label>
+
               <input
                 id="proofMax"
                 type="number"
@@ -231,17 +225,18 @@
               aria-label="Search coterie bottle list"
             />
 
-            <!-- NEW: Add Bottle button (popup) -->
-            <button
-              id="addBottleBtn"
-              class="hbh-add-bottle-btn"
-              type="button"
-              title="Add a bottle (Phase II enhancement)"
+            <!-- NEW: IG Account Dropdown -->
+            <select
+              id="igAccountSelect"
+              class="hbh-ig-select"
+              aria-label="Open reviewer tasting page"
             >
-              Add Bottle
-            </button>
+              <option value="">
+                Open Reviewer Tasting Page…
+              </option>
+            </select>
 
-            <!-- RIGHT: Star Toggle (static star like Pickers) -->
+            <!-- RIGHT: Toggle -->
             <div class="hbh-toggle-wrap">
               <button
                 id="coterieNewOnlyToggle"
@@ -250,7 +245,14 @@
                 aria-pressed="false"
                 title="Filter bottles to only those with recently updated coterie"
               >
-                <svg class="star-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">
+                <svg
+                  class="star-icon"
+                  viewBox="0 0 24 24"
+                  width="16"
+                  height="16"
+                  aria-hidden="true"
+                  focusable="false"
+                >
                   <path
                     d="M12 2.2l2.9 6.2 6.8.6-5.2 4.5 1.6 6.7L12 16.9 5.9 20.2l1.6-6.7L2.3 9l6.8-.6L12 2.2z"
                     fill="rgba(215, 162, 74, 0.95)"
@@ -265,7 +267,10 @@
               </span>
             </div>
 
-            <span class="skin2-status" id="status">Loading…</span>
+            <span class="skin2-status" id="status">
+              Loading…
+            </span>
+
           </div>
         </div>
 
@@ -274,7 +279,12 @@
           <div id="coterie-content"></div>
         </div>
 
-        <div id="error" class="skin2-error" style="display:none;"></div>
+        <div
+          id="error"
+          class="skin2-error"
+          style="display:none;"
+        ></div>
+
       </section>
 
       <!-- Skin2 Footer Injection Target -->
@@ -284,46 +294,124 @@
     <!-- Scripts -->
     <script src="../assets/js/site-chrome.js"></script>
 
-    <!-- NEW: Add Bottle popup wiring -->
-    <script>
-      (function () {
-        const btn = document.getElementById("addBottleBtn");
-        if (!btn) return;
+    <!-- NEW: IG Account Dropdown Logic -->
+    <script type="module">
+      import { supabase } from "../assets/js/supabaseClient.js";
 
-        function openAddBottlePopup() {
-          const url = `../coterie/add-bottle.html`;
+      async function loadIgAccounts() {
+
+        const select =
+          document.getElementById("igAccountSelect");
+
+        if (!select) return;
+
+        const { data, error } =
+          await supabase
+            .from("v_MyTastings")
+            .select("ig_account_normalized")
+            .not("ig_account_normalized", "is", null)
+            .order("ig_account_normalized", {
+              ascending: true
+            });
+
+        if (error) {
+          console.error(
+            "Failed loading IG accounts",
+            error
+          );
+          return;
+        }
+
+        const uniqueAccounts =
+          [
+            ...new Set(
+              (data || [])
+                .map(
+                  r => r.ig_account_normalized
+                )
+                .filter(Boolean)
+            )
+          ];
+
+        for (const acct of uniqueAccounts) {
+
+          const opt =
+            document.createElement("option");
+
+          opt.value = acct;
+          opt.textContent = `@${acct}`;
+
+          select.appendChild(opt);
+        }
+
+        select.addEventListener("change", () => {
+
+          const ig =
+            (select.value || "").trim();
+
+          if (!ig) return;
+
+          const url =
+            `../MyTastings.html?ig_account=${encodeURIComponent(ig)}`;
+
           window.open(
             url,
             "_blank",
-            "width=720,height=520,resizable=yes,scrollbars=yes"
+            "width=1200,height=900,resizable=yes,scrollbars=yes"
           );
-        }
 
-        btn.addEventListener("click", openAddBottlePopup);
-      })();
+          select.selectedIndex = 0;
+        });
+      }
+
+      loadIgAccounts();
     </script>
 
-    <!-- Toggle wiring: MUST run before coterie-page.js loads -->
+    <!-- Toggle wiring -->
     <script>
       (function () {
-        const KEY = "HBH_COTERIE_ONLY_NEW";
-        const btn = document.getElementById("coterieNewOnlyToggle");
+
+        const KEY =
+          "HBH_COTERIE_ONLY_NEW";
+
+        const btn =
+          document.getElementById(
+            "coterieNewOnlyToggle"
+          );
 
         // Initialize shared state
-        const initial = localStorage.getItem(KEY) === "1";
-        window.HBH_CoterieFilter = { onlyNew: initial };
+        const initial =
+          localStorage.getItem(KEY) === "1";
+
+        window.HBH_CoterieFilter = {
+          onlyNew: initial
+        };
 
         function setPressed(isOn) {
+
           if (!btn) return;
-          btn.setAttribute("aria-pressed", isOn ? "true" : "false");
+
+          btn.setAttribute(
+            "aria-pressed",
+            isOn ? "true" : "false"
+          );
+
           btn.title = isOn
             ? "Showing only bottles with recently updated coterie (click to show all)"
             : "Filter bottles to only those with recently updated coterie";
         }
 
         function dispatch(isOn) {
+
           window.dispatchEvent(
-            new CustomEvent("hbh:coterieFilterChanged", { detail: { onlyNew: isOn } })
+            new CustomEvent(
+              "hbh:coterieFilterChanged",
+              {
+                detail: {
+                  onlyNew: isOn
+                }
+              }
+            )
           );
         }
 
@@ -332,12 +420,22 @@
 
         // Wire click
         if (btn) {
-          btn.addEventListener("click", () => {
-            const next = !window.HBH_CoterieFilter.onlyNew;
-            window.HBH_CoterieFilter.onlyNew = next;
 
-            localStorage.setItem(KEY, next ? "1" : "0");
+          btn.addEventListener("click", () => {
+
+            const next =
+              !window.HBH_CoterieFilter.onlyNew;
+
+            window.HBH_CoterieFilter.onlyNew =
+              next;
+
+            localStorage.setItem(
+              KEY,
+              next ? "1" : "0"
+            );
+
             setPressed(next);
+
             dispatch(next);
           });
         }
@@ -345,7 +443,14 @@
     </script>
 
     <!-- IMPORTANT: Must be module scripts -->
-    <script type="module" src="../assets/js/coterie-page.js"></script>
-    <script type="module" src="../assets/js/inventory-filter.js"></script>
+    <script
+      type="module"
+      src="../assets/js/coterie-page.js"
+    ></script>
+
+    <script
+      type="module"
+      src="../assets/js/inventory-filter.js"
+    ></script>
   </body>
 </html>
