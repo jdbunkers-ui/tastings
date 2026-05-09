@@ -7,7 +7,7 @@
    ========================================================= */
 
 (function () {
-  const GA_MEASUREMENT_ID = "G-WYKYH1KKXY";
+  const GA_MEASUREMENT_ID = "G-1RKBKHYTBW";
   const TRACKED_NAV_DELAY_MS = 180;
   const ENABLE_DEBUG_MODE = false; // set true temporarily when using GA4 DebugView
 
