@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Add Bottle – Honey Barrel Hunter</title>
+
+  <link rel="stylesheet" href="../assets/css/skin2.css" />
+</head>
+
+<body>
+  <main class="skin2-wrap">
+    <div id="site-header"></div>
+
+    <section class="skin2-card">
+      <h1>Add a new bottle to the Coterie</h1>
+
+      <div class="skin2-controls">
+        <label>Email</label>
+        <input id="email" type="email" />
+
+        <label>Instagram (optional)</label>
+        <input id="ig" type="text" placeholder="@yourhandle" />
+      </div>
+    </section>
+
+    <!-- DISTILLERY -->
+    <section class="skin2-card">
+      <h2>Distillery</h2>
+
+      <select id="distillerySelect"></select>
+
+      <button id="addDistilleryBtn">Add Distillery</button>
+
+      <div id="distilleryForm" style="display:none;">
+        <input id="distillery_name" placeholder="Distillery Name" />
+        <input id="country" placeholder="Country" />
+        <input id="state" placeholder="State" />
+        <input id="address_line_1" placeholder="Address Line 1" />
+        <input id="city" placeholder="City" />
+        <input id="postal_code" placeholder="Postal Code" />
+      </div>
+    </section>
+
+    <!-- BOTTLE -->
+    <section class="skin2-card">
+      <h2>Bottle</h2>
+
+      <select id="bottleSelect"></select>
+
+      <button id="addBottleBtn">Add Bottle</button>
+
+      <div id="bottleForm" style="display:none;">
+        <input id="brand_name" placeholder="Brand Name" />
+        <input id="expression_name" placeholder="Expression Name" />
+        <input id="spirit_category" placeholder="Spirit Category" />
+        <input id="abv" placeholder="ABV" />
+        <input id="size_ml" placeholder="Size (ml)" />
+      </div>
+    </section>
+
+    <!-- SINGLE BARREL -->
+    <section class="skin2-card">
+      <h2>Single Barrel / Vintage</h2>
+
+      <select id="barrelType">
+        <option value="">None</option>
+        <option value="SINGLE_BARREL">Single Barrel</option>
+        <option value="VINTAGE_BATCH">Vintage</option>
+      </select>
+
+      <div id="singleBarrelForm" style="display:none;">
+        <input id="pick_name" placeholder="Pick Name" />
+        <input id="bottling_year" placeholder="Bottling Year" />
+        <input id="batch_code" placeholder="Batch Code" />
+      </div>
+    </section>
+
+    <!-- BARREL PICKER -->
+    <section class="skin2-card">
+      <h2>Barrel Picker</h2>
+
+      <select id="pickerSelect"></select>
+
+      <button id="addPickerBtn">Add Barrel Picker</button>
+
+      <div id="pickerForm" style="display:none;">
+        <input id="barrel_picker_name" placeholder="Picker Name" />
+      </div>
+    </section>
+
+    <section class="skin2-card">
+      <button id="submitBtn">Submit</button>
+      <div id="status"></div>
+    </section>
+
+    <div id="site-footer"></div>
+  </main>
+
+  <script src="../assets/js/site-chrome.js"></script>
+  <script type="module" src="./bottle-load.js"></script>
+</body>
+</html>
