@@ -189,21 +189,26 @@
 
       <div id="singleBarrelForm" style="display:none;">
         <div class="field-wrap">
-          <label>Pick Name</label>
-          <input id="pick_name" placeholder="Bottle King Wayne Pick" />
-          <span class="helper">Examples: Honey Barrel Hunter Pick, Bottle King Wayne Pick, Private Select.</span>
+          <label>Pick Name / Batch <span class="required">*</span></label>
+          <input id="pick_name" placeholder="Batch 4" />
+          <span class="helper-required">Required</span>
+          <span class="helper">
+            The actual name of the “pick” on the bottle. Use “Batch 4” if this is a limited Jack 10/12/14 release. Use “C924” for an Elijah Craig Barrel Proof batch release.
+          </span>
         </div>
 
         <div class="field-wrap">
           <label>Bottling Year</label>
-          <input id="bottling_year" placeholder="2024" />
-          <span class="helper">Use a four-digit year if known.</span>
+          <input id="bottling_year" placeholder="2025" />
+          <span class="helper">Optional. Use a four-digit year if known.</span>
         </div>
 
         <div class="field-wrap">
           <label>Batch Code</label>
-          <input id="batch_code" placeholder="Batch A124" />
-          <span class="helper">Use any label batch, lot, barrel, or release code printed on the bottle.</span>
+          <input id="batch_code" placeholder="Warehouse CN-F, Rick 12, Barrel 345" />
+          <span class="helper">
+            Optional. We are flexible here, as any additional specifics such as warehouse, rick, or actual barrel number can be added.
+          </span>
         </div>
       </div>
     </section>
@@ -224,8 +229,9 @@
 
       <div id="pickerForm" style="display:none;">
         <div class="field-wrap">
-          <label>Barrel Picker Name</label>
+          <label>Barrel Picker Name <span class="required">*</span></label>
           <input id="barrel_picker_name" placeholder="Bottle King Wayne" />
+          <span class="helper-required">Required</span>
           <span class="helper">Use the public-facing name of the store, group, club, or reviewer.</span>
         </div>
       </div>
