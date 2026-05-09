@@ -34,6 +34,17 @@
       display: block;
       font-weight: 600;
     }
+
+    .advanced-toggle {
+      margin: 12px 0;
+    }
+
+    .advanced-panel {
+      display: none;
+      border-top: 1px solid rgba(181, 122, 42, 0.25);
+      margin-top: 12px;
+      padding-top: 12px;
+    }
   </style>
 </head>
 
@@ -55,14 +66,14 @@
       <div class="skin2-controls">
         <div class="field-wrap">
           <label>Email <span class="required">*</span></label>
-          <input id="email" type="email" placeholder="example@email.com" />
+          <input id="email" type="email" placeholder="example@email.com" autocomplete="off" data-lpignore="true" />
           <span class="helper-required">Required</span>
           <span class="helper">Used only if I need to follow up with a question about the submission.</span>
         </div>
 
         <div class="field-wrap">
           <label>Instagram</label>
-          <input id="ig" type="text" placeholder="@honeybarrelhunter" />
+          <input id="ig" type="text" placeholder="@honeybarrelhunter" autocomplete="off" data-lpignore="true" />
           <span class="helper">Optional. Helps attribute submissions or follow up socially later.</span>
         </div>
       </div>
@@ -83,42 +94,81 @@
       <div id="distilleryForm" style="display:none;">
         <div class="field-wrap">
           <label>Distillery Name <span class="required">*</span></label>
-          <input id="distillery_name" placeholder="Ben Holladay Distillery" />
+          <input id="distillery_name" placeholder="Ben Holladay Distillery" autocomplete="off" data-lpignore="true" />
           <span class="helper-required">Required</span>
           <span class="helper">Use the official distillery name when possible.</span>
         </div>
 
         <div class="field-wrap">
           <label>Country <span class="required">*</span></label>
-          <input id="country" placeholder="United States" />
+          <input id="country" placeholder="United States" autocomplete="off" data-lpignore="true" />
           <span class="helper-required">Required</span>
           <span class="helper">Use the full country name when known.</span>
         </div>
 
         <div class="field-wrap">
           <label>State <span class="required">*</span></label>
-          <input id="state" placeholder="MO" />
+          <input id="state" placeholder="MO" autocomplete="off" data-lpignore="true" />
           <span class="helper-required">Required</span>
           <span class="helper">Use the two-letter state code when applicable. Example: KY, MO, NJ.</span>
         </div>
 
         <div class="field-wrap">
           <label>Address Line 1 <span class="required">*</span></label>
-          <input id="address_line_1" placeholder="1 McCormick Lane" />
+          <input id="address_line_1" placeholder="1 McCormick Lane" autocomplete="off" data-lpignore="true" />
           <span class="helper-required">Required</span>
           <span class="helper">Street address of the distillery or primary location.</span>
         </div>
 
         <div class="field-wrap">
           <label>City <span class="required">*</span></label>
-          <input id="city" placeholder="Weston" />
+          <input id="city" placeholder="Weston" autocomplete="off" data-lpignore="true" />
           <span class="helper-required">Required</span>
         </div>
 
         <div class="field-wrap">
           <label>Postal Code <span class="required">*</span></label>
-          <input id="postal_code" placeholder="64098" />
+          <input id="postal_code" placeholder="64098" autocomplete="off" data-lpignore="true" />
           <span class="helper-required">Required</span>
+        </div>
+
+        <button class="advanced-toggle" type="button" data-target="distilleryAdvanced">Optional Distillery Details</button>
+
+        <div id="distilleryAdvanced" class="advanced-panel">
+          <div class="field-wrap">
+            <label>Address Line 2</label>
+            <input id="address_line_2" placeholder="Suite, building, campus, etc." autocomplete="off" data-lpignore="true" />
+          </div>
+
+          <div class="field-wrap">
+            <label>Distillery Description</label>
+            <textarea id="distillery_description" placeholder="Short description of the distillery." autocomplete="off" data-lpignore="true"></textarea>
+          </div>
+
+          <div class="field-wrap">
+            <label>Photo Filename</label>
+            <input id="distillery_photo_filename" placeholder="ben-holladay.jpg" autocomplete="off" data-lpignore="true" />
+          </div>
+
+          <div class="field-wrap">
+            <label>Latitude</label>
+            <input id="latitude" placeholder="39.4112" autocomplete="off" data-lpignore="true" />
+          </div>
+
+          <div class="field-wrap">
+            <label>Longitude</label>
+            <input id="longitude" placeholder="-94.9016" autocomplete="off" data-lpignore="true" />
+          </div>
+
+          <div class="field-wrap">
+            <label>Canonical Distillery Name</label>
+            <input id="canonical_distillery_name" placeholder="ben holladay distillery" autocomplete="off" data-lpignore="true" />
+          </div>
+
+          <div class="field-wrap">
+            <label>Distillery Submitter Notes</label>
+            <textarea id="distillery_submitter_notes" placeholder="Anything I should know before approving this distillery." autocomplete="off" data-lpignore="true"></textarea>
+          </div>
         </div>
       </div>
     </section>
@@ -138,35 +188,117 @@
       <div id="bottleForm" style="display:none;">
         <div class="field-wrap">
           <label>Brand Name <span class="required">*</span></label>
-          <input id="brand_name" placeholder="Wild Turkey" />
+          <input id="brand_name" placeholder="Wild Turkey" autocomplete="off" data-lpignore="true" />
           <span class="helper-required">Required</span>
           <span class="helper">The main brand on the bottle. Example: Wild Turkey, Woodford Reserve, Ben Holladay.</span>
         </div>
 
         <div class="field-wrap">
           <label>Expression Name <span class="required">*</span></label>
-          <input id="expression_name" placeholder="Rare Breed Barrel Proof" />
+          <input id="expression_name" placeholder="Rare Breed Barrel Proof" autocomplete="off" data-lpignore="true" />
           <span class="helper-required">Required</span>
           <span class="helper">The specific bottle expression. Example: Rare Breed, Rickhouse Proof, Double Oaked.</span>
         </div>
 
         <div class="field-wrap">
           <label>Spirit Category <span class="required">*</span></label>
-          <input id="spirit_category" placeholder="Bourbon" />
+          <input id="spirit_category" placeholder="Bourbon" autocomplete="off" data-lpignore="true" />
           <span class="helper-required">Required</span>
           <span class="helper">Examples: Bourbon, Rye, American Whiskey, Scotch, Irish Whiskey.</span>
         </div>
 
         <div class="field-wrap">
           <label>ABV</label>
-          <input id="abv" placeholder="58.5" />
+          <input id="abv" placeholder="58.5" autocomplete="off" data-lpignore="true" />
           <span class="helper">Alcohol by volume, not proof. Example: 58.5 for 117 proof.</span>
         </div>
 
         <div class="field-wrap">
           <label>Size ML</label>
-          <input id="size_ml" placeholder="750" />
+          <input id="size_ml" placeholder="750" autocomplete="off" data-lpignore="true" />
           <span class="helper">Bottle size in milliliters. Most common: 750.</span>
+        </div>
+
+        <button class="advanced-toggle" type="button" data-target="bottleAdvanced">Optional Bottle Details</button>
+
+        <div id="bottleAdvanced" class="advanced-panel">
+          <div class="field-wrap">
+            <label>Spirit Subtype</label>
+            <input id="spirit_subtype" placeholder="Wheated Bourbon, Rye, Tennessee Whiskey" autocomplete="off" data-lpignore="true" />
+          </div>
+
+          <div class="field-wrap">
+            <label>Bottling Strength Type</label>
+            <input id="bottling_strength_type" placeholder="Barrel Proof, Bottled-in-Bond, 101 Proof" autocomplete="off" data-lpignore="true" />
+          </div>
+
+          <div class="field-wrap">
+            <label>Age in Months</label>
+            <input id="age_in_month_qty" placeholder="120" autocomplete="off" data-lpignore="true" />
+          </div>
+
+          <div class="field-wrap">
+            <label>Finished?</label>
+            <select id="finished_ind">
+              <option value="">Unknown / No</option>
+              <option value="false">No</option>
+              <option value="true">Yes</option>
+            </select>
+          </div>
+
+          <div class="field-wrap">
+            <label>Chill Filtered?</label>
+            <select id="chill_filtered_ind">
+              <option value="">Unknown / No</option>
+              <option value="false">No</option>
+              <option value="true">Yes</option>
+            </select>
+          </div>
+
+          <div class="field-wrap">
+            <label>Mash Bill</label>
+            <input id="mash_bill" placeholder="72% corn, 18% rye, 10% malted barley" autocomplete="off" data-lpignore="true" />
+          </div>
+
+          <div class="field-wrap">
+            <label>Finished Type</label>
+            <input id="finished_type" placeholder="Port finish, toasted barrel, amburana finish" autocomplete="off" data-lpignore="true" />
+          </div>
+
+          <div class="field-wrap">
+            <label>MSRP</label>
+            <input id="msrp" placeholder="79.99" autocomplete="off" data-lpignore="true" />
+          </div>
+
+          <div class="field-wrap">
+            <label>UPC / EAN</label>
+            <input id="upc_ean" placeholder="Optional barcode value" autocomplete="off" data-lpignore="true" />
+          </div>
+
+          <div class="field-wrap">
+            <label>Peat Level</label>
+            <input id="peat_level" placeholder="None, Light, Medium, Heavy" autocomplete="off" data-lpignore="true" />
+          </div>
+
+          <div class="field-wrap">
+            <label>Age Method</label>
+            <input id="age_method" placeholder="Age stated, NAS, blend of ages" autocomplete="off" data-lpignore="true" />
+          </div>
+
+          <div class="field-wrap">
+            <label>Primary Cask Type</label>
+            <input id="cask_type_primary" placeholder="New charred oak, ex-bourbon, sherry cask" autocomplete="off" data-lpignore="true" />
+          </div>
+
+          <div class="field-wrap">
+            <label>Warehouse</label>
+            <input id="bottle_warehouse" placeholder="Warehouse CN-F" autocomplete="off" data-lpignore="true" />
+          </div>
+
+          <div class="field-wrap">
+            <label>Bottle Submitter Notes</label>
+            <textarea id="bottle_submitter_notes" placeholder="Anything I should know before approving this bottle." autocomplete="off" data-lpignore="true"></textarea>
+          </div>
         </div>
       </div>
     </section>
@@ -190,7 +322,7 @@
       <div id="singleBarrelForm" style="display:none;">
         <div class="field-wrap">
           <label>Pick Name / Batch <span class="required">*</span></label>
-          <input id="pick_name" placeholder="Batch 4" />
+          <input id="pick_name" placeholder="Batch 4" autocomplete="off" data-lpignore="true" />
           <span class="helper-required">Required</span>
           <span class="helper">
             The actual name of the “pick” on the bottle. Use “Batch 4” if this is a limited Jack 10/12/14 release. Use “C924” for an Elijah Craig Barrel Proof batch release.
@@ -199,16 +331,68 @@
 
         <div class="field-wrap">
           <label>Bottling Year</label>
-          <input id="bottling_year" placeholder="2025" />
+          <input id="bottling_year" placeholder="2025" autocomplete="off" data-lpignore="true" />
           <span class="helper">Optional. Use a four-digit year if known.</span>
         </div>
 
         <div class="field-wrap">
           <label>Batch Code</label>
-          <input id="batch_code" placeholder="Warehouse CN-F, Rick 12, Barrel 345" />
+          <input id="batch_code" placeholder="Warehouse CN-F, Rick 12, Barrel 345" autocomplete="off" data-lpignore="true" />
           <span class="helper">
             Optional. We are flexible here, as any additional specifics such as warehouse, rick, or actual barrel number can be added.
           </span>
+        </div>
+
+        <button class="advanced-toggle" type="button" data-target="singleBarrelAdvanced">Optional Single Barrel / Vintage Details</button>
+
+        <div id="singleBarrelAdvanced" class="advanced-panel">
+          <div class="field-wrap">
+            <label>Warehouse</label>
+            <input id="sb_warehouse" placeholder="Warehouse CN-F" autocomplete="off" data-lpignore="true" />
+          </div>
+
+          <div class="field-wrap">
+            <label>Cask Strength?</label>
+            <select id="cask_strength">
+              <option value="false">No</option>
+              <option value="true">Yes</option>
+            </select>
+          </div>
+
+          <div class="field-wrap">
+            <label>ABV Override</label>
+            <input id="abv_override" placeholder="62.3" autocomplete="off" data-lpignore="true" />
+          </div>
+
+          <div class="field-wrap">
+            <label>Age Statement Total Months</label>
+            <input id="age_statement_total_months" placeholder="144" autocomplete="off" data-lpignore="true" />
+          </div>
+
+          <div class="field-wrap">
+            <label>Distilled State</label>
+            <input id="distilled_state" placeholder="KY" autocomplete="off" data-lpignore="true" />
+          </div>
+
+          <div class="field-wrap">
+            <label>Bottled State</label>
+            <input id="bottled_state" placeholder="KY" autocomplete="off" data-lpignore="true" />
+          </div>
+
+          <div class="field-wrap">
+            <label>Single Barrel Description</label>
+            <textarea id="single_barrel_description" placeholder="Short description for this specific release." autocomplete="off" data-lpignore="true"></textarea>
+          </div>
+
+          <div class="field-wrap">
+            <label>Bottle Image Reference</label>
+            <input id="bottle_img_ref" placeholder="jack-12-batch-4.jpg" autocomplete="off" data-lpignore="true" />
+          </div>
+
+          <div class="field-wrap">
+            <label>Single Barrel Submitter Notes</label>
+            <textarea id="single_barrel_submitter_notes" placeholder="Anything I should know before approving this release." autocomplete="off" data-lpignore="true"></textarea>
+          </div>
         </div>
       </div>
     </section>
@@ -230,9 +414,93 @@
       <div id="pickerForm" style="display:none;">
         <div class="field-wrap">
           <label>Barrel Picker Name <span class="required">*</span></label>
-          <input id="barrel_picker_name" placeholder="Bottle King Wayne" />
+          <input id="barrel_picker_name" placeholder="Bottle King Wayne" autocomplete="off" data-lpignore="true" />
           <span class="helper-required">Required</span>
           <span class="helper">Use the public-facing name of the store, group, club, or reviewer.</span>
+        </div>
+
+        <button class="advanced-toggle" type="button" data-target="pickerAdvanced">Optional Barrel Picker Details</button>
+
+        <div id="pickerAdvanced" class="advanced-panel">
+          <div class="field-wrap">
+            <label>Picker Type</label>
+            <input id="barrel_picker_type" placeholder="Retailer, Club, Reviewer, Private Group" autocomplete="off" data-lpignore="true" />
+          </div>
+
+          <div class="field-wrap">
+            <label>Country</label>
+            <input id="picker_country" placeholder="USA" autocomplete="off" data-lpignore="true" />
+          </div>
+
+          <div class="field-wrap">
+            <label>State</label>
+            <input id="picker_state" placeholder="NJ" autocomplete="off" data-lpignore="true" />
+          </div>
+
+          <div class="field-wrap">
+            <label>City</label>
+            <input id="picker_city" placeholder="Wayne" autocomplete="off" data-lpignore="true" />
+          </div>
+
+          <div class="field-wrap">
+            <label>Postal Code</label>
+            <input id="picker_postal_code" placeholder="07470" autocomplete="off" data-lpignore="true" />
+          </div>
+
+          <div class="field-wrap">
+            <label>Address Line 1</label>
+            <input id="picker_address_line_1" placeholder="Street address" autocomplete="off" data-lpignore="true" />
+          </div>
+
+          <div class="field-wrap">
+            <label>Address Line 2</label>
+            <input id="picker_address_line_2" placeholder="Suite, unit, etc." autocomplete="off" data-lpignore="true" />
+          </div>
+
+          <div class="field-wrap">
+            <label>Full Address</label>
+            <input id="full_address" placeholder="Full formatted address" autocomplete="off" data-lpignore="true" />
+          </div>
+
+          <div class="field-wrap">
+            <label>Phone Number</label>
+            <input id="phone_number" placeholder="555-555-5555" autocomplete="off" data-lpignore="true" />
+          </div>
+
+          <div class="field-wrap">
+            <label>Instagram URL</label>
+            <input id="instagram_url" placeholder="https://instagram.com/example" autocomplete="off" data-lpignore="true" />
+          </div>
+
+          <div class="field-wrap">
+            <label>Facebook URL</label>
+            <input id="facebook_url" placeholder="https://facebook.com/example" autocomplete="off" data-lpignore="true" />
+          </div>
+
+          <div class="field-wrap">
+            <label>Website URL</label>
+            <input id="website_url" placeholder="https://example.com" autocomplete="off" data-lpignore="true" />
+          </div>
+
+          <div class="field-wrap">
+            <label>Google Maps URL</label>
+            <input id="google_maps_url" placeholder="https://maps.google.com/..." autocomplete="off" data-lpignore="true" />
+          </div>
+
+          <div class="field-wrap">
+            <label>Notes</label>
+            <textarea id="picker_notes" placeholder="Internal notes about this picker." autocomplete="off" data-lpignore="true"></textarea>
+          </div>
+
+          <div class="field-wrap">
+            <label>Picker Description</label>
+            <textarea id="barrel_picker_description" placeholder="Public-facing description." autocomplete="off" data-lpignore="true"></textarea>
+          </div>
+
+          <div class="field-wrap">
+            <label>Barrel Picker Submitter Notes</label>
+            <textarea id="barrel_picker_submitter_notes" placeholder="Anything I should know before approving this picker." autocomplete="off" data-lpignore="true"></textarea>
+          </div>
         </div>
       </div>
     </section>
